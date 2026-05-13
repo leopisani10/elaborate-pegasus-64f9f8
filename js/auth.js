@@ -204,6 +204,138 @@ async function rejectBaba(babaId, reason) {
 }
 
 // =============================================
+// CHAT
+// =============================================
+
+// Encontra conversa existente ou cria uma nova entre eu e outro user.
+// Determina automaticamente quem é parent e quem é babá baseado nos tipos.
+async function getOrCreateConversation(otherUserId) {
+  const me = await getCurrentUser();
+  if (!me) throw new Error('Não logado');
+
+  const myProfile = await getCurrentProfile();
+  if (!myProfile) throw new Error('Sem profile');
+
+  // Busca o profile do outro pra saber quem é qual
+  const { data: otherProfile, error: otherErr } = await db
+    .from('profiles')
+    .select('id, user_type')
+    .eq('id', otherUserId)
+    .single();
+  if (otherErr || !otherProfile) throw new Error('Outro usuário não encontrado');
+
+  let parentId, babaId;
+  if (myProfile.user_type === 'parent' && otherProfile.user_type === 'baba') {
+    parentId = me.id;
+    babaId = otherProfile.id;
+  } else if (myProfile.user_type === 'baba' && otherProfile.user_type === 'parent') {
+    parentId = otherProfile.id;
+    babaId = me.id;
+  } else {
+    throw new Error('Conversa só entre família e babá');
+  }
+
+  // Tenta achar conversa existente
+  const { data: existing } = await db
+    .from('conversations')
+    .select('*')
+    .eq('parent_id', parentId)
+    .eq('baba_id', babaId)
+    .maybeSingle();
+
+  if (existing) return existing;
+
+  // Cria nova
+  const { data: newConv, error: createErr } = await db
+    .from('conversations')
+    .insert({ parent_id: parentId, baba_id: babaId })
+    .select()
+    .single();
+
+  if (createErr) {
+    console.error('createConversation error:', createErr);
+    throw createErr;
+  }
+  return newConv;
+}
+
+async function getMyConversations() {
+  const me = await getCurrentUser();
+  if (!me) return [];
+
+  const { data, error } = await db
+    .from('conversations')
+    .select('*')
+    .or(`parent_id.eq.${me.id},baba_id.eq.${me.id}`)
+    .order('last_message_at', { ascending: false, nullsFirst: false });
+
+  if (error) { console.error('getMyConversations error:', error); return []; }
+  return data || [];
+}
+
+// Pega o profile do "outro" lado de uma conversa
+async function getOtherParticipant(conversation) {
+  const me = await getCurrentUser();
+  if (!me) return null;
+  const otherId = conversation.parent_id === me.id ? conversation.baba_id : conversation.parent_id;
+  const { data } = await db
+    .from('profiles')
+    .select('*')
+    .eq('id', otherId)
+    .single();
+  return data;
+}
+
+async function getMessages(conversationId) {
+  const { data, error } = await db
+    .from('messages')
+    .select('*')
+    .eq('conversation_id', conversationId)
+    .order('created_at', { ascending: true });
+  if (error) { console.error('getMessages error:', error); return []; }
+  return data || [];
+}
+
+async function sendMessage(conversationId, content) {
+  const me = await getCurrentUser();
+  if (!me) throw new Error('Não logado');
+  const { data, error } = await db
+    .from('messages')
+    .insert({
+      conversation_id: conversationId,
+      sender_id: me.id,
+      content: content.trim(),
+    })
+    .select()
+    .single();
+  if (error) { console.error('sendMessage error:', error); throw error; }
+  return data;
+}
+
+// Subscribe a novas mensagens via Supabase Realtime.
+// Retorna o channel pra você poder unsubscribe depois.
+function subscribeToMessages(conversationId, onNewMessage) {
+  const channel = db
+    .channel(`messages:${conversationId}`)
+    .on(
+      'postgres_changes',
+      {
+        event: 'INSERT',
+        schema: 'public',
+        table: 'messages',
+        filter: `conversation_id=eq.${conversationId}`,
+      },
+      (payload) => onNewMessage(payload.new)
+    )
+    .subscribe();
+  return channel;
+}
+
+function unsubscribe(channel) {
+  if (channel) db.removeChannel(channel);
+}
+
+// =============================================
 // EXPORT
 // =============================================
 
@@ -211,5 +343,7 @@ window.dbHelpers = {
   getCurrentUser, getCurrentProfile, signOut, requireAuth, requireAdmin, redirectToDashboard,
   getBabaProfile, upsertBabaProfile, getApprovedBabas, getBabaById,
   getPendingBabas, approveBaba, rejectBaba,
+  getOrCreateConversation, getMyConversations, getOtherParticipant,
+  getMessages, sendMessage, subscribeToMessages, unsubscribe,
   showError, showSuccess, setLoading,
 };
