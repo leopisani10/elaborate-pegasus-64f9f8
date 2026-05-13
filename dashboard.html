@@ -8,6 +8,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="shared.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script defer src="js/auth.js"></script>
   <style>
     body { background: #FAFBFC; }
 
@@ -426,166 +428,140 @@
         <button class="chip">Inglês</button>
       </div>
 
-      <div class="results-grid">
-        <!-- Card 1 — Maria Silva -->
-        <a href="profile.html" class="listing-card" style="text-decoration:none; color:inherit;">
-          <div class="listing-head">
-            <div class="listing-avatar av-1">M</div>
-            <div>
-              <div class="listing-name">Maria Silva</div>
-              <div class="listing-loc">
-                <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg>
-                Copacabana
-              </div>
-            </div>
-            <div class="listing-verified"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
-          </div>
-          <p class="listing-bio">7 anos cuidando de recém-nascidos. Referências em Ipanema e Leblon.</p>
-          <div class="listing-tags">
-            <span class="tag tag-baba">7 anos</span>
-            <span class="tag tag-warm">Recém-nascido</span>
-          </div>
-          <div class="listing-foot">
-            <div class="listing-price">R$ 35<span>/h</span></div>
-            <button class="listing-btn">Ver perfil</button>
-          </div>
-        </a>
-
-        <!-- Card 2 — Ana Costa -->
-        <a href="profile.html" class="listing-card" style="text-decoration:none; color:inherit;">
-          <div class="listing-head">
-            <div class="listing-avatar av-3">A</div>
-            <div>
-              <div class="listing-name">Ana Costa</div>
-              <div class="listing-loc">
-                <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg>
-                Ipanema
-              </div>
-            </div>
-            <div class="listing-verified"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
-          </div>
-          <p class="listing-bio">Pedagoga formada, 3 anos cuidando de crianças entre 1 e 5 anos.</p>
-          <div class="listing-tags">
-            <span class="tag tag-baba">Pedagoga</span>
-            <span class="tag tag-warm">1-5 anos</span>
-          </div>
-          <div class="listing-foot">
-            <div class="listing-price">R$ 30<span>/h</span></div>
-            <button class="listing-btn">Ver perfil</button>
-          </div>
-        </a>
-
-        <!-- Card 3 — Carla -->
-        <a href="profile.html" class="listing-card" style="text-decoration:none; color:inherit;">
-          <div class="listing-head">
-            <div class="listing-avatar av-6">C</div>
-            <div>
-              <div class="listing-name">Carla Santos</div>
-              <div class="listing-loc">
-                <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg>
-                Leblon
-              </div>
-            </div>
-            <div class="listing-verified"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
-          </div>
-          <p class="listing-bio">Babá folguista, finais de semana e feriados. Especialista em sono.</p>
-          <div class="listing-tags">
-            <span class="tag tag-baba">Folguista</span>
-            <span class="tag tag-warm">Noturno</span>
-          </div>
-          <div class="listing-foot">
-            <div class="listing-price">R$ 35<span>/h</span></div>
-            <button class="listing-btn">Ver perfil</button>
-          </div>
-        </a>
-
-        <!-- Card 4 — Joana -->
-        <a href="profile.html" class="listing-card" style="text-decoration:none; color:inherit;">
-          <div class="listing-head">
-            <div class="listing-avatar av-7">J</div>
-            <div>
-              <div class="listing-name">Joana Ribeiro</div>
-              <div class="listing-loc">
-                <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg>
-                Botafogo
-              </div>
-            </div>
-            <div class="listing-verified"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
-          </div>
-          <p class="listing-bio">5 anos cuidando de gêmeos. Habilitação, passaporte, viaja com a família.</p>
-          <div class="listing-tags">
-            <span class="tag tag-baba">Viaja</span>
-            <span class="tag tag-warm">Habilitada</span>
-          </div>
-          <div class="listing-foot">
-            <div class="listing-price">R$ 40<span>/h</span></div>
-            <button class="listing-btn">Ver perfil</button>
-          </div>
-        </a>
-
-        <!-- Card 5 — Patricia -->
-        <a href="profile.html" class="listing-card" style="text-decoration:none; color:inherit;">
-          <div class="listing-head">
-            <div class="listing-avatar av-4">P</div>
-            <div>
-              <div class="listing-name">Patrícia Lima</div>
-              <div class="listing-loc">
-                <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg>
-                Tijuca
-              </div>
-            </div>
-            <div class="listing-verified"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
-          </div>
-          <p class="listing-bio">10 anos como babá. Fluente em inglês, trabalhou em famílias estrangeiras.</p>
-          <div class="listing-tags">
-            <span class="tag tag-baba">Inglês</span>
-            <span class="tag tag-warm">10 anos</span>
-          </div>
-          <div class="listing-foot">
-            <div class="listing-price">R$ 45<span>/h</span></div>
-            <button class="listing-btn">Ver perfil</button>
-          </div>
-        </a>
-
-        <!-- Card 6 — Beatriz (locked / preview) -->
-        <a href="profile.html" class="listing-card locked" style="text-decoration:none; color:inherit;">
-          <div class="listing-head">
-            <div class="listing-avatar av-5">B</div>
-            <div>
-              <div class="listing-name">Beatriz Almeida</div>
-              <div class="listing-loc">
-                <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg>
-                Barra
-              </div>
-            </div>
-            <div class="listing-verified"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
-          </div>
-          <p class="listing-bio">Profissional especializada em pós-parto, com vivência em pediatria neonatal.</p>
-          <div class="listing-tags">
-            <span class="tag tag-baba">Pós-parto</span>
-            <span class="tag tag-warm">Recém-nascido</span>
-          </div>
-          <div class="listing-foot">
-            <div class="listing-price">R$ 50<span>/h</span></div>
-            <span class="listing-lock">
-              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
-              Assine
-            </span>
-          </div>
-        </a>
+      <div class="results-grid" id="resultsGrid">
+        <!-- Cards são preenchidos dinamicamente via JS -->
+        <div style="grid-column: 1 / -1; padding: 60px 20px; text-align: center; color: var(--ink-3); font-size: 15px;">
+          <div class="loading-spinner" style="display: inline-block; width: 28px; height: 28px; border: 3px solid var(--line); border-top-color: var(--cta); border-radius: 50%; animation: spin 0.8s linear infinite;"></div>
+          <div style="margin-top: 16px;">Carregando babás...</div>
+        </div>
       </div>
+      <style>@keyframes spin { to { transform: rotate(360deg); } }</style>
 
-      <div class="pagination">
-        <button class="page-btn">‹</button>
-        <button class="page-btn active">1</button>
-        <button class="page-btn">2</button>
-        <button class="page-btn">3</button>
-        <button class="page-btn">4</button>
-        <button class="page-btn">›</button>
+      <div id="emptyState" style="display:none; padding: 60px 20px; text-align: center; background: var(--bg-soft); border-radius: 20px; margin-top: 20px;">
+        <div style="font-size: 48px; margin-bottom: 12px;">🌱</div>
+        <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 6px;">Ainda não tem babás aprovadas.</h3>
+        <p style="font-size: 14px; color: var(--ink-3); max-width: 400px; margin: 0 auto;">
+          Estamos verificando perfis. Volta em breve — novas babás chegam toda semana.
+        </p>
       </div>
     </div>
   </section>
 </main>
 
-  </body>
+  
+<script>
+  window.addEventListener('DOMContentLoaded', async () => {
+    if (!window.dbClient) {
+      setTimeout(() => location.reload(), 800);
+      return;
+    }
+
+    // Exige login
+    const user = await window.dbHelpers.requireAuth();
+    if (!user) return;
+
+    // Confere se é família (babá vai pra outro lugar)
+    const profile = await window.dbHelpers.getCurrentProfile();
+    if (profile && profile.user_type === 'baba') {
+      window.location.href = '/onboarding-baba.html';
+      return;
+    }
+    if (profile && profile.user_type === 'admin') {
+      window.location.href = '/admin.html';
+      return;
+    }
+
+    // Atualiza o user chip com nome real
+    if (profile && profile.full_name) {
+      const initial = profile.full_name.charAt(0).toUpperCase();
+      const chipAvatar = document.querySelector('.user-chip-avatar');
+      const chipName = document.querySelector('.user-chip-name');
+      if (chipAvatar) chipAvatar.textContent = initial;
+      if (chipName) chipName.textContent = profile.full_name.split(' ')[0];
+    }
+
+    // Busca babás aprovadas
+    await loadBabas();
+  });
+
+  // Cor de avatar baseada no índice
+  const AVATAR_COLORS = ['av-1', 'av-3', 'av-4', 'av-5', 'av-6', 'av-7'];
+  function avatarColorFor(idx) { return AVATAR_COLORS[idx % AVATAR_COLORS.length]; }
+
+  function renderBabaCard(baba, idx) {
+    const fullName = baba.profiles?.full_name || 'Babá';
+    const firstInitial = fullName.charAt(0).toUpperCase();
+    const firstName = fullName.split(' ')[0];
+    const neighborhood = (baba.neighborhoods && baba.neighborhoods[0]) || 'Rio de Janeiro';
+    const rate = baba.hourly_rate || 0;
+    const bio = (baba.bio || '').substring(0, 100) + (baba.bio && baba.bio.length > 100 ? '...' : '');
+    const years = baba.years_experience || 0;
+
+    const specialtiesTags = (baba.specialties || []).slice(0, 2).map(s => {
+      const labels = {
+        'pedagoga': 'Pedagoga', 'enfermeira': 'Enfermeira', 'folguista': 'Folguista',
+        'noturna': 'Noturna', 'pos-parto': 'Pós-parto', 'ingles': 'Inglês',
+        'habilitada': 'Habilitada', 'viaja': 'Viaja'
+      };
+      return `<span class="tag tag-warm">${labels[s] || s}</span>`;
+    }).join('');
+
+    return `
+      <a href="profile.html?id=${baba.id}" class="listing-card" style="text-decoration:none; color:inherit;">
+        <div class="listing-head">
+          <div class="listing-avatar ${avatarColorFor(idx)}">${firstInitial}</div>
+          <div>
+            <div class="listing-name">${escapeHtml(firstName)}</div>
+            <div class="listing-loc">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg>
+              ${escapeHtml(neighborhood)}
+            </div>
+          </div>
+          <div class="listing-verified"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+        </div>
+        <p class="listing-bio">${escapeHtml(bio)}</p>
+        <div class="listing-tags">
+          ${years > 0 ? `<span class="tag tag-baba">${years} ${years === 1 ? 'ano' : 'anos'}</span>` : ''}
+          ${specialtiesTags}
+        </div>
+        <div class="listing-foot">
+          <div class="listing-price">R$ ${rate}<span>/h</span></div>
+          <button class="listing-btn">Ver perfil</button>
+        </div>
+      </a>
+    `;
+  }
+
+  function escapeHtml(str) {
+    if (!str) return '';
+    return String(str).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[m]);
+  }
+
+  async function loadBabas() {
+    const grid = document.getElementById('resultsGrid');
+    const empty = document.getElementById('emptyState');
+    const countEl = document.querySelector('.results-count');
+
+    try {
+      const babas = await window.dbHelpers.getApprovedBabas();
+
+      if (babas.length === 0) {
+        grid.style.display = 'none';
+        empty.style.display = 'block';
+        if (countEl) countEl.innerHTML = '<strong>0 babás</strong> encontradas';
+        return;
+      }
+
+      if (countEl) {
+        countEl.innerHTML = `<strong>${babas.length} ${babas.length === 1 ? 'babá' : 'babás'}</strong> ${babas.length === 1 ? 'encontrada' : 'encontradas'}`;
+      }
+
+      grid.innerHTML = babas.map((b, i) => renderBabaCard(b, i)).join('');
+    } catch (err) {
+      console.error('Erro carregando babás:', err);
+      grid.innerHTML = `<div style="grid-column: 1 / -1; padding: 40px; text-align: center; color: var(--cta);">Erro carregando babás. Tenta recarregar a página.</div>`;
+    }
+  }
+</script>
+</body>
 </html>

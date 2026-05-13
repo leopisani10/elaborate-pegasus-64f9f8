@@ -8,225 +8,60 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="shared.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script defer src="js/auth.js"></script>
   <style>
     body { background: #FAFBFC; }
-
-    .ob-header {
-      padding: 18px 0;
-      border-bottom: 1px solid var(--line);
-      background: white;
-    }
-    .ob-header-inner {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 0 24px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
+    .ob-header { padding: 18px 0; border-bottom: 1px solid var(--line); background: white; }
+    .ob-header-inner { max-width: 900px; margin: 0 auto; padding: 0 24px; display: flex; justify-content: space-between; align-items: center; }
     .ob-header img { height: 32px; }
-    .ob-exit {
-      font-size: 13px;
-      color: var(--ink-3);
-      font-weight: 500;
-    }
+    .ob-exit { font-size: 13px; color: var(--ink-3); font-weight: 500; cursor: pointer; background: none; border: none; }
     .ob-exit:hover { color: var(--ink); }
 
-    .ob-layout {
-      max-width: 900px;
-      margin: 0 auto;
-      padding: 32px 24px 80px;
-      display: grid;
-      grid-template-columns: 240px 1fr;
-      gap: 40px;
-    }
+    .ob-container { max-width: 720px; margin: 0 auto; padding: 32px 24px 80px; }
 
-    /* Steps sidebar */
-    .ob-steps {
-      position: sticky;
-      top: 24px;
-      align-self: start;
+    .ob-panel { background: white; border: 1px solid var(--line); border-radius: 24px; padding: 40px; }
+    .ob-panel h1 { font-size: 28px; font-weight: 800; letter-spacing: -0.035em; margin-bottom: 8px; }
+    .ob-panel .panel-sub { color: var(--ink-3); font-size: 15px; margin-bottom: 32px; line-height: 1.5; }
+
+    .form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+    /* Pending state */
+    .pending-state {
+      text-align: center;
+      padding: 40px 20px;
     }
-    .ob-steps-title {
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--ink-3);
-      margin-bottom: 16px;
-    }
-    .ob-step {
-      display: flex;
-      gap: 12px;
-      padding: 10px 0;
-      position: relative;
-    }
-    .ob-step::before {
-      content: '';
-      position: absolute;
-      left: 13px;
-      top: 36px;
-      bottom: -10px;
-      width: 2px;
-      background: var(--line);
-    }
-    .ob-step:last-child::before { display: none; }
-    .ob-step-num {
-      width: 28px;
-      height: 28px;
+    .pending-icon {
+      width: 80px;
+      height: 80px;
       border-radius: 50%;
-      background: white;
-      border: 2px solid var(--line);
-      display: flex;
+      background: var(--cta-soft);
+      color: var(--cta);
+      display: inline-flex;
       align-items: center;
       justify-content: center;
-      font-size: 12px;
-      font-weight: 700;
-      color: var(--ink-3);
-      flex-shrink: 0;
-      z-index: 1;
+      margin: 0 auto 24px;
     }
-    .ob-step.done .ob-step-num {
-      background: var(--baba);
-      border-color: var(--baba);
-      color: white;
-    }
-    .ob-step.done::before { background: var(--baba); }
-    .ob-step.active .ob-step-num {
-      background: white;
-      border-color: var(--cta);
-      color: var(--cta);
-    }
-    .ob-step-text {
-      padding-top: 3px;
-    }
-    .ob-step-name {
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--ink);
-    }
-    .ob-step.active .ob-step-name { color: var(--cta); }
-    .ob-step:not(.active):not(.done) .ob-step-name { color: var(--ink-3); }
-    .ob-step-meta {
-      font-size: 11px;
-      color: var(--ink-3);
-      margin-top: 1px;
-    }
-
-    /* Form panel */
-    .ob-panel {
-      background: white;
-      border: 1px solid var(--line);
-      border-radius: 24px;
-      padding: 40px;
-    }
-    .ob-panel h1 {
-      font-size: 28px;
+    .pending-state h2 {
+      font-size: 24px;
       font-weight: 800;
-      letter-spacing: -0.035em;
-      margin-bottom: 8px;
+      letter-spacing: -0.025em;
+      margin-bottom: 12px;
     }
-    .ob-panel .panel-sub {
+    .pending-state p {
       color: var(--ink-3);
       font-size: 15px;
-      margin-bottom: 32px;
-      line-height: 1.5;
+      line-height: 1.6;
+      max-width: 480px;
+      margin: 0 auto 24px;
     }
-
-    /* Upload zones */
-    .upload-zone {
-      border: 2px dashed var(--line-strong);
-      border-radius: 16px;
-      padding: 24px 20px;
-      text-align: center;
-      cursor: pointer;
-      transition: all 0.2s;
-      background: var(--bg-soft);
-    }
-    .upload-zone:hover { border-color: var(--cta); background: var(--cta-soft); }
-    .upload-zone-icon {
-      width: 48px;
-      height: 48px;
-      border-radius: 50%;
-      background: white;
-      color: var(--cta);
+    .pending-state .actions {
       display: flex;
-      align-items: center;
+      gap: 10px;
       justify-content: center;
-      margin: 0 auto 10px;
-      border: 1px solid var(--line);
-    }
-    .upload-zone-title {
-      font-size: 14px;
-      font-weight: 600;
-      margin-bottom: 2px;
-    }
-    .upload-zone-sub {
-      font-size: 12px;
-      color: var(--ink-3);
     }
 
-    .doc-list {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-    }
-
-    .doc-uploaded {
-      border: 1px solid var(--baba-soft);
-      background: var(--baba-soft);
-      border-radius: 14px;
-      padding: 16px 20px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-    .doc-uploaded-icon {
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      background: var(--baba);
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-    .doc-uploaded-text { flex: 1; min-width: 0; }
-    .doc-uploaded-title {
-      font-size: 13px;
-      font-weight: 700;
-      color: var(--baba-deep);
-      margin-bottom: 1px;
-    }
-    .doc-uploaded-file {
-      font-size: 12px;
-      color: var(--baba-deep);
-      opacity: 0.75;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .doc-replace {
-      font-size: 11px;
-      color: var(--baba-deep);
-      font-weight: 700;
-      cursor: pointer;
-      padding: 4px 8px;
-      border-radius: 999px;
-      background: rgba(15,110,92,0.1);
-    }
-
-    /* Form helpers */
-    .form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-    .form-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
-
-    /* Tag selection */
-    .tag-pick {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
+    .tag-pick { display: flex; flex-wrap: wrap; gap: 8px; }
     .tag-pick label {
       cursor: pointer;
       padding: 8px 14px;
@@ -235,119 +70,46 @@
       font-size: 13px;
       font-weight: 500;
       color: var(--ink-2);
+      background: white;
       transition: all 0.15s;
       user-select: none;
     }
     .tag-pick input { display: none; }
-    .tag-pick input:checked + span { color: var(--baba-deep); }
     .tag-pick label:has(input:checked) {
       background: var(--baba-soft);
       border-color: var(--baba);
       color: var(--baba-deep);
     }
 
-    /* Day picker */
-    .day-pick {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap: 8px;
-    }
-    .day-pick label {
-      cursor: pointer;
-      padding: 16px 6px;
-      text-align: center;
-      border: 1.5px solid var(--line-strong);
-      border-radius: 14px;
-      transition: all 0.15s;
-      background: white;
-    }
-    .day-pick label:hover { border-color: var(--baba); }
-    .day-pick input { display: none; }
-    .day-pick label:has(input:checked) {
-      background: var(--baba);
-      border-color: var(--baba);
-      color: white;
-    }
-    .day-pick label .d-name {
-      font-size: 11px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-    }
-    .day-pick label .d-num {
-      font-size: 17px;
-      font-weight: 700;
-      margin-top: 2px;
-      line-height: 1;
-    }
-
-    /* Pricing slider visual */
     .price-display {
-      text-align: center;
-      padding: 24px;
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      padding: 16px 20px;
       background: var(--baba-soft);
-      border-radius: 16px;
-      margin-bottom: 12px;
+      border-radius: 12px;
+      margin-top: 12px;
     }
     .price-display .val {
-      font-size: 44px;
+      font-size: 28px;
       font-weight: 800;
       color: var(--baba-deep);
       letter-spacing: -0.03em;
     }
-    .price-display .val small {
-      font-size: 15px;
-      color: var(--baba-deep);
-      opacity: 0.7;
-      font-weight: 500;
-    }
-    .price-display .note {
-      font-size: 13px;
-      color: var(--baba-deep);
-      opacity: 0.8;
-      margin-top: 4px;
-    }
-    .range-row {
-      display: flex;
-      justify-content: space-between;
-      font-size: 12px;
-      color: var(--ink-3);
-      margin-top: 6px;
-    }
-    input[type=range] { width: 100%; accent-color: var(--baba); }
+    .price-display .lbl { font-size: 13px; color: var(--baba-deep); opacity: 0.7; }
 
-    /* Footer actions */
     .ob-actions {
       display: flex;
-      justify-content: space-between;
+      justify-content: flex-end;
       align-items: center;
-      padding-top: 32px;
-      margin-top: 32px;
+      padding-top: 24px;
+      margin-top: 24px;
       border-top: 1px solid var(--line);
     }
-    .ob-back {
-      background: transparent;
-      border: none;
-      color: var(--ink-3);
-      font-family: inherit;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      padding: 12px 0;
-    }
-    .ob-back:hover { color: var(--ink); }
 
-    @media (max-width: 760px) {
-      .ob-layout { grid-template-columns: 1fr; gap: 20px; }
-      .ob-steps { position: static; }
-      .ob-steps { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 8px; }
-      .ob-step::before { display: none; }
-      .ob-step { padding: 0; min-width: 80px; flex-direction: column; align-items: center; text-align: center; }
-      .ob-step-text { padding-top: 8px; }
+    @media (max-width: 600px) {
       .ob-panel { padding: 28px 20px; }
-      .doc-list { grid-template-columns: 1fr; }
-      .form-row-2, .form-row-3 { grid-template-columns: 1fr; }
-      .day-pick { grid-template-columns: repeat(4, 1fr); }
+      .form-row-2 { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -356,131 +118,216 @@
 <header class="ob-header">
   <div class="ob-header-inner">
     <a href="/"><img src="logo.png" alt="Dona Baby+"></a>
-    <a href="/" class="ob-exit">Sair sem salvar →</a>
+    <button class="ob-exit" onclick="window.dbHelpers && window.dbHelpers.signOut()">Sair →</button>
   </div>
 </header>
 
-<div class="ob-layout">
-
-  <!-- Steps -->
-  <aside class="ob-steps">
-    <div class="ob-steps-title">Cadastro de babá</div>
-    <div class="ob-step done">
-      <div class="ob-step-num">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-      </div>
-      <div class="ob-step-text">
-        <div class="ob-step-name">Dados básicos</div>
-        <div class="ob-step-meta">Foto e contato</div>
-      </div>
-    </div>
-    <div class="ob-step active">
-      <div class="ob-step-num">2</div>
-      <div class="ob-step-text">
-        <div class="ob-step-name">Documentos</div>
-        <div class="ob-step-meta">Para verificação</div>
-      </div>
-    </div>
-    <div class="ob-step">
-      <div class="ob-step-num">3</div>
-      <div class="ob-step-text">
-        <div class="ob-step-name">Experiência</div>
-        <div class="ob-step-meta">Histórico profissional</div>
-      </div>
-    </div>
-    <div class="ob-step">
-      <div class="ob-step-num">4</div>
-      <div class="ob-step-text">
-        <div class="ob-step-name">Disponibilidade</div>
-        <div class="ob-step-meta">Dias e horários</div>
-      </div>
-    </div>
-    <div class="ob-step">
-      <div class="ob-step-num">5</div>
-      <div class="ob-step-text">
-        <div class="ob-step-name">Valor</div>
-        <div class="ob-step-meta">Quanto cobra/hora</div>
-      </div>
-    </div>
-    <div class="ob-step">
-      <div class="ob-step-num">6</div>
-      <div class="ob-step-text">
-        <div class="ob-step-name">Revisão</div>
-        <div class="ob-step-meta">Enviar pra aprovação</div>
-      </div>
-    </div>
-  </aside>
-
-  <!-- Active step content -->
-  <main class="ob-panel">
-    <h1>Documentos para verificação</h1>
+<div class="ob-container">
+  <main class="ob-panel" id="formPanel">
+    <h1>Conta sobre você</h1>
     <p class="panel-sub">
-      Pra você aparecer pras famílias com selo verificado, precisamos conferir alguns documentos. Tudo fica criptografado e só nosso time tem acesso. <strong>Análise leva até 48 horas úteis.</strong>
+      Preencha esses dados pra famílias te conhecerem. Depois nosso time revisa em até 48h e libera seu perfil.
     </p>
 
-    <div class="field">
-      <label class="field-label">RG ou CNH (frente e verso) <span class="req">*</span></label>
-      <div class="doc-uploaded">
-        <div class="doc-uploaded-icon">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-        </div>
-        <div class="doc-uploaded-text">
-          <div class="doc-uploaded-title">Documento enviado</div>
-          <div class="doc-uploaded-file">rg-maria-silva.pdf · 2.1 MB</div>
-        </div>
-        <span class="doc-replace">Trocar</span>
+    <form id="babaForm">
+      <div class="field">
+        <label class="field-label" for="bio">Bio · fala um pouco da sua experiência <span class="req">*</span></label>
+        <textarea class="textarea" id="bio" name="bio" rows="5" required minlength="50" placeholder="Ex: Sou babá há 7 anos, especializada em recém-nascidos. Trabalhei em famílias de Ipanema e Leblon..."></textarea>
+        <div class="field-help">Mínimo 50 caracteres. Conte sua experiência, especialidades, abordagem.</div>
       </div>
-    </div>
 
-    <div class="field">
-      <label class="field-label">CPF <span class="req">*</span></label>
-      <input class="input" type="text" placeholder="000.000.000-00" value="148.526.873-09">
-      <div class="field-help">Apenas para verificação interna. Nunca exibido pras famílias.</div>
-    </div>
-
-    <div class="field">
-      <label class="field-label">Antecedente criminal (emitido nos últimos 90 dias) <span class="req">*</span></label>
-      <div class="upload-zone">
-        <div class="upload-zone-icon">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      <div class="form-row-2">
+        <div class="field">
+          <label class="field-label" for="years">Anos de experiência <span class="req">*</span></label>
+          <input class="input" id="years" name="years" type="number" min="0" max="50" placeholder="Ex: 5" required>
         </div>
-        <div class="upload-zone-title">Arraste o arquivo ou clique pra escolher</div>
-        <div class="upload-zone-sub">PDF · até 5 MB · emitido no <a href="#" style="color:var(--cta); font-weight:600;">portal e-SAJ</a></div>
-      </div>
-      <div class="field-help">Se ainda não tem, dá pra fazer online em 5 minutos. Cobramos a emissão? Não — você faz direto no portal do TJ.</div>
-    </div>
-
-    <div class="field">
-      <label class="field-label">Comprovante de residência (últimos 90 dias)</label>
-      <div class="upload-zone">
-        <div class="upload-zone-icon">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        <div class="field">
+          <label class="field-label" for="rate">Valor por hora (R$) <span class="req">*</span></label>
+          <input class="input" id="rate" name="rate" type="number" min="15" max="200" step="5" placeholder="Ex: 35" required>
         </div>
-        <div class="upload-zone-title">Conta de luz, água ou similar</div>
-        <div class="upload-zone-sub">PDF, JPG ou PNG · até 5 MB</div>
       </div>
-    </div>
 
-    <div class="field">
-      <label class="field-label">Selfie segurando seu documento (opcional, mas acelera)</label>
-      <div class="upload-zone">
-        <div class="upload-zone-icon">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
+      <div class="field">
+        <label class="field-label">Bairros que atende <span class="req">*</span></label>
+        <div class="tag-pick" id="neighborhoods">
+          <label><input type="checkbox" value="Copacabana">Copacabana</label>
+          <label><input type="checkbox" value="Ipanema">Ipanema</label>
+          <label><input type="checkbox" value="Leblon">Leblon</label>
+          <label><input type="checkbox" value="Botafogo">Botafogo</label>
+          <label><input type="checkbox" value="Flamengo">Flamengo</label>
+          <label><input type="checkbox" value="Tijuca">Tijuca</label>
+          <label><input type="checkbox" value="Barra da Tijuca">Barra da Tijuca</label>
+          <label><input type="checkbox" value="Recreio">Recreio</label>
+          <label><input type="checkbox" value="Jardim Botânico">Jardim Botânico</label>
+          <label><input type="checkbox" value="Lagoa">Lagoa</label>
         </div>
-        <div class="upload-zone-title">Tira uma selfie</div>
-        <div class="upload-zone-sub">Segure seu documento perto do rosto · JPG ou PNG</div>
+        <div class="field-help">Marca todos os bairros onde você consegue trabalhar.</div>
       </div>
-    </div>
 
-    <div class="ob-actions">
-      <button class="ob-back">← Voltar</button>
-      <button class="btn btn-cta btn-lg">
-        Salvar e continuar
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-      </button>
+      <div class="field">
+        <label class="field-label">Idades com que tem experiência <span class="req">*</span></label>
+        <div class="tag-pick" id="ageRanges">
+          <label><input type="checkbox" value="newborn">Recém-nascido (0-6m)</label>
+          <label><input type="checkbox" value="baby">Bebê (6m-2a)</label>
+          <label><input type="checkbox" value="toddler">Pré-escolar (2-4a)</label>
+          <label><input type="checkbox" value="kid">Criança (4-8a)</label>
+          <label><input type="checkbox" value="older">Maior (8a+)</label>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="field-label">Especialidades (opcional)</label>
+        <div class="tag-pick" id="specialties">
+          <label><input type="checkbox" value="pedagoga">Pedagoga</label>
+          <label><input type="checkbox" value="enfermeira">Enfermeira</label>
+          <label><input type="checkbox" value="folguista">Folguista</label>
+          <label><input type="checkbox" value="noturna">Noturna</label>
+          <label><input type="checkbox" value="pos-parto">Pós-parto</label>
+          <label><input type="checkbox" value="ingles">Inglês</label>
+          <label><input type="checkbox" value="habilitada">Habilitada</label>
+          <label><input type="checkbox" value="viaja">Viaja</label>
+        </div>
+      </div>
+
+      <div class="ob-actions">
+        <button class="btn btn-cta btn-lg" type="submit" id="submitBtn">
+          Enviar pra aprovação
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </button>
+      </div>
+    </form>
+  </main>
+
+  <!-- Estado "aguardando aprovação" — escondido por default -->
+  <main class="ob-panel pending-state" id="pendingPanel" style="display:none;">
+    <div class="pending-icon">
+      <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/>
+        <polyline points="12 6 12 12 16 14"/>
+      </svg>
+    </div>
+    <h2>Cadastro enviado!</h2>
+    <p>
+      Nosso time vai revisar seu perfil em até <strong>48 horas</strong>. Você recebe um email
+      quando for aprovada e seu perfil ficar visível pras famílias.
+    </p>
+    <p style="font-size: 13px; color: var(--ink-4);">
+      Enquanto isso, dá pra editar os dados clicando em "Editar perfil" depois.
+    </p>
+    <div class="actions">
+      <button class="btn btn-secondary" onclick="window.dbHelpers.signOut()">Sair</button>
     </div>
   </main>
 </div>
 
-  </body>
+<script>
+  let currentUser = null;
+
+  window.addEventListener('DOMContentLoaded', async () => {
+    // Espera o supabase carregar
+    if (!window.dbClient) {
+      setTimeout(() => location.reload(), 800);
+      return;
+    }
+
+    // Exige login
+    currentUser = await window.dbHelpers.requireAuth();
+    if (!currentUser) return;
+
+    // Confere se já é babá; se for família, redireciona
+    const profile = await window.dbHelpers.getCurrentProfile();
+    if (!profile) { window.location.href = '/login.html'; return; }
+    if (profile.user_type !== 'baba') {
+      alert('Essa página é só pra babás. Redirecionando...');
+      window.location.href = '/dashboard.html';
+      return;
+    }
+
+    // Se já tem perfil salvo e está pending, mostra estado de espera
+    const baba = await window.dbHelpers.getBabaProfile(currentUser.id);
+    if (baba && baba.bio && baba.approval_status === 'pending') {
+      showPending();
+      return;
+    }
+    if (baba && baba.approval_status === 'approved') {
+      // já aprovada — vai pra conta
+      window.location.href = '/account.html';
+      return;
+    }
+
+    // Preenche form com dados existentes (se houver de tentativa anterior)
+    if (baba) {
+      if (baba.bio) document.getElementById('bio').value = baba.bio;
+      if (baba.years_experience) document.getElementById('years').value = baba.years_experience;
+      if (baba.hourly_rate) document.getElementById('rate').value = baba.hourly_rate;
+      if (baba.neighborhoods) checkBoxes('neighborhoods', baba.neighborhoods);
+      if (baba.age_ranges) checkBoxes('ageRanges', baba.age_ranges);
+      if (baba.specialties) checkBoxes('specialties', baba.specialties);
+    }
+  });
+
+  function checkBoxes(containerId, values) {
+    if (!Array.isArray(values)) return;
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    values.forEach(v => {
+      const cb = container.querySelector(`input[value="${v}"]`);
+      if (cb) cb.checked = true;
+    });
+  }
+
+  function getChecked(containerId) {
+    const container = document.getElementById(containerId);
+    return Array.from(container.querySelectorAll('input:checked')).map(cb => cb.value);
+  }
+
+  function showPending() {
+    document.getElementById('formPanel').style.display = 'none';
+    document.getElementById('pendingPanel').style.display = 'block';
+  }
+
+  document.getElementById('babaForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const submitBtn = document.getElementById('submitBtn');
+    const helpers = window.dbHelpers;
+
+    const bio = document.getElementById('bio').value.trim();
+    const years = parseInt(document.getElementById('years').value, 10);
+    const rate = parseFloat(document.getElementById('rate').value);
+    const neighborhoods = getChecked('neighborhoods');
+    const ageRanges = getChecked('ageRanges');
+    const specialties = getChecked('specialties');
+
+    if (bio.length < 50) {
+      helpers.showError('A bio precisa ter pelo menos 50 caracteres.');
+      return;
+    }
+    if (neighborhoods.length === 0) {
+      helpers.showError('Marca pelo menos 1 bairro que você atende.');
+      return;
+    }
+    if (ageRanges.length === 0) {
+      helpers.showError('Marca pelo menos 1 faixa etária com que você tem experiência.');
+      return;
+    }
+
+    helpers.setLoading(submitBtn, true);
+    try {
+      await helpers.upsertBabaProfile(currentUser.id, {
+        bio,
+        years_experience: years,
+        hourly_rate: rate,
+        neighborhoods,
+        age_ranges: ageRanges,
+        specialties,
+      });
+      showPending();
+    } catch (err) {
+      helpers.showError('Não conseguiu salvar: ' + (err.message || 'erro desconhecido'));
+      helpers.setLoading(submitBtn, false);
+    }
+  });
+</script>
+
+</body>
 </html>

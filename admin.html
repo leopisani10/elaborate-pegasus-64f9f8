@@ -8,6 +8,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="shared.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script defer src="js/auth.js"></script>
   <style>
     body { background: #FAFBFC; }
 
@@ -340,121 +342,158 @@
           </div>
         </div>
 
-        <!-- Applications -->
-        <div class="application">
-          <div class="app-avatar av-1">M</div>
-          <div class="app-body">
-            <div class="app-head">
-              <div class="app-name">Maria Aparecida da Silva</div>
-              <span class="app-time">há 6h</span>
-            </div>
-            <div class="app-meta">
-              <span><svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg> Copacabana</span>
-              <span>7 anos de experiência</span>
-              <span>R$ 35/hora</span>
-            </div>
-            <p class="app-bio">Babá há 7 anos, especializada em recém-nascidos e primeira infância. Trabalhei em famílias de Ipanema e Leblon. Tenho disponibilidade integral e flexibilidade para folgas.</p>
-            <div class="app-docs">
-              <span class="doc-chip ok"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> RG</span>
-              <span class="doc-chip ok"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> Antecedente</span>
-              <span class="doc-chip ok"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> Comprovante</span>
-              <span class="doc-chip ok"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> Selfie</span>
-            </div>
-          </div>
-          <div class="app-actions">
-            <button class="btn-approve">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-              Aprovar
-            </button>
-            <button class="btn-reject">Rejeitar</button>
-            <button class="btn-detail">Ver detalhes →</button>
+        <!-- Applications — preenchidas dinamicamente -->
+        <div id="applicationsList">
+          <div style="padding: 60px 20px; text-align: center; color: var(--ink-3);">
+            <div style="display: inline-block; width: 28px; height: 28px; border: 3px solid var(--line); border-top-color: var(--cta); border-radius: 50%; animation: spin 0.8s linear infinite;"></div>
+            <div style="margin-top: 16px;">Carregando aplicações...</div>
           </div>
         </div>
-
-        <div class="application">
-          <div class="app-avatar av-3">A</div>
-          <div class="app-body">
-            <div class="app-head">
-              <div class="app-name">Ana Paula Costa</div>
-              <span class="app-time">há 18h</span>
-            </div>
-            <div class="app-meta">
-              <span><svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg> Ipanema</span>
-              <span>Pedagoga, 3 anos</span>
-              <span>R$ 30/hora</span>
-            </div>
-            <p class="app-bio">Pedagoga formada pela UFRJ. Cuido de crianças entre 1 e 5 anos. Trabalho com rotina, leitura e atividades sensoriais.</p>
-            <div class="app-docs">
-              <span class="doc-chip ok"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> RG</span>
-              <span class="doc-chip ok"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> Antecedente</span>
-              <span class="doc-chip missing"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg> Comprovante (falta)</span>
-              <span class="doc-chip ok"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> Selfie</span>
-            </div>
-          </div>
-          <div class="app-actions">
-            <button class="btn-approve">Aprovar</button>
-            <button class="btn-reject">Solicitar doc</button>
-            <button class="btn-detail">Ver detalhes →</button>
-          </div>
-        </div>
-
-        <div class="application">
-          <div class="app-avatar av-7">J</div>
-          <div class="app-body">
-            <div class="app-head">
-              <div class="app-name">Joana Maria Ribeiro</div>
-              <span class="app-time urgent">há 52h · urgente</span>
-            </div>
-            <div class="app-meta">
-              <span><svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg> Botafogo</span>
-              <span>5 anos, gêmeos</span>
-              <span>R$ 40/hora</span>
-            </div>
-            <p class="app-bio">Cuido de gêmeos há 5 anos. Tenho habilitação, passaporte e disponibilidade pra viagens com a família.</p>
-            <div class="app-docs">
-              <span class="doc-chip ok"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> RG</span>
-              <span class="doc-chip ok"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> Antecedente</span>
-              <span class="doc-chip ok"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> Comprovante</span>
-              <span class="doc-chip ok"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> CNH</span>
-            </div>
-          </div>
-          <div class="app-actions">
-            <button class="btn-approve">Aprovar</button>
-            <button class="btn-reject">Rejeitar</button>
-            <button class="btn-detail">Ver detalhes →</button>
-          </div>
-        </div>
-
-        <div class="application">
-          <div class="app-avatar av-5">B</div>
-          <div class="app-body">
-            <div class="app-head">
-              <div class="app-name">Beatriz Almeida</div>
-              <span class="app-time">há 28h</span>
-            </div>
-            <div class="app-meta">
-              <span><svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg> Barra da Tijuca</span>
-              <span>Pós-parto, neonatologia</span>
-              <span>R$ 50/hora</span>
-            </div>
-            <p class="app-bio">Profissional especializada em pós-parto. Vivência em pediatria neonatal por 8 anos no Hospital Perinatal.</p>
-            <div class="app-docs">
-              <span class="doc-chip ok"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> RG</span>
-              <span class="doc-chip ok"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> Antecedente</span>
-              <span class="doc-chip ok"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> Diploma</span>
-              <span class="doc-chip ok"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> COREN</span>
-            </div>
-          </div>
-          <div class="app-actions">
-            <button class="btn-approve">Aprovar</button>
-            <button class="btn-reject">Rejeitar</button>
-            <button class="btn-detail">Ver detalhes →</button>
-          </div>
-        </div>
+        <style>@keyframes spin { to { transform: rotate(360deg); } }</style>
+      </div>
       </div>
     </div>
   </div>
 </main>
 
-  </body>
+  
+<script>
+  const AVATAR_COLORS = ['av-1', 'av-3', 'av-4', 'av-5', 'av-6', 'av-7'];
+  function avatarColorFor(idx) { return AVATAR_COLORS[idx % AVATAR_COLORS.length]; }
+  function escapeHtml(str) {
+    if (!str) return '';
+    return String(str).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[m]);
+  }
+
+  function timeAgo(dateStr) {
+    if (!dateStr) return '';
+    const d = new Date(dateStr);
+    const diffMs = Date.now() - d.getTime();
+    const hours = Math.floor(diffMs / 3600000);
+    if (hours < 1) return 'há menos de 1h';
+    if (hours < 24) return `há ${hours}h`;
+    const days = Math.floor(hours / 24);
+    return `há ${days}d`;
+  }
+
+  function isUrgent(dateStr) {
+    if (!dateStr) return false;
+    return (Date.now() - new Date(dateStr).getTime()) > 48 * 3600 * 1000;
+  }
+
+  window.addEventListener('DOMContentLoaded', async () => {
+    if (!window.dbClient) {
+      setTimeout(() => location.reload(), 800);
+      return;
+    }
+
+    // Exige admin
+    const adminProfile = await window.dbHelpers.requireAdmin();
+    if (!adminProfile) return;
+
+    // Atualizar chip do admin
+    if (adminProfile.full_name) {
+      const chipName = document.querySelector('.user-chip-name');
+      if (chipName) chipName.textContent = adminProfile.full_name.split(' ')[0];
+    }
+
+    await loadPending();
+  });
+
+  async function loadPending() {
+    const list = document.getElementById('applicationsList');
+    try {
+      const pending = await window.dbHelpers.getPendingBabas();
+
+      // Atualiza stats
+      const statValues = document.querySelectorAll('.stat .value');
+      if (statValues[0]) statValues[0].textContent = pending.length;
+      if (statValues[1]) statValues[1].textContent = pending.filter(b => isUrgent(b.created_at)).length;
+
+      if (pending.length === 0) {
+        list.innerHTML = `
+          <div style="padding: 80px 20px; text-align: center; background: var(--bg-soft); border-radius: 20px;">
+            <div style="font-size: 48px; margin-bottom: 12px;">✨</div>
+            <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 6px;">Fila vazia.</h3>
+            <p style="font-size: 14px; color: var(--ink-3);">Nenhuma babá aguardando aprovação.</p>
+          </div>`;
+        return;
+      }
+
+      list.innerHTML = pending.map((b, i) => {
+        const profile = b.profiles || {};
+        const fullName = profile.full_name || 'Sem nome';
+        const initial = fullName.charAt(0).toUpperCase();
+        const neighborhoods = (b.neighborhoods || []).join(', ') || 'Não informado';
+        const urgent = isUrgent(b.created_at);
+        const years = b.years_experience || 0;
+        const rate = b.hourly_rate || 0;
+        const bio = b.bio || '(Sem bio)';
+
+        return `
+          <div class="application" data-baba-id="${b.id}">
+            <div class="app-avatar ${avatarColorFor(i)}">${initial}</div>
+            <div class="app-body">
+              <div class="app-head">
+                <div class="app-name">${escapeHtml(fullName)}</div>
+                <span class="app-time ${urgent ? 'urgent' : ''}">${timeAgo(b.created_at)}${urgent ? ' · urgente' : ''}</span>
+              </div>
+              <div class="app-meta">
+                <span><svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg> ${escapeHtml(neighborhoods)}</span>
+                <span>${years} ${years === 1 ? 'ano' : 'anos'} de experiência</span>
+                <span>R$ ${rate}/hora</span>
+                ${profile.email ? `<span>📧 ${escapeHtml(profile.email)}</span>` : ''}
+                ${profile.phone ? `<span>📱 ${escapeHtml(profile.phone)}</span>` : ''}
+              </div>
+              <p class="app-bio">${escapeHtml(bio)}</p>
+            </div>
+            <div class="app-actions">
+              <button class="btn-approve" onclick="doApprove('${b.id}', this)">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                Aprovar
+              </button>
+              <button class="btn-reject" onclick="doReject('${b.id}', this)">Rejeitar</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    } catch (err) {
+      console.error('Erro carregando pending:', err);
+      list.innerHTML = `<div style="padding: 40px; text-align: center; color: var(--cta);">Erro: ${escapeHtml(err.message || 'desconhecido')}</div>`;
+    }
+  }
+
+  async function doApprove(babaId, btn) {
+    if (!confirm('Aprovar essa babá? Ela vai aparecer pras famílias.')) return;
+    const helpers = window.dbHelpers;
+    helpers.setLoading(btn, true);
+    try {
+      await helpers.approveBaba(babaId);
+      // remove o card
+      const card = document.querySelector(`[data-baba-id="${babaId}"]`);
+      if (card) card.remove();
+      await loadPending();
+    } catch (err) {
+      helpers.showError('Não conseguiu aprovar: ' + (err.message || 'erro'));
+      helpers.setLoading(btn, false);
+    }
+  }
+
+  async function doReject(babaId, btn) {
+    const reason = prompt('Motivo da rejeição (visível pra babá):');
+    if (!reason) return;
+    const helpers = window.dbHelpers;
+    helpers.setLoading(btn, true);
+    try {
+      await helpers.rejectBaba(babaId, reason);
+      const card = document.querySelector(`[data-baba-id="${babaId}"]`);
+      if (card) card.remove();
+      await loadPending();
+    } catch (err) {
+      helpers.showError('Não conseguiu rejeitar: ' + (err.message || 'erro'));
+      helpers.setLoading(btn, false);
+    }
+  }
+</script>
+</body>
 </html>
