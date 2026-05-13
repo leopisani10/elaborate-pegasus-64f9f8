@@ -304,18 +304,11 @@
 <header class="app-nav">
   <div class="app-nav-inner">
     <a class="app-logo" href="/"><img src="logo.png" alt="Dona Baby+"></a>
-    <ul class="app-nav-links">
-      <li><a href="dashboard.html">Buscar babás</a></li>
-      <li><a href="chat.html">Mensagens</a></li>
-      <li><a href="#">Salvas</a></li>
-    </ul>
+    <ul class="app-nav-links" id="navLinks"></ul>
     <div class="app-nav-right">
-      <button class="icon-btn" aria-label="Notificações">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/></svg>
-      </button>
       <a class="user-chip" href="account.html">
-        <div class="user-chip-avatar" id="navAvatar">?</div>
-        <div class="user-chip-name" id="navName">...</div>
+        <div class="user-chip-avatar" id="chipAvatar">?</div>
+        <div class="user-chip-name" id="chipName">...</div>
       </a>
     </div>
   </div>
@@ -602,6 +595,101 @@
       }
     }
   });
+</script>
+
+<script>
+  // Nav dinâmica + tracking de não-lidas (vive em TODA página logada)
+  (function() {
+    const ACTIVE_KEY = 'account';
+    let _renderedFor = null;
+
+    async function renderNav() {
+      if (!window.dbClient || !window.dbHelpers) {
+        setTimeout(renderNav, 300);
+        return;
+      }
+      const profile = await window.dbHelpers.getCurrentProfile();
+      if (!profile) return;
+
+      // Chip
+      const chipAv = document.getElementById('chipAvatar');
+      const chipNm = document.getElementById('chipName');
+      if (chipAv) chipAv.textContent = (profile.full_name || '?').charAt(0).toUpperCase();
+      if (chipNm) chipNm.textContent = (profile.full_name || '').split(' ')[0];
+
+      const links = document.getElementById('navLinks');
+      if (!links) return;
+
+      let items = [];
+      if (profile.user_type === 'parent') {
+        items = [
+          { href: '/dashboard.html', label: 'Buscar babás', key: 'dashboard' },
+          { href: '/chat.html', label: 'Mensagens', key: 'chat', badge: 'unread' },
+        ];
+      } else if (profile.user_type === 'baba') {
+        items = [
+          { href: '/chat.html', label: 'Mensagens', key: 'chat', badge: 'unread' },
+          { href: '/account.html', label: 'Meu perfil', key: 'account' },
+        ];
+      } else if (profile.user_type === 'admin') {
+        items = [
+          { href: '/admin.html', label: 'Aprovações', key: 'admin' },
+          { href: '/chat.html', label: 'Mensagens', key: 'chat', badge: 'unread' },
+        ];
+      }
+
+      links.innerHTML = items.map(it => {
+        const active = it.key === ACTIVE_KEY ? 'active' : '';
+        const badge = it.badge === 'unread' ? '<span class="nav-badge-dot" id="navUnreadDot" style="display:none;"></span>' : '';
+        return `<li><a href="${it.href}" class="${active}">${it.label}${badge}</a></li>`;
+      }).join('');
+
+      checkUnread(profile.id);
+    }
+
+    async function checkUnread(myId) {
+      // Roda uma query simples: existe alguma mensagem em alguma das minhas convs
+      // onde sender != eu e created_at > meu last_read local pra essa conv?
+      const { data: convs } = await window.dbClient
+        .from('conversations')
+        .select('id, last_message_at')
+        .or(`parent_id.eq.${myId},baba_id.eq.${myId}`);
+      if (!convs || convs.length === 0) return;
+
+      let hasUnread = false;
+      for (const c of convs) {
+        const lastRead = localStorage.getItem(`lastRead:${c.id}`) || '1970-01-01';
+        if (c.last_message_at && c.last_message_at > lastRead) {
+          // Confere se a última mensagem foi do outro
+          const { data: lastMsgs } = await window.dbClient
+            .from('messages')
+            .select('sender_id, created_at')
+            .eq('conversation_id', c.id)
+            .order('created_at', { ascending: false })
+            .limit(1);
+          if (lastMsgs && lastMsgs[0] && lastMsgs[0].sender_id !== myId) {
+            hasUnread = true;
+            break;
+          }
+        }
+      }
+      const dot = document.getElementById('navUnreadDot');
+      if (dot) dot.style.display = hasUnread ? 'inline-block' : 'none';
+    }
+
+    // CSS pro badge
+    const style = document.createElement('style');
+    style.textContent = `
+      .nav-badge-dot {
+        display: inline-block; width: 8px; height: 8px;
+        background: var(--cta); border-radius: 50%;
+        margin-left: 6px; vertical-align: middle;
+      }
+    `;
+    document.head.appendChild(style);
+
+    window.addEventListener('DOMContentLoaded', renderNav);
+  })();
 </script>
 </body>
 </html>

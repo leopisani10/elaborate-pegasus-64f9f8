@@ -306,6 +306,33 @@
       .conv-list { display: none; border-radius: 0; border: none; }
       .conv-active { border-radius: 0; border: none; }
     }
+
+    /* Badge de notificação no nav */
+    .nav-badge {
+      display: inline-block;
+      background: var(--cta);
+      color: white;
+      font-size: 10px;
+      font-weight: 700;
+      border-radius: 999px;
+      padding: 1px 7px;
+      margin-left: 6px;
+      vertical-align: middle;
+      line-height: 1.4;
+    }
+    .nav-badge-dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      background: var(--cta);
+      border-radius: 50%;
+      margin-left: 6px;
+      vertical-align: middle;
+    }
+    /* Conversation item: estilo de não-lida */
+    .conv-item.unread .conv-name { font-weight: 800; }
+    .conv-item.unread .conv-preview { color: var(--ink); font-weight: 600; }
+    .conv-item.unread .conv-meta .conv-time { color: var(--cta); font-weight: 700; }
   </style>
 </head>
 <body>
@@ -313,18 +340,13 @@
 <header class="app-nav">
   <div class="app-nav-inner">
     <a class="app-logo" href="/"><img src="logo.png" alt="Dona Baby+"></a>
-    <ul class="app-nav-links">
-      <li><a href="dashboard.html">Buscar babás</a></li>
-      <li><a href="chat.html" class="active">Mensagens</a></li>
-      <li><a href="#">Salvas</a></li>
+    <ul class="app-nav-links" id="navLinks">
+      <!-- preenchido por JS conforme tipo de usuário -->
     </ul>
     <div class="app-nav-right">
-      <button class="icon-btn" aria-label="Notificações">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/></svg>
-      </button>
       <a class="user-chip" href="account.html">
-        <div class="user-chip-avatar">F</div>
-        <div class="user-chip-name">Fernanda</div>
+        <div class="user-chip-avatar" id="chipAvatar">?</div>
+        <div class="user-chip-name" id="chipName">...</div>
       </a>
     </div>
   </div>
@@ -421,6 +443,71 @@
     return new Date(dateStr).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
   }
 
+
+  // ===== NAV DINÂMICA =====
+  function renderNav(activePage) {
+    const links = document.getElementById('navLinks');
+    if (!links) return;
+    if (!myProfile) return;
+
+    let items = [];
+    if (myProfile.user_type === 'parent') {
+      items = [
+        { href: '/dashboard.html', label: 'Buscar babás', key: 'dashboard' },
+        { href: '/chat.html', label: 'Mensagens', key: 'chat', badge: 'unread' },
+      ];
+    } else if (myProfile.user_type === 'baba') {
+      items = [
+        { href: '/chat.html', label: 'Mensagens', key: 'chat', badge: 'unread' },
+        { href: '/account.html', label: 'Meu perfil', key: 'account' },
+      ];
+    } else if (myProfile.user_type === 'admin') {
+      items = [
+        { href: '/admin.html', label: 'Aprovações', key: 'admin' },
+        { href: '/chat.html', label: 'Mensagens', key: 'chat', badge: 'unread' },
+      ];
+    }
+
+    links.innerHTML = items.map(it => {
+      const active = it.key === activePage ? 'active' : '';
+      const badgeHtml = it.badge === 'unread' ? '<span class="nav-badge-dot" id="navUnreadDot" style="display:none;"></span>' : '';
+      return `<li><a href="${it.href}" class="${active}">${it.label}${badgeHtml}</a></li>`;
+    }).join('');
+  }
+
+  // ===== TRACKING LOCAL DE NÃO-LIDAS =====
+  // Usa localStorage pra marcar mensagens vistas. Não muda schema.
+  function getLastReadAt(conversationId) {
+    return localStorage.getItem(`lastRead:${conversationId}`) || '1970-01-01';
+  }
+  function setLastReadAt(conversationId, isoDate) {
+    localStorage.setItem(`lastRead:${conversationId}`, isoDate);
+    updateUnreadBadges();
+  }
+
+  function updateUnreadBadges() {
+    if (!allConvs || !me) return;
+    let hasAnyUnread = false;
+    allConvs.forEach(conv => {
+      // Procura o último timestamp visto
+      const lastRead = getLastReadAt(conv.id);
+      const lastMsg = conv.last_message_at || conv.created_at;
+      // Conversa só conta como "unread" se a última mensagem é do OUTRO e mais recente que lastRead
+      const item = document.querySelector(`.conv-item[data-conv-id="${conv.id}"]`);
+      if (!item) return;
+      // Precisa verificar quem mandou a última. Vamos confiar no flag em memória se temos.
+      const isUnread = (conv._lastSenderId && conv._lastSenderId !== me.id && lastMsg > lastRead);
+      if (isUnread) {
+        item.classList.add('unread');
+        hasAnyUnread = true;
+      } else {
+        item.classList.remove('unread');
+      }
+    });
+    const dot = document.getElementById('navUnreadDot');
+    if (dot) dot.style.display = hasAnyUnread ? 'inline-block' : 'none';
+  }
+
   window.addEventListener('DOMContentLoaded', async () => {
     if (!window.dbClient) {
       setTimeout(() => location.reload(), 800);
@@ -436,12 +523,11 @@
       return;
     }
 
-    // Atualizar user chip
+    // Monta nav dinâmica conforme tipo + user chip
+    renderNav('chat');
     if (myProfile.full_name) {
-      const chipAvatar = document.querySelector('.user-chip-avatar');
-      const chipName = document.querySelector('.user-chip-name');
-      if (chipAvatar) chipAvatar.textContent = myProfile.full_name.charAt(0).toUpperCase();
-      if (chipName) chipName.textContent = myProfile.full_name.split(' ')[0];
+      document.getElementById('chipAvatar').textContent = myProfile.full_name.charAt(0).toUpperCase();
+      document.getElementById('chipName').textContent = myProfile.full_name.split(' ')[0];
     }
 
     // ?baba=xxx: abre/cria conversa com essa babá
@@ -461,6 +547,9 @@
     } else {
       await loadConversations();
     }
+
+    // Subscription global pra TODAS as conversas (atualiza preview e badge)
+    setupGlobalMessageWatch();
 
     // Composer submit
     document.getElementById('composerForm').addEventListener('submit', async (e) => {
@@ -502,19 +591,35 @@
 
       const enriched = await Promise.all(allConvs.map(async (conv, idx) => {
         const other = await window.dbHelpers.getOtherParticipant(conv);
-        return { conv, other, idx };
+        // Pega última mensagem pra saber sender + preview
+        const { data: lastMsgs } = await window.dbClient
+          .from('messages')
+          .select('content, sender_id, created_at')
+          .eq('conversation_id', conv.id)
+          .order('created_at', { ascending: false })
+          .limit(1);
+        const lastMsg = lastMsgs && lastMsgs[0];
+        if (lastMsg) {
+          conv._lastSenderId = lastMsg.sender_id;
+          conv._lastContent = lastMsg.content;
+        }
+        return { conv, other, idx, lastMsg };
       }));
 
-      list.innerHTML = enriched.map(({ conv, other, idx }) => {
+      list.innerHTML = enriched.map(({ conv, other, idx, lastMsg }) => {
         const name = other?.full_name || 'Usuário';
         const firstName = name.split(' ')[0];
         const initial = name.charAt(0).toUpperCase();
+        let preview = 'Toque pra abrir';
+        if (lastMsg) {
+          preview = (lastMsg.sender_id === me.id ? 'Você: ' : '') + lastMsg.content.substring(0, 40);
+        }
         return `
           <div class="conv-item" data-conv-id="${conv.id}" onclick="openConvById('${conv.id}')">
             <div class="conv-avatar ${avatarColorFor(idx)}">${initial}</div>
             <div class="conv-info">
               <div class="conv-name">${escapeHtml(firstName)}</div>
-              <div class="conv-preview" id="preview-${conv.id}">Toque pra abrir</div>
+              <div class="conv-preview" id="preview-${conv.id}">${escapeHtml(preview)}</div>
             </div>
             <div class="conv-meta">
               <div class="conv-time">${timeShort(conv.last_message_at || conv.created_at)}</div>
@@ -522,6 +627,8 @@
           </div>
         `;
       }).join('');
+
+      updateUnreadBadges();
     } catch (err) {
       console.error('Erro carregando convs:', err);
       list.innerHTML = `<div style="padding: 20px; color: var(--cta);">Erro: ${escapeHtml(err.message)}</div>`;
@@ -579,7 +686,28 @@
     if (activeChannel) window.dbHelpers.unsubscribe(activeChannel);
 
     activeChannel = window.dbHelpers.subscribeToMessages(conv.id, (newMsg) => {
-      // Se for minha mensagem (otimista), remover marca pra confirmar
+      // Atualiza estado em memória pra unread tracking
+      const c = allConvs.find(x => x.id === newMsg.conversation_id);
+      if (c) {
+        c._lastSenderId = newMsg.sender_id;
+        c._lastContent = newMsg.content;
+        c.last_message_at = newMsg.created_at;
+      }
+
+      // Atualiza preview na sidebar
+      const previewEl = document.getElementById(`preview-${newMsg.conversation_id}`);
+      if (previewEl) {
+        previewEl.textContent = (newMsg.sender_id === me.id ? 'Você: ' : '') + newMsg.content.substring(0, 40);
+      }
+
+      // Se a mensagem é do outro lado e estamos com a conversa aberta, marca como lida na hora
+      if (activeConv && activeConv.id === newMsg.conversation_id && newMsg.sender_id !== me.id) {
+        setLastReadAt(newMsg.conversation_id, new Date().toISOString());
+      } else {
+        updateUnreadBadges();
+      }
+
+      // Optimistic match
       if (newMsg.sender_id === me.id) {
         const opts = document.querySelectorAll('.msg[data-optimistic="true"]');
         for (const opt of opts) {
@@ -589,7 +717,10 @@
           }
         }
       }
-      appendMessage(newMsg);
+      // Só anexa se for da conversa ativa
+      if (activeConv && activeConv.id === newMsg.conversation_id) {
+        appendMessage(newMsg);
+      }
     });
 
     // Atualiza preview da sidebar
@@ -598,6 +729,50 @@
       const last = messages[messages.length - 1];
       preview.textContent = (last.sender_id === me.id ? 'Você: ' : '') + last.content.substring(0, 40);
     }
+
+    // Marca como lida (abriu a conversa)
+    setLastReadAt(conv.id, new Date().toISOString());
+  }
+
+
+  function setupGlobalMessageWatch() {
+    if (!me) return;
+    // Subscribe a inserts de mensagens em todas as minhas conversas
+    const convIds = allConvs.map(c => c.id);
+    if (convIds.length === 0) return;
+
+    window.dbClient
+      .channel('global-messages')
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'messages',
+        },
+        (payload) => {
+          const m = payload.new;
+          // Só interessa se for de uma conversa minha
+          if (!convIds.includes(m.conversation_id)) return;
+          // Se já estamos tratando via active channel, evita duplicar
+          if (activeConv && activeConv.id === m.conversation_id) return;
+
+          // Atualiza in-memory
+          const c = allConvs.find(x => x.id === m.conversation_id);
+          if (c) {
+            c._lastSenderId = m.sender_id;
+            c._lastContent = m.content;
+            c.last_message_at = m.created_at;
+          }
+          // Atualiza preview
+          const previewEl = document.getElementById(`preview-${m.conversation_id}`);
+          if (previewEl) {
+            previewEl.textContent = (m.sender_id === me.id ? 'Você: ' : '') + m.content.substring(0, 40);
+          }
+          updateUnreadBadges();
+        }
+      )
+      .subscribe();
   }
 
   function appendMessage(msg) {
