@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Buscar famílias · Dona Baby+</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="shared.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script defer src="js/auth.js"></script>
+  <style>
+    body { background: #FAFBFC; }
+    .search-hero { background: white; padding: 36px 0 32px; border-bottom: 1px solid var(--line); }
+    .search-hero h1 { font-size: clamp(28px, 4vw, 40px); font-weight: 800; letter-spacing: -0.035em; margin-bottom: 8px; }
+    .search-hero .sub { color: var(--ink-3); font-size: 16px; margin-bottom: 24px; }
+    .results-section { padding: 32px 0 80px; }
+    .results-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 16px; }
+    .results-count { font-size: 15px; color: var(--ink-2); }
+    .results-count strong { color: var(--ink); font-weight: 700; }
+    .results-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+
+    .listing-card {
+      background: white; border: 1px solid var(--line); border-radius: 20px; padding: 24px;
+      transition: all 0.3s; position: relative; cursor: pointer;
+    }
+    .listing-card::after {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background: var(--familia); opacity: 0; transition: opacity 0.3s; border-radius: 20px 20px 0 0;
+    }
+    .listing-card:hover {
+      transform: translateY(-4px); border-color: var(--line-strong);
+      box-shadow: 0 20px 40px -16px rgba(14,22,32,0.1);
+    }
+    .listing-card:hover::after { opacity: 1; }
+
+    .listing-head { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+    .listing-avatar { width: 52px; height: 52px; border-radius: 50%; color: white; font-size: 19px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; background: var(--familia); }
+    .av-2 { background: var(--familia); }
+    .av-3 { background: var(--orange); }
+    .av-4 { background: var(--blue); }
+    .av-5 { background: var(--yellow); color: var(--ink); }
+    .av-6 { background: var(--pink); }
+    .av-7 { background: var(--red); }
+    .listing-name { font-size: 17px; font-weight: 700; line-height: 1.2; }
+    .listing-loc { font-size: 12px; color: var(--ink-3); display: flex; align-items: center; gap: 3px; margin-top: 2px; }
+    .listing-bio { font-size: 13px; color: var(--ink-2); line-height: 1.55; margin-bottom: 14px; min-height: 54px; }
+    .listing-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 16px; }
+    .tag-fam-card { background: var(--familia-soft); color: var(--familia-deep); font-size: 12px; font-weight: 600; padding: 4px 11px; border-radius: 999px; display: inline-block; }
+    .listing-foot { display: flex; justify-content: space-between; align-items: center; padding-top: 14px; border-top: 1px solid var(--line); }
+    .listing-children { font-size: 15px; font-weight: 700; }
+    .listing-children span { font-size: 12px; color: var(--ink-3); font-weight: 400; }
+    .listing-btn { background: var(--familia); color: white; padding: 8px 14px; border-radius: 999px; font-size: 12px; font-weight: 700; border: none; cursor: pointer; }
+
+    @media (max-width: 960px) { .results-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 600px) { .results-grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+
+<header class="app-nav">
+  <div class="app-nav-inner">
+    <a class="app-logo" href="/"><img src="logo.png" alt="Dona Baby+"></a>
+    <ul class="app-nav-links" id="navLinks"></ul>
+    <div class="app-nav-right">
+      <a class="user-chip" href="account.html">
+        <div class="user-chip-avatar" id="chipAvatar">?</div>
+        <div class="user-chip-name" id="chipName">...</div>
+      </a>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="search-hero">
+    <div class="container">
+      <h1>Encontre uma família.</h1>
+      <p class="sub">Famílias do Rio que tão procurando babá agora.</p>
+    </div>
+  </section>
+
+  <section class="results-section">
+    <div class="container">
+      <div class="results-head">
+        <div class="results-count" id="resultsCount">Carregando...</div>
+      </div>
+
+      <div class="results-grid" id="resultsGrid">
+        <div style="grid-column: 1 / -1; padding: 60px 20px; text-align: center; color: var(--ink-3); font-size: 15px;">
+          <div style="display: inline-block; width: 28px; height: 28px; border: 3px solid var(--line); border-top-color: var(--familia); border-radius: 50%; animation: spin 0.8s linear infinite;"></div>
+          <div style="margin-top: 16px;">Carregando famílias...</div>
+        </div>
+      </div>
+      <style>@keyframes spin { to { transform: rotate(360deg); } }</style>
+
+      <div id="emptyState" style="display:none; padding: 60px 20px; text-align: center; background: var(--bg-soft); border-radius: 20px; margin-top: 20px;">
+        <div style="font-size: 48px; margin-bottom: 12px;">🌱</div>
+        <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 6px;">Ainda não tem famílias procurando.</h3>
+        <p style="font-size: 14px; color: var(--ink-3); max-width: 400px; margin: 0 auto;">
+          Volta em breve — famílias novas chegam todo dia.
+        </p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+  let myProfile = null;
+
+  const AVATAR_COLORS = ['av-2', 'av-3', 'av-4', 'av-5', 'av-6', 'av-7'];
+  function avatarColorFor(idx) { return AVATAR_COLORS[idx % AVATAR_COLORS.length]; }
+  function escapeHtml(str) {
+    if (!str) return '';
+    return String(str).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[m]);
+  }
+
+  // Nav dinâmica
+  function renderNav() {
+    if (!myProfile) return;
+    const links = document.getElementById('navLinks');
+    const items = [
+      { href: '/families.html', label: 'Buscar famílias', key: 'families', active: true },
+      { href: '/chat.html', label: 'Mensagens', key: 'chat', badge: 'unread' },
+      { href: '/account.html', label: 'Meu perfil', key: 'account' },
+    ];
+    links.innerHTML = items.map(it => {
+      const active = it.active ? 'active' : '';
+      const badge = it.badge === 'unread' ? '<span class="nav-badge-dot" id="navUnreadDot" style="display:none;"></span>' : '';
+      return `<li><a href="${it.href}" class="${active}">${it.label}${badge}</a></li>`;
+    }).join('');
+  }
+
+  window.addEventListener('DOMContentLoaded', async () => {
+    if (!window.dbClient) { setTimeout(() => location.reload(), 800); return; }
+
+    await window.dbHelpers.requireAuth();
+    myProfile = await window.dbHelpers.getCurrentProfile();
+    if (!myProfile) { window.location.href = '/login.html'; return; }
+
+    if (myProfile.user_type !== 'baba') {
+      window.dbHelpers.redirectToDashboard();
+      return;
+    }
+
+    // Confere se babá tá aprovada
+    const baba = await window.dbHelpers.getBabaProfile(myProfile.id);
+    if (!baba || baba.approval_status !== 'approved') {
+      alert('Você precisa estar aprovada pra buscar famílias.');
+      window.location.href = '/onboarding-baba.html';
+      return;
+    }
+
+    // Atualiza chip
+    document.getElementById('chipAvatar').textContent = (myProfile.full_name || '?').charAt(0).toUpperCase();
+    document.getElementById('chipName').textContent = (myProfile.full_name || '').split(' ')[0];
+
+    renderNav();
+    await loadFamilies();
+  });
+
+  async function loadFamilies() {
+    const grid = document.getElementById('resultsGrid');
+    const empty = document.getElementById('emptyState');
+    const countEl = document.getElementById('resultsCount');
+
+    try {
+      const families = await window.dbHelpers.getActiveFamilies();
+
+      if (families.length === 0) {
+        grid.style.display = 'none';
+        empty.style.display = 'block';
+        countEl.innerHTML = '<strong>0 famílias</strong> encontradas';
+        return;
+      }
+
+      countEl.innerHTML = `<strong>${families.length} ${families.length === 1 ? 'família' : 'famílias'}</strong> procurando`;
+      grid.innerHTML = families.map((f, i) => renderFamilyCard(f, i)).join('');
+    } catch (err) {
+      console.error('Erro carregando famílias:', err);
+      grid.innerHTML = `<div style="grid-column: 1 / -1; padding: 40px; text-align: center; color: var(--cta);">Erro: ${escapeHtml(err.message || 'desconhecido')}</div>`;
+    }
+  }
+
+  const AGE_LABELS = {
+    'esperando': 'Esperando bebê',
+    'newborn': 'Recém-nascido',
+    'baby': 'Bebê',
+    'toddler-young': 'Bebê grande',
+    'toddler': 'Pré-escolar',
+    'kid-small': 'Pequena',
+    'kid': 'Escolar',
+  };
+
+  const SCHED_LABELS = {
+    'integral': 'Integral',
+    'meio-periodo': 'Meio período',
+    'folguista': 'Folguista',
+    'noturna': 'Noturna',
+    'eventual': 'Eventual',
+    'viagem': 'Viagem',
+  };
+
+  function renderFamilyCard(family, idx) {
+    const fullName = family.profiles?.full_name || 'Família';
+    const firstName = fullName.split(' ')[0];
+    const initial = firstName.charAt(0).toUpperCase();
+    const childCount = family.children_count || 0;
+    const childAges = (family.children_ages || []).slice(0, 3).map(a => AGE_LABELS[a] || a).join(', ');
+    const neighborhood = family.neighborhood || '—';
+    const scheds = (family.schedule_preference || '').split(',').filter(Boolean).slice(0, 2);
+    const notes = family.notes ? (family.notes.substring(0, 90) + (family.notes.length > 90 ? '...' : '')) : 'Sem observações.';
+
+    return `
+      <a href="chat.html?parent=${family.id}" class="listing-card" style="text-decoration:none; color:inherit;">
+        <div class="listing-head">
+          <div class="listing-avatar ${avatarColorFor(idx)}">${initial}</div>
+          <div>
+            <div class="listing-name">Família ${escapeHtml(firstName)}</div>
+            <div class="listing-loc">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg>
+              ${escapeHtml(neighborhood)}
+            </div>
+          </div>
+        </div>
+        <p class="listing-bio">${escapeHtml(notes)}</p>
+        <div class="listing-tags">
+          ${childAges ? `<span class="tag-fam-card">${escapeHtml(childAges)}</span>` : ''}
+          ${scheds.map(s => `<span class="tag-fam-card">${escapeHtml(SCHED_LABELS[s] || s)}</span>`).join('')}
+        </div>
+        <div class="listing-foot">
+          <div class="listing-children">${childCount} ${childCount === 1 ? 'criança' : 'crianças'}</div>
+          <button class="listing-btn">Conversar →</button>
+        </div>
+      </a>
+    `;
+  }
+</script>
+
+</body>
+</html>

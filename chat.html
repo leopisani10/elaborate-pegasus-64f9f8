@@ -458,6 +458,7 @@
       ];
     } else if (myProfile.user_type === 'baba') {
       items = [
+        { href: '/families.html', label: 'Buscar famílias', key: 'families' },
         { href: '/chat.html', label: 'Mensagens', key: 'chat', badge: 'unread' },
         { href: '/account.html', label: 'Meu perfil', key: 'account' },
       ];
@@ -530,13 +531,13 @@
       document.getElementById('chipName').textContent = myProfile.full_name.split(' ')[0];
     }
 
-    // ?baba=xxx: abre/cria conversa com essa babá
+    // ?baba=xxx (família clicou) ou ?parent=xxx (babá clicou): abre/cria conversa
     const params = new URLSearchParams(window.location.search);
-    const babaParam = params.get('baba');
+    const otherUserId = params.get('baba') || params.get('parent');
 
-    if (babaParam) {
+    if (otherUserId) {
       try {
-        const conv = await window.dbHelpers.getOrCreateConversation(babaParam);
+        const conv = await window.dbHelpers.getOrCreateConversation(otherUserId);
         await loadConversations();
         await openConversation(conv);
       } catch (err) {
@@ -607,9 +608,12 @@
       }));
 
       list.innerHTML = enriched.map(({ conv, other, idx, lastMsg }) => {
-        const name = other?.full_name || 'Usuário';
-        const firstName = name.split(' ')[0];
-        const initial = name.charAt(0).toUpperCase();
+        const otherName = other?.full_name || 'Usuário';
+        const firstName = otherName.split(' ')[0];
+        const displayName = (myProfile.user_type === 'baba' && other?.user_type === 'parent')
+          ? `Família ${firstName}`
+          : firstName;
+        const initial = otherName.charAt(0).toUpperCase();
         let preview = 'Toque pra abrir';
         if (lastMsg) {
           preview = (lastMsg.sender_id === me.id ? 'Você: ' : '') + lastMsg.content.substring(0, 40);
@@ -618,7 +622,7 @@
           <div class="conv-item" data-conv-id="${conv.id}" onclick="openConvById('${conv.id}')">
             <div class="conv-avatar ${avatarColorFor(idx)}">${initial}</div>
             <div class="conv-info">
-              <div class="conv-name">${escapeHtml(firstName)}</div>
+              <div class="conv-name">${escapeHtml(displayName)}</div>
               <div class="conv-preview" id="preview-${conv.id}">${escapeHtml(preview)}</div>
             </div>
             <div class="conv-meta">
@@ -652,10 +656,14 @@
     document.getElementById('convPanel').style.display = 'flex';
 
     const other = await window.dbHelpers.getOtherParticipant(conv);
-    const name = other?.full_name || 'Usuário';
-    const initial = name.charAt(0).toUpperCase();
+    const otherName = other?.full_name || 'Usuário';
+    // Se eu sou babá, o "outro" é família - mostra "Família X"
+    const displayName = (myProfile.user_type === 'baba' && other?.user_type === 'parent')
+      ? `Família ${otherName.split(' ')[0]}`
+      : otherName;
+    const initial = otherName.charAt(0).toUpperCase();
     document.getElementById('activeAvatar').textContent = initial;
-    document.getElementById('activeName').textContent = name;
+    document.getElementById('activeName').textContent = displayName;
     document.getElementById('activeStatus').textContent = other?.user_type === 'baba' ? 'Babá' : 'Família';
 
     const viewLink = document.getElementById('viewProfileLink');

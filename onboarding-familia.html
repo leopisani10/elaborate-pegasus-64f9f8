@@ -8,156 +8,58 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="shared.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script defer src="js/auth.js"></script>
   <style>
     body { background: #FAFBFC; }
-
-    .ob-header {
-      padding: 18px 0;
-      border-bottom: 1px solid var(--line);
-      background: white;
-    }
-    .ob-header-inner {
-      max-width: 720px;
-      margin: 0 auto;
-      padding: 0 24px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
+    .ob-header { padding: 18px 0; border-bottom: 1px solid var(--line); background: white; }
+    .ob-header-inner { max-width: 720px; margin: 0 auto; padding: 0 24px; display: flex; justify-content: space-between; align-items: center; }
     .ob-header img { height: 32px; }
+    .ob-exit { font-size: 13px; color: var(--ink-3); font-weight: 500; cursor: pointer; background: none; border: none; }
+    .ob-exit:hover { color: var(--ink); }
 
-    .progress-row {
-      max-width: 720px;
-      margin: 24px auto 0;
-      padding: 0 24px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .progress-bar {
-      flex: 1;
-      height: 4px;
-      background: var(--line);
-      border-radius: 999px;
-      overflow: hidden;
-    }
-    .progress-fill {
-      height: 100%;
-      width: 50%;
-      background: var(--familia);
-      border-radius: 999px;
-      transition: width 0.3s;
-    }
-    .progress-text {
-      font-size: 12px;
-      font-weight: 700;
-      color: var(--ink-3);
-    }
+    .ob-container { max-width: 640px; margin: 0 auto; padding: 32px 24px 80px; }
+    .ob-panel { background: white; border: 1px solid var(--line); border-radius: 24px; padding: 40px; }
+    .ob-panel h1 { font-size: 28px; font-weight: 800; letter-spacing: -0.035em; margin-bottom: 8px; }
+    .ob-panel .panel-sub { color: var(--ink-3); font-size: 15px; margin-bottom: 32px; line-height: 1.5; }
 
-    .ob-card {
-      max-width: 580px;
-      margin: 32px auto 80px;
-      padding: 0 24px;
-    }
-
-    .ob-card h1 {
-      font-size: 30px;
-      font-weight: 800;
-      letter-spacing: -0.035em;
-      margin-bottom: 8px;
-    }
-    .ob-card .sub {
-      color: var(--ink-3);
-      font-size: 15px;
-      margin-bottom: 32px;
-      line-height: 1.55;
-    }
-
-    /* Counter inputs */
-    .count-pick {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 8px;
-    }
+    .count-pick { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
     .count-pick label {
-      cursor: pointer;
-      padding: 18px 8px;
-      text-align: center;
-      border: 1.5px solid var(--line-strong);
-      border-radius: 14px;
-      transition: all 0.15s;
-      background: white;
-      font-size: 16px;
-      font-weight: 700;
-      color: var(--ink-2);
+      cursor: pointer; padding: 18px 8px; text-align: center;
+      border: 1.5px solid var(--line-strong); border-radius: 14px;
+      background: white; font-size: 16px; font-weight: 700; color: var(--ink-2);
+      transition: all 0.15s; user-select: none;
     }
     .count-pick label:hover { border-color: var(--familia); }
     .count-pick input { display: none; }
     .count-pick label:has(input:checked) {
-      background: var(--familia);
-      border-color: var(--familia);
-      color: white;
+      background: var(--familia); border-color: var(--familia); color: white;
     }
 
-    /* Kid age tag pick */
-    .tag-pick {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
+    .tag-pick { display: flex; flex-wrap: wrap; gap: 8px; }
     .tag-pick label {
-      cursor: pointer;
-      padding: 10px 16px;
-      border: 1.5px solid var(--line-strong);
-      border-radius: 999px;
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--ink-2);
-      background: white;
-      transition: all 0.15s;
-      user-select: none;
+      cursor: pointer; padding: 10px 16px;
+      border: 1.5px solid var(--line-strong); border-radius: 999px;
+      font-size: 13px; font-weight: 600; color: var(--ink-2);
+      background: white; transition: all 0.15s; user-select: none;
     }
     .tag-pick input { display: none; }
     .tag-pick label:has(input:checked) {
-      background: var(--familia-soft);
-      border-color: var(--familia);
-      color: var(--familia-deep);
+      background: var(--familia-soft); border-color: var(--familia); color: var(--familia-deep);
     }
 
-    .ob-actions {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-top: 36px;
-    }
-    .ob-back {
-      background: transparent;
-      border: none;
-      color: var(--ink-3);
-      font-family: inherit;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-    }
+    .ob-actions { display: flex; justify-content: flex-end; align-items: center; padding-top: 24px; margin-top: 24px; border-top: 1px solid var(--line); }
+
     .btn-fam-big {
-      background: var(--familia);
-      color: white;
-      padding: 16px 32px;
-      border-radius: 999px;
-      border: none;
-      font-family: inherit;
-      font-weight: 700;
-      font-size: 15px;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
+      background: var(--familia); color: white; padding: 16px 32px; border-radius: 999px;
+      border: none; font-family: inherit; font-weight: 700; font-size: 15px; cursor: pointer;
+      display: inline-flex; align-items: center; gap: 8px;
       box-shadow: 0 6px 16px -4px rgba(124,91,211,0.4);
     }
     .btn-fam-big:hover { background: var(--familia-deep); transform: translateY(-1px); }
 
-    @media (max-width: 500px) {
-      .count-pick { grid-template-columns: repeat(5, 1fr); }
+    @media (max-width: 600px) {
+      .ob-panel { padding: 28px 20px; }
       .count-pick label { padding: 14px 4px; font-size: 14px; }
     }
   </style>
@@ -167,58 +69,172 @@
 <header class="ob-header">
   <div class="ob-header-inner">
     <a href="/"><img src="logo.png" alt="Dona Baby+"></a>
-    <a href="/" class="text-sm text-muted" style="font-weight:500;">Sair sem salvar →</a>
+    <button class="ob-exit" onclick="window.dbHelpers && window.dbHelpers.signOut()">Sair →</button>
   </div>
 </header>
 
-<div class="progress-row">
-  <div class="progress-bar"><div class="progress-fill"></div></div>
-  <div class="progress-text">Passo 2 de 4</div>
+<div class="ob-container">
+  <main class="ob-panel">
+    <h1>Conta um pouco sobre as crianças.</h1>
+    <p class="panel-sub">
+      Isso ajuda a gente a recomendar babás certas pra você, e permite que babás interessadas em famílias como a sua entrem em contato.
+    </p>
+
+    <form id="famForm">
+      <div class="field">
+        <label class="field-label">Quantas crianças? <span class="req">*</span></label>
+        <div class="count-pick">
+          <label><input type="radio" name="qtde" value="1" required>1</label>
+          <label><input type="radio" name="qtde" value="2">2</label>
+          <label><input type="radio" name="qtde" value="3">3</label>
+          <label><input type="radio" name="qtde" value="4">4</label>
+          <label><input type="radio" name="qtde" value="5">5+</label>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="field-label">Idade das crianças <span class="req">*</span></label>
+        <div class="tag-pick" id="ageRanges">
+          <label><input type="checkbox" value="esperando">Esperando bebê</label>
+          <label><input type="checkbox" value="newborn">Recém-nascido (0-6m)</label>
+          <label><input type="checkbox" value="baby">Bebê (6m-1a)</label>
+          <label><input type="checkbox" value="toddler-young">Bebê grande (1-2a)</label>
+          <label><input type="checkbox" value="toddler">Pré-escolar (2-4a)</label>
+          <label><input type="checkbox" value="kid-small">Pequena (4-6a)</label>
+          <label><input type="checkbox" value="kid">Escolar (6-12a)</label>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="field-label">Bairro onde mora <span class="req">*</span></label>
+        <select class="select" id="neighborhood" required>
+          <option value="">Selecione...</option>
+          <option value="Copacabana">Copacabana</option>
+          <option value="Ipanema">Ipanema</option>
+          <option value="Leblon">Leblon</option>
+          <option value="Botafogo">Botafogo</option>
+          <option value="Flamengo">Flamengo</option>
+          <option value="Tijuca">Tijuca</option>
+          <option value="Barra da Tijuca">Barra da Tijuca</option>
+          <option value="Recreio">Recreio</option>
+          <option value="Jardim Botânico">Jardim Botânico</option>
+          <option value="Lagoa">Lagoa</option>
+          <option value="Outro">Outro</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label class="field-label">Que tipo de babá você procura? <span class="req">*</span></label>
+        <div class="tag-pick" id="schedule">
+          <label><input type="checkbox" value="integral">Período integral</label>
+          <label><input type="checkbox" value="meio-periodo">Meio período</label>
+          <label><input type="checkbox" value="folguista">Folguista (fim de semana)</label>
+          <label><input type="checkbox" value="noturna">Noturna</label>
+          <label><input type="checkbox" value="eventual">Eventual</label>
+          <label><input type="checkbox" value="viagem">Pra viagem</label>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="field-label">Algo importante que a babá precisa saber?</label>
+        <textarea class="textarea" id="notes" rows="4" placeholder="Ex: meu filho tem alergia a amendoim, ou minha filha precisa de medicação a cada 6h. Pode falar livremente, isso fica visível pras babás interessadas."></textarea>
+      </div>
+
+      <div class="ob-actions">
+        <button class="btn-fam-big" type="submit" id="submitBtn">
+          Continuar
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </button>
+      </div>
+    </form>
+  </main>
 </div>
 
-<main class="ob-card">
-  <h1>Conta um pouco sobre as crianças.</h1>
-  <p class="sub">Isso ajuda a gente a recomendar as babás certas pra você e a fazer match com profissionais que têm experiência na idade dos seus filhos.</p>
+<script>
+  let currentUser = null;
 
-  <div class="field">
-    <label class="field-label">Quantas crianças?</label>
-    <div class="count-pick">
-      <label><input type="radio" name="qtde">1</label>
-      <label><input type="radio" name="qtde" checked>2</label>
-      <label><input type="radio" name="qtde">3</label>
-      <label><input type="radio" name="qtde">4</label>
-      <label><input type="radio" name="qtde">5+</label>
-    </div>
-  </div>
+  window.addEventListener('DOMContentLoaded', async () => {
+    if (!window.dbClient) {
+      setTimeout(() => location.reload(), 800);
+      return;
+    }
 
-  <div class="field">
-    <label class="field-label">Idade das crianças</label>
-    <div class="tag-pick">
-      <label><input type="checkbox">Esperando bebê</label>
-      <label><input type="checkbox" checked>Recém-nascido (0-6 meses)</label>
-      <label><input type="checkbox" checked>Bebê (6m-1 ano)</label>
-      <label><input type="checkbox">Bebê grande (1-2 anos)</label>
-      <label><input type="checkbox">Pré-escolar (2-4 anos)</label>
-      <label><input type="checkbox">Pequena (4-6 anos)</label>
-      <label><input type="checkbox">Escolar (6-12 anos)</label>
-    </div>
-    <div class="field-help">Pode marcar mais de uma se tiver filhos de idades diferentes.</div>
-  </div>
+    currentUser = await window.dbHelpers.requireAuth();
+    if (!currentUser) return;
 
-  <div class="field">
-    <label class="field-label">Algo importante que a babá precisa saber?</label>
-    <textarea class="textarea" placeholder="Ex: meu filho tem alergia a amendoim, ou minha filha precisa de medicação a cada 6h..."></textarea>
-    <div class="field-help">Detalhes médicos, alimentares ou de rotina ficam visíveis só pras babás que você iniciar conversa.</div>
-  </div>
+    const profile = await window.dbHelpers.getCurrentProfile();
+    if (!profile) { window.location.href = '/login.html'; return; }
+    if (profile.user_type !== 'parent') {
+      alert('Essa página é só pra famílias.');
+      window.dbHelpers.redirectToDashboard();
+      return;
+    }
 
-  <div class="ob-actions">
-    <button class="ob-back">← Voltar</button>
-    <button class="btn-fam-big">
-      Continuar
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-    </button>
-  </div>
-</main>
+    // Preenche com dados existentes (se houver)
+    const parent = await window.dbHelpers.getParentProfile(currentUser.id);
+    if (parent) {
+      if (parent.children_count) {
+        const r = document.querySelector(`input[name="qtde"][value="${parent.children_count}"]`);
+        if (r) r.checked = true;
+      }
+      if (parent.children_ages) checkBoxes('ageRanges', parent.children_ages);
+      if (parent.neighborhood) document.getElementById('neighborhood').value = parent.neighborhood;
+      if (parent.schedule_preference) {
+        const prefs = parent.schedule_preference.split(',');
+        checkBoxes('schedule', prefs);
+      }
+      if (parent.notes) document.getElementById('notes').value = parent.notes;
+    }
+  });
 
-  </body>
+  function checkBoxes(containerId, values) {
+    if (!Array.isArray(values)) return;
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    values.forEach(v => {
+      const cb = container.querySelector(`input[value="${v}"]`);
+      if (cb) cb.checked = true;
+    });
+  }
+
+  function getChecked(containerId) {
+    const container = document.getElementById(containerId);
+    return Array.from(container.querySelectorAll('input:checked')).map(cb => cb.value);
+  }
+
+  document.getElementById('famForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const submitBtn = document.getElementById('submitBtn');
+    const helpers = window.dbHelpers;
+
+    const qtdeInput = document.querySelector('input[name="qtde"]:checked');
+    const qtde = qtdeInput ? parseInt(qtdeInput.value, 10) : null;
+    const ages = getChecked('ageRanges');
+    const neighborhood = document.getElementById('neighborhood').value;
+    const schedule = getChecked('schedule');
+    const notes = document.getElementById('notes').value.trim();
+
+    if (!qtde) { helpers.showError('Diz quantas crianças.'); return; }
+    if (ages.length === 0) { helpers.showError('Marca pelo menos uma idade.'); return; }
+    if (!neighborhood) { helpers.showError('Selecione o bairro.'); return; }
+    if (schedule.length === 0) { helpers.showError('Selecione pelo menos um tipo de babá.'); return; }
+
+    helpers.setLoading(submitBtn, true);
+    try {
+      await helpers.upsertParentProfile(currentUser.id, {
+        children_count: qtde,
+        children_ages: ages,
+        neighborhood,
+        schedule_preference: schedule.join(','),
+        notes: notes || null,
+      });
+      window.location.href = '/dashboard.html';
+    } catch (err) {
+      helpers.showError('Não conseguiu salvar: ' + (err.message || 'erro'));
+      helpers.setLoading(submitBtn, false);
+    }
+  });
+</script>
+
+</body>
 </html>
