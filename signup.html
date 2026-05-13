@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Criar conta · Dona Baby+</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="shared.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script defer src="js/auth.js"></script>
+  <style>
+    body { background: #FAFBFC; }
+
+    .signup-wrap {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .signup-header {
+      padding: 24px 0;
+      border-bottom: 1px solid var(--line);
+      background: white;
+    }
+    .signup-header-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+    .signup-header img { height: 36px; }
+    .signup-header .help-link {
+      font-size: 14px;
+      color: var(--ink-2);
+      font-weight: 500;
+    }
+    .signup-header .help-link a { color: var(--cta); font-weight: 600; }
+
+    .signup-main {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 48px 24px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .signup-card {
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      padding: 48px;
+      max-width: 720px;
+      width: 100%;
+      box-shadow: 0 24px 48px -24px rgba(14,22,32,0.08);
+      position: relative;
+      z-index: 2;
+    }
+    .signup-card h1 {
+      font-size: 32px;
+      font-weight: 800;
+      letter-spacing: -0.035em;
+      margin-bottom: 8px;
+    }
+    .signup-card .sub {
+      color: var(--ink-3);
+      font-size: 16px;
+      margin-bottom: 36px;
+    }
+
+    /* Choice cards */
+    .choice-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+    .choice {
+      cursor: pointer;
+      border: 2px solid var(--line);
+      border-radius: 20px;
+      padding: 24px;
+      transition: all 0.2s;
+      background: white;
+      text-align: left;
+      position: relative;
+    }
+    .choice:hover { border-color: var(--line-strong); transform: translateY(-2px); }
+    .choice.selected {
+      border-color: var(--cta);
+      box-shadow: 0 0 0 3px rgba(235,95,45,0.1);
+    }
+    .choice.selected .choice-check { opacity: 1; }
+    .choice-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+    }
+    .choice.baba .choice-icon { background: var(--baba-soft); color: var(--baba-deep); }
+    .choice.fam .choice-icon { background: var(--familia-soft); color: var(--familia-deep); }
+    .choice h3 {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+    .choice p {
+      font-size: 14px;
+      color: var(--ink-3);
+      line-height: 1.5;
+    }
+    .choice-check {
+      position: absolute;
+      top: 18px;
+      right: 18px;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--cta);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    /* Form section */
+    .form-section {
+      padding-top: 28px;
+      border-top: 1px solid var(--line);
+    }
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .terms {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      margin: 20px 0 24px;
+      font-size: 13px;
+      color: var(--ink-3);
+      line-height: 1.5;
+    }
+    .terms input { margin-top: 3px; accent-color: var(--cta); }
+    .terms a { color: var(--cta); font-weight: 600; }
+
+    .login-link {
+      text-align: center;
+      font-size: 14px;
+      color: var(--ink-3);
+      margin-top: 18px;
+    }
+    .login-link a { color: var(--cta); font-weight: 600; }
+
+    /* Bg decoration */
+    .bg-blob {
+      position: absolute;
+      width: 600px;
+      height: 600px;
+      border-radius: 50%;
+      filter: blur(100px);
+      opacity: 0.4;
+      pointer-events: none;
+    }
+    .bg-blob-1 {
+      top: -200px;
+      left: -200px;
+      background: radial-gradient(circle, var(--baba-soft), transparent 70%);
+    }
+    .bg-blob-2 {
+      bottom: -200px;
+      right: -200px;
+      background: radial-gradient(circle, var(--familia-soft), transparent 70%);
+    }
+
+    @media (max-width: 720px) {
+      .signup-card { padding: 32px 24px; }
+      .signup-card h1 { font-size: 26px; }
+      .choice-grid { grid-template-columns: 1fr; }
+      .form-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="signup-wrap">
+
+  <header class="signup-header">
+    <div class="signup-header-inner">
+      <a href="/"><img src="logo.png" alt="Dona Baby+"></a>
+      <div class="help-link">Já tem conta? <a href="login.html">Entrar</a></div>
+    </div>
+  </header>
+
+  <main class="signup-main">
+    <div class="bg-blob bg-blob-1"></div>
+    <div class="bg-blob bg-blob-2"></div>
+
+    <div class="signup-card">
+      <h1>Comece em 2 minutos.</h1>
+      <p class="sub">Cadastro grátis. Sem cartão. Você só paga quando quiser começar a conversar.</p>
+
+      <div class="field-label" style="margin-bottom: 12px;">Quem é você?</div>
+      <div class="choice-grid">
+        <button class="choice fam selected" data-type="fam" type="button">
+          <div class="choice-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21v-2a4 4 0 014-4h6a4 4 0 014 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </div>
+          <h3>Sou família</h3>
+          <p>Procuro uma babá de confiança pra cuidar dos meus filhos.</p>
+          <div class="choice-check">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+        </button>
+
+        <button class="choice baba" data-type="baba" type="button">
+          <div class="choice-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-3-3.87"/><path d="M4 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/><circle cx="10" cy="7" r="4"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+          </div>
+          <h3>Sou babá</h3>
+          <p>Sou profissional de cuidado infantil e procuro famílias.</p>
+          <div class="choice-check">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+        </button>
+      </div>
+
+      <form class="form-section" id="signupForm">
+        <div class="form-row">
+          <div class="field">
+            <label class="field-label" for="nome">Nome completo <span class="req">*</span></label>
+            <input class="input" id="nome" name="nome" type="text" placeholder="Como você quer ser chamada(o)" required>
+          </div>
+          <div class="field">
+            <label class="field-label" for="phone">WhatsApp <span class="req">*</span></label>
+            <input class="input" id="phone" name="phone" type="tel" placeholder="(21) 99999-9999" required>
+          </div>
+        </div>
+        <div class="field">
+          <label class="field-label" for="email">Email <span class="req">*</span></label>
+          <input class="input" id="email" name="email" type="email" placeholder="voce@email.com" required>
+        </div>
+        <div class="field">
+          <label class="field-label" for="senha">Crie uma senha <span class="req">*</span></label>
+          <input class="input" id="senha" name="senha" type="password" placeholder="Mínimo 6 caracteres" required minlength="6">
+          <div class="field-help">Use letras, números e pelo menos 1 símbolo.</div>
+        </div>
+
+        <label class="terms">
+          <input type="checkbox" required>
+          <span>Li e aceito os <a href="#">Termos de uso</a> e a <a href="#">Política de privacidade</a>. Aceito receber notificações por email e WhatsApp.</span>
+        </label>
+
+        <button class="btn btn-cta btn-lg btn-block" type="submit" id="submitBtn">
+          Criar minha conta grátis
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </button>
+
+        <div class="login-link">
+          Já tem conta? <a href="login.html">Entrar</a>
+        </div>
+      </form>
+    </div>
+  </main>
+</div>
+
+<!-- Demo navigation -->
+
+  <script>
+  // Choice selector visual
+  let selectedType = 'fam'; // default
+  document.querySelectorAll('.choice').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.choice').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      selectedType = btn.dataset.type;
+    });
+  });
+
+  // Espera o Supabase carregar antes de configurar o form
+  window.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('signupForm');
+    const submitBtn = document.getElementById('submitBtn');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      // Garante que o auth.js carregou
+      if (!window.dbClient) {
+        alert('Aguarda 1 segundo e tenta de novo (carregando conexão)...');
+        return;
+      }
+
+      const helpers = window.dbHelpers;
+      helpers.setLoading(submitBtn, true);
+
+      const nome = document.getElementById('nome').value.trim();
+      const phone = document.getElementById('phone').value.trim();
+      const email = document.getElementById('email').value.trim().toLowerCase();
+      const senha = document.getElementById('senha').value;
+      const userType = selectedType === 'fam' ? 'parent' : 'baba';
+
+      try {
+        // 1. Cria usuário no auth
+        const { data: authData, error: authError } = await window.dbClient.auth.signUp({
+          email,
+          password: senha,
+          options: {
+            data: {
+              full_name: nome,
+              user_type: userType,
+            }
+          }
+        });
+
+        if (authError) throw authError;
+        if (!authData.user) throw new Error('Não conseguiu criar a conta. Tenta de novo.');
+
+        // 2. O trigger handle_new_user já criou o profile automaticamente.
+        // Mas o trigger não tem como pegar o telefone do user_metadata, então atualizamos:
+        const { error: updateError } = await window.dbClient
+          .from('profiles')
+          .update({ phone })
+          .eq('id', authData.user.id);
+
+        if (updateError) {
+          console.warn('Não conseguiu salvar o telefone, mas conta foi criada:', updateError);
+        }
+
+        // 3. Redireciona pra próxima tela
+        if (userType === 'baba') {
+          window.location.href = '/onboarding-baba.html';
+        } else {
+          window.location.href = '/dashboard.html';
+        }
+
+      } catch (err) {
+        console.error('Erro no signup:', err);
+        let msg = err.message || 'Erro desconhecido';
+
+        // Traduz mensagens comuns
+        if (msg.includes('already registered') || msg.includes('already been registered')) {
+          msg = 'Esse email já tem conta. Vai pra tela de login.';
+        } else if (msg.includes('Password should be at least')) {
+          msg = 'A senha precisa ter pelo menos 6 caracteres.';
+        } else if (msg.includes('valid email')) {
+          msg = 'Email inválido. Confere se digitou certo.';
+        }
+
+        helpers.showError(msg);
+        helpers.setLoading(submitBtn, false);
+      }
+    });
+  });
+</script>
+
+</body>
+</html>
