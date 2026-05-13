@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Aprovação de babás · Admin · Dona Baby+</title>
+  <title>Admin · Dona Baby+</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -14,575 +14,1079 @@
   <style>
     body { background: #FAFBFC; }
 
-    .admin-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background: var(--ink);
-      color: white;
-      padding: 4px 12px;
-      border-radius: 999px;
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.04em;
-    }
+    /* Header */
+    .app-nav { background: white; }
+    .app-nav-inner { max-width: 1400px; margin: 0 auto; padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; }
+    .app-nav img { height: 32px; }
+    .app-nav-links { display: flex; gap: 24px; list-style: none; }
+    .app-nav-links a { color: var(--ink-2); text-decoration: none; font-weight: 500; font-size: 14px; padding: 6px 0; border-bottom: 2px solid transparent; }
+    .app-nav-links a.active { color: var(--cta); border-bottom-color: var(--cta); }
+    .app-nav-right { display: flex; align-items: center; gap: 16px; }
+    .user-chip { display: flex; align-items: center; gap: 10px; padding: 6px 12px 6px 6px; border-radius: 999px; background: white; border: 1px solid var(--line); text-decoration: none; color: var(--ink); }
+    .user-chip-avatar { width: 28px; height: 28px; border-radius: 50%; background: var(--ink); color: white; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
 
-    .admin-layout {
+    .admin-container { max-width: 1400px; margin: 0 auto; padding: 32px 24px 80px; }
+
+    /* Heading + filtros */
+    .admin-head {
+      display: flex; justify-content: space-between; align-items: flex-end;
+      margin-bottom: 32px; flex-wrap: wrap; gap: 16px;
+    }
+    .admin-head h1 { font-size: 32px; font-weight: 800; letter-spacing: -0.035em; margin-bottom: 6px; }
+    .admin-head p { color: var(--ink-3); font-size: 14px; }
+
+    .admin-actions { display: flex; gap: 8px; }
+    .btn-refresh {
+      background: white; border: 1px solid var(--line-strong); border-radius: 999px;
+      padding: 8px 16px; font-size: 13px; font-weight: 600;
+      cursor: pointer; display: flex; align-items: center; gap: 6px;
+    }
+    .btn-refresh:hover { background: var(--bg-soft); }
+
+    /* Stats cards */
+    .stats-grid {
       display: grid;
-      grid-template-columns: 240px 1fr;
-      gap: 32px;
-      padding: 32px 0 80px;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 14px;
+      margin-bottom: 32px;
     }
+    .stat-card {
+      background: white; border: 1px solid var(--line); border-radius: 16px;
+      padding: 20px 22px;
+    }
+    .stat-card .lbl {
+      font-size: 11px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.08em; color: var(--ink-3); margin-bottom: 8px;
+    }
+    .stat-card .val {
+      font-size: 28px; font-weight: 800; letter-spacing: -0.025em; color: var(--ink);
+      line-height: 1.1;
+    }
+    .stat-card .sub { font-size: 12px; color: var(--ink-3); margin-top: 4px; }
+    .stat-card.cta .val { color: var(--cta); }
+    .stat-card.baba .val { color: var(--baba); }
+    .stat-card.familia .val { color: var(--familia); }
+    .stat-card.blue .val { color: var(--blue); }
 
-    /* LEFT — filters */
-    .admin-side {
-      position: sticky;
-      top: 80px;
-      align-self: start;
-    }
-    .admin-side h3 {
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--ink-3);
-      margin-bottom: 12px;
-      padding: 0 12px;
-    }
-    .admin-side ul { list-style: none; margin-bottom: 24px; }
-    .admin-side li { margin-bottom: 2px; }
-    .admin-side a {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 9px 12px;
-      border-radius: 10px;
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--ink-2);
-    }
-    .admin-side a:hover { background: var(--bg-soft); color: var(--ink); }
-    .admin-side a.active { background: var(--ink); color: white; }
-    .admin-side a .count {
-      font-size: 11px;
-      font-weight: 700;
-      background: var(--cta);
-      color: white;
-      padding: 2px 8px;
-      border-radius: 999px;
-    }
-    .admin-side a.active .count { background: white; color: var(--ink); }
+    @media (max-width: 1100px) { .stats-grid { grid-template-columns: repeat(3, 1fr); } }
+    @media (max-width: 700px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
 
-    /* RIGHT */
-    .admin-main h1 {
-      font-size: 28px;
-      font-weight: 800;
-      letter-spacing: -0.035em;
-      margin-bottom: 4px;
-    }
-    .admin-main .sub {
-      color: var(--ink-3);
-      font-size: 14px;
-      margin-bottom: 28px;
-    }
-
-    /* Application row */
-    .application {
-      background: white;
-      border: 1px solid var(--line);
-      border-radius: 20px;
-      margin-bottom: 14px;
-      padding: 24px;
-      display: grid;
-      grid-template-columns: auto 1fr auto;
-      gap: 20px;
-      align-items: flex-start;
-    }
-    .app-avatar {
-      width: 60px;
-      height: 60px;
-      border-radius: 50%;
-      color: white;
-      font-weight: 700;
-      font-size: 22px;
+    /* Tabs */
+    .admin-tabs {
       display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-    .av-1 { background: var(--baba); }
-    .av-3 { background: var(--orange); }
-    .av-4 { background: var(--blue); }
-    .av-5 { background: var(--yellow); color: var(--ink); }
-    .av-6 { background: var(--pink); }
-    .av-7 { background: var(--red); }
-
-    .app-body {
-      min-width: 0;
-    }
-    .app-head {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 4px;
-      flex-wrap: wrap;
-    }
-    .app-name { font-size: 17px; font-weight: 700; }
-    .app-time {
-      font-size: 11px;
-      color: var(--ink-3);
-      background: var(--bg-soft);
-      padding: 2px 8px;
-      border-radius: 999px;
-      font-weight: 600;
-    }
-    .app-time.urgent { background: var(--cta-soft); color: var(--cta); }
-
-    .app-meta {
-      display: flex;
-      gap: 16px;
-      font-size: 13px;
-      color: var(--ink-3);
-      margin-bottom: 12px;
-      flex-wrap: wrap;
-    }
-    .app-meta span {
-      display: flex;
-      align-items: center;
       gap: 4px;
+      margin-bottom: 24px;
+      border-bottom: 1px solid var(--line);
+      overflow-x: auto;
+    }
+    .admin-tab {
+      background: none; border: none; padding: 12px 20px;
+      font-family: inherit; font-size: 14px; font-weight: 600; color: var(--ink-3);
+      cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px;
+      white-space: nowrap; display: flex; align-items: center; gap: 8px;
+    }
+    .admin-tab:hover { color: var(--ink); }
+    .admin-tab.active { color: var(--cta); border-bottom-color: var(--cta); }
+    .admin-tab .count {
+      background: var(--bg-soft); color: var(--ink-2); font-size: 11px;
+      font-weight: 700; padding: 2px 8px; border-radius: 999px;
+    }
+    .admin-tab.active .count { background: #FFE8DC; color: var(--cta); }
+
+    /* Tab content */
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* Tabela */
+    .data-table-wrap {
+      background: white; border: 1px solid var(--line); border-radius: 20px; overflow: hidden;
+    }
+    .data-table { width: 100%; border-collapse: collapse; }
+    .data-table th {
+      background: var(--bg-soft);
+      padding: 12px 16px; text-align: left;
+      font-size: 11px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.06em; color: var(--ink-3);
+      border-bottom: 1px solid var(--line);
+    }
+    .data-table td {
+      padding: 14px 16px; border-bottom: 1px solid var(--line);
+      font-size: 14px; color: var(--ink-2); vertical-align: middle;
+    }
+    .data-table tr:last-child td { border-bottom: none; }
+    .data-table tr:hover { background: #FAFBFC; }
+
+    .row-avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--baba); color: white; font-weight: 700; font-size: 14px; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; }
+    .row-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .row-user { display: flex; align-items: center; gap: 12px; }
+    .row-user .info strong { color: var(--ink); font-weight: 700; display: block; font-size: 14px; }
+    .row-user .info .meta { color: var(--ink-3); font-size: 12px; margin-top: 2px; }
+
+    .status-pill {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 4px 10px; border-radius: 999px;
+      font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;
+    }
+    .status-pending { background: #FFF7E6; color: #B5530F; }
+    .status-approved { background: var(--baba-soft); color: var(--baba-deep); }
+    .status-rejected { background: #FCE7E7; color: #B53034; }
+    .status-active { background: var(--baba-soft); color: var(--baba-deep); }
+    .status-trialing { background: #E8F0FF; color: #2563EB; }
+    .status-past_due { background: #FFF7E6; color: #B5530F; }
+    .status-canceled { background: #F2F4F7; color: var(--ink-3); }
+    .status-incomplete { background: #FCE7E7; color: #B53034; }
+    .status-none { background: #F2F4F7; color: var(--ink-3); }
+
+    .row-actions { display: flex; gap: 6px; justify-content: flex-end; }
+    .btn-mini {
+      background: white; border: 1px solid var(--line-strong); border-radius: 8px;
+      padding: 6px 12px; font-size: 12px; font-weight: 600;
+      cursor: pointer; color: var(--ink); font-family: inherit;
+    }
+    .btn-mini:hover { background: var(--bg-soft); border-color: var(--ink); }
+    .btn-mini.approve { background: var(--baba); color: white; border-color: var(--baba); }
+    .btn-mini.approve:hover { background: var(--baba-deep); border-color: var(--baba-deep); }
+    .btn-mini.reject { color: #B53034; border-color: #FCE7E7; }
+    .btn-mini.reject:hover { background: #FCE7E7; }
+    .btn-mini.danger { background: white; color: #B53034; border-color: #FCE7E7; }
+    .btn-mini.danger:hover { background: #FCE7E7; }
+
+    /* Empty state */
+    .empty-state {
+      padding: 60px 20px; text-align: center; color: var(--ink-3);
+    }
+    .empty-state .ic { font-size: 40px; margin-bottom: 12px; }
+    .empty-state h3 { color: var(--ink); font-weight: 700; font-size: 16px; margin-bottom: 4px; }
+    .empty-state p { font-size: 13px; }
+
+    /* Loading */
+    .loading {
+      padding: 60px 20px; text-align: center;
+    }
+    .spinner {
+      display: inline-block; width: 32px; height: 32px;
+      border: 3px solid var(--line); border-top-color: var(--cta); border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Modal */
+    .modal-overlay {
+      display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+      z-index: 100; align-items: flex-start; justify-content: center;
+      padding: 40px 20px; overflow-y: auto;
+    }
+    .modal-overlay.show { display: flex; }
+    .modal {
+      background: white; border-radius: 20px; max-width: 720px; width: 100%;
+      max-height: calc(100vh - 80px); overflow-y: auto;
+    }
+    .modal-head {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 24px 28px; border-bottom: 1px solid var(--line); position: sticky; top: 0; background: white; z-index: 1;
+    }
+    .modal-head h2 { font-size: 20px; font-weight: 800; letter-spacing: -0.02em; margin: 0; }
+    .modal-close { background: none; border: none; cursor: pointer; padding: 4px; color: var(--ink-3); }
+    .modal-close:hover { color: var(--ink); }
+    .modal-body { padding: 24px 28px; }
+    .modal-section { margin-bottom: 24px; }
+    .modal-section h3 { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-3); margin-bottom: 10px; }
+    .modal-section .val { color: var(--ink-2); line-height: 1.6; font-size: 14px; }
+    .modal-section .val strong { color: var(--ink); }
+    .modal-foot {
+      padding: 16px 28px; border-top: 1px solid var(--line);
+      display: flex; gap: 8px; justify-content: flex-end; flex-wrap: wrap;
+      position: sticky; bottom: 0; background: white;
+    }
+    .big-avatar {
+      width: 80px; height: 80px; border-radius: 50%;
+      background: var(--baba); color: white; font-weight: 800; font-size: 32px;
+      display: inline-flex; align-items: center; justify-content: center;
+      overflow: hidden;
+    }
+    .big-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+    /* Searchbar */
+    .table-toolbar {
+      display: flex; gap: 10px; margin-bottom: 16px;
+      flex-wrap: wrap; align-items: center;
+    }
+    .table-search {
+      flex: 1; min-width: 240px;
+      padding: 9px 14px; border: 1px solid var(--line-strong); border-radius: 999px;
+      font-family: inherit; font-size: 13px; background: white;
+    }
+    .table-search:focus { outline: 2px solid var(--cta); outline-offset: 2px; }
+    .filter-pill {
+      background: white; border: 1px solid var(--line-strong); border-radius: 999px;
+      padding: 7px 14px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: inherit;
+    }
+    .filter-pill:hover { background: var(--bg-soft); }
+    .filter-pill.active { background: var(--ink); color: white; border-color: var(--ink); }
+
+    /* Money */
+    .mrr-highlight {
+      font-size: 32px; font-weight: 800;
+      color: var(--baba); letter-spacing: -0.025em;
     }
 
-    .app-bio {
-      font-size: 14px;
-      color: var(--ink-2);
-      line-height: 1.55;
-      margin-bottom: 12px;
-    }
-
-    .app-docs {
-      display: flex;
-      gap: 6px;
-      flex-wrap: wrap;
-    }
-    .doc-chip {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 5px 10px;
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      font-size: 11px;
-      font-weight: 600;
-      color: var(--ink-2);
-      background: white;
-      cursor: pointer;
-    }
-    .doc-chip:hover { border-color: var(--ink); }
-    .doc-chip.ok { background: var(--baba-soft); color: var(--baba-deep); border-color: var(--baba-soft); }
-    .doc-chip.missing { background: var(--cta-soft); color: var(--cta); border-color: var(--cta-soft); }
-
-    .app-actions {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      min-width: 140px;
-    }
-
-    .btn-approve {
-      background: var(--baba);
-      color: white;
-      padding: 10px 16px;
-      border-radius: 999px;
-      border: none;
-      font-family: inherit;
-      font-weight: 700;
-      font-size: 13px;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-    }
-    .btn-approve:hover { background: var(--baba-deep); }
-
-    .btn-reject {
-      background: white;
-      color: var(--cta);
-      padding: 10px 16px;
-      border-radius: 999px;
-      border: 1px solid var(--line-strong);
-      font-family: inherit;
-      font-weight: 600;
-      font-size: 13px;
-      cursor: pointer;
-    }
-    .btn-reject:hover { border-color: var(--cta); }
-
-    .btn-detail {
-      background: transparent;
-      color: var(--ink-2);
-      padding: 10px 16px;
-      border: none;
-      font-family: inherit;
-      font-weight: 600;
-      font-size: 12px;
-      cursor: pointer;
-    }
-    .btn-detail:hover { color: var(--ink); }
-
-    /* Stats top */
-    .stats {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 12px;
-      margin-bottom: 28px;
-    }
-    .stat {
-      background: white;
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      padding: 18px 20px;
-    }
-    .stat .label {
-      font-size: 11px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      color: var(--ink-3);
-      margin-bottom: 4px;
-    }
-    .stat .value {
-      font-size: 28px;
-      font-weight: 800;
-      letter-spacing: -0.03em;
-    }
-    .stat.t-baba .value { color: var(--baba); }
-    .stat.t-cta .value { color: var(--cta); }
-    .stat.t-fam .value { color: var(--familia); }
-
-    @media (max-width: 960px) {
-      .admin-layout { grid-template-columns: 1fr; }
-      .admin-side { position: static; }
-      .admin-side ul { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; }
-      .application { grid-template-columns: 60px 1fr; }
-      .app-actions { grid-column: 1 / -1; flex-direction: row; }
-      .app-actions .btn-detail { flex: 1; }
-      .stats { grid-template-columns: repeat(2, 1fr); }
-    }
+    .tag-soft { display: inline-block; background: var(--bg-soft); color: var(--ink-2); padding: 3px 8px; border-radius: 999px; font-size: 11px; font-weight: 600; margin: 1px; }
   </style>
 </head>
 <body>
 
 <header class="app-nav">
   <div class="app-nav-inner">
-    <a class="app-logo" href="/"><img src="logo.png" alt="Dona Baby+"></a>
+    <a href="/"><img src="logo.png" alt="Dona Baby+"></a>
     <ul class="app-nav-links" id="navLinks"></ul>
     <div class="app-nav-right">
       <a class="user-chip" href="account.html">
         <div class="user-chip-avatar" id="chipAvatar">?</div>
-        <div class="user-chip-name" id="chipName">...</div>
+        <div id="chipName">...</div>
       </a>
     </div>
   </div>
 </header>
 
-<main>
-  <div class="container">
+<main class="admin-container">
 
-    <div class="admin-layout">
-
-      <!-- Sidebar -->
-      <aside class="admin-side">
-        <h3>Aprovações</h3>
-        <ul>
-          <li><a class="active">Pendentes <span class="count">12</span></a></li>
-          <li><a>Em análise</a></li>
-          <li><a>Aprovadas hoje</a></li>
-          <li><a>Rejeitadas</a></li>
-        </ul>
-        <h3>Filtros</h3>
-        <ul>
-          <li><a>Todas as regiões</a></li>
-          <li><a>Zona Sul</a></li>
-          <li><a>Tijuca</a></li>
-          <li><a>Barra</a></li>
-        </ul>
-      </aside>
-
-      <!-- Main -->
-      <div class="admin-main">
-        <h1>Babás aguardando aprovação</h1>
-        <p class="sub">Cada babá precisa ser verificada manualmente antes de aparecer pras famílias.</p>
-
-        <!-- Stats -->
-        <div class="stats">
-          <div class="stat">
-            <div class="label">Pendentes</div>
-            <div class="value">12</div>
-          </div>
-          <div class="stat t-cta">
-            <div class="label">Urgentes (&gt;48h)</div>
-            <div class="value">3</div>
-          </div>
-          <div class="stat t-baba">
-            <div class="label">Aprovadas (semana)</div>
-            <div class="value">23</div>
-          </div>
-          <div class="stat t-fam">
-            <div class="label">Tempo médio</div>
-            <div class="value">14h</div>
-          </div>
-        </div>
-
-        <!-- Applications — preenchidas dinamicamente -->
-        <div id="applicationsList">
-          <div style="padding: 60px 20px; text-align: center; color: var(--ink-3);">
-            <div style="display: inline-block; width: 28px; height: 28px; border: 3px solid var(--line); border-top-color: var(--cta); border-radius: 50%; animation: spin 0.8s linear infinite;"></div>
-            <div style="margin-top: 16px;">Carregando aplicações...</div>
-          </div>
-        </div>
-        <style>@keyframes spin { to { transform: rotate(360deg); } }</style>
-      </div>
-      </div>
+  <div class="admin-head">
+    <div>
+      <h1>Painel admin</h1>
+      <p>Aprovações, famílias, assinaturas e operação do Dona Baby+.</p>
+    </div>
+    <div class="admin-actions">
+      <button class="btn-refresh" onclick="loadAll()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
+        Atualizar
+      </button>
     </div>
   </div>
+
+  <!-- STATS -->
+  <div class="stats-grid">
+    <div class="stat-card cta">
+      <div class="lbl">Pendentes</div>
+      <div class="val" id="statPending">—</div>
+      <div class="sub" id="statPendingSub">aguardando análise</div>
+    </div>
+    <div class="stat-card baba">
+      <div class="lbl">Babás visíveis</div>
+      <div class="val" id="statBabasVisible">—</div>
+      <div class="sub" id="statBabasVisibleSub">aprovadas + ativas</div>
+    </div>
+    <div class="stat-card familia">
+      <div class="lbl">Famílias ativas</div>
+      <div class="val" id="statFamiliesActive">—</div>
+      <div class="sub" id="statFamiliesActiveSub">com assinatura</div>
+    </div>
+    <div class="stat-card blue">
+      <div class="lbl">MRR mensal</div>
+      <div class="val" id="statMrr">—</div>
+      <div class="sub" id="statMrrSub">recorrente em R$</div>
+    </div>
+    <div class="stat-card">
+      <div class="lbl">Em trial</div>
+      <div class="val" id="statTrial">—</div>
+      <div class="sub" id="statTrialSub">3 dias grátis</div>
+    </div>
+  </div>
+
+  <!-- TABS -->
+  <nav class="admin-tabs">
+    <button class="admin-tab active" data-tab="pending">
+      Pendentes <span class="count" id="tabCountPending">0</span>
+    </button>
+    <button class="admin-tab" data-tab="approved">
+      Aprovadas <span class="count" id="tabCountApproved">0</span>
+    </button>
+    <button class="admin-tab" data-tab="rejected">
+      Rejeitadas <span class="count" id="tabCountRejected">0</span>
+    </button>
+    <button class="admin-tab" data-tab="families">
+      Famílias <span class="count" id="tabCountFamilies">0</span>
+    </button>
+    <button class="admin-tab" data-tab="subscriptions">
+      Assinaturas <span class="count" id="tabCountSubs">0</span>
+    </button>
+    <button class="admin-tab" data-tab="finance">
+      Financeiro
+    </button>
+  </nav>
+
+  <!-- PANEL: PENDING -->
+  <section class="tab-panel active" id="panel-pending">
+    <div class="table-toolbar">
+      <input class="table-search" id="searchPending" placeholder="Buscar por nome ou email...">
+    </div>
+    <div class="data-table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Babá</th>
+            <th>Bairros</th>
+            <th>Experiência</th>
+            <th>Valor/h</th>
+            <th>Cadastrada</th>
+            <th style="text-align:right;">Ações</th>
+          </tr>
+        </thead>
+        <tbody id="tablePending">
+          <tr><td colspan="6"><div class="loading"><div class="spinner"></div></div></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- PANEL: APPROVED -->
+  <section class="tab-panel" id="panel-approved">
+    <div class="table-toolbar">
+      <input class="table-search" id="searchApproved" placeholder="Buscar por nome ou email...">
+    </div>
+    <div class="data-table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Babá</th>
+            <th>Bairros</th>
+            <th>Assinatura</th>
+            <th>Aprovada em</th>
+            <th style="text-align:right;">Ações</th>
+          </tr>
+        </thead>
+        <tbody id="tableApproved">
+          <tr><td colspan="5"><div class="loading"><div class="spinner"></div></div></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- PANEL: REJECTED -->
+  <section class="tab-panel" id="panel-rejected">
+    <div class="data-table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Babá</th>
+            <th>Motivo</th>
+            <th>Rejeitada em</th>
+            <th style="text-align:right;">Ações</th>
+          </tr>
+        </thead>
+        <tbody id="tableRejected">
+          <tr><td colspan="4"><div class="loading"><div class="spinner"></div></div></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- PANEL: FAMILIES -->
+  <section class="tab-panel" id="panel-families">
+    <div class="table-toolbar">
+      <input class="table-search" id="searchFamilies" placeholder="Buscar por nome, email ou bairro...">
+    </div>
+    <div class="data-table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Família</th>
+            <th>Bairro</th>
+            <th>Filhos</th>
+            <th>Assinatura</th>
+            <th>Cadastrada</th>
+            <th style="text-align:right;">Ações</th>
+          </tr>
+        </thead>
+        <tbody id="tableFamilies">
+          <tr><td colspan="6"><div class="loading"><div class="spinner"></div></div></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- PANEL: SUBSCRIPTIONS -->
+  <section class="tab-panel" id="panel-subscriptions">
+    <div class="table-toolbar">
+      <input class="table-search" id="searchSubs" placeholder="Buscar por nome ou email...">
+      <button class="filter-pill active" data-sub-filter="all">Todas</button>
+      <button class="filter-pill" data-sub-filter="trialing">Em trial</button>
+      <button class="filter-pill" data-sub-filter="active">Ativas</button>
+      <button class="filter-pill" data-sub-filter="past_due">Atrasadas</button>
+      <button class="filter-pill" data-sub-filter="canceled">Canceladas</button>
+    </div>
+    <div class="data-table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Usuário</th>
+            <th>Plano</th>
+            <th>Status</th>
+            <th>Próx. cobrança</th>
+            <th>Valor</th>
+            <th style="text-align:right;">Ações</th>
+          </tr>
+        </thead>
+        <tbody id="tableSubs">
+          <tr><td colspan="6"><div class="loading"><div class="spinner"></div></div></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- PANEL: FINANCE -->
+  <section class="tab-panel" id="panel-finance">
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px;">
+      <div class="stat-card" style="padding: 28px;">
+        <div class="lbl">Receita recorrente (MRR)</div>
+        <div class="mrr-highlight" id="financeMrr">R$ —</div>
+        <div class="sub" id="financeMrrSub">somando assinaturas active e trialing</div>
+      </div>
+      <div class="stat-card" style="padding: 28px;">
+        <div class="lbl">Receita projetada anual (ARR)</div>
+        <div class="mrr-highlight" id="financeArr" style="color: var(--familia);">R$ —</div>
+        <div class="sub">12× MRR atual</div>
+      </div>
+    </div>
+
+    <div class="data-table-wrap" style="margin-bottom: 24px;">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th colspan="2" style="background: var(--bg-soft);">Composição do MRR</th>
+          </tr>
+        </thead>
+        <tbody id="tableFinanceBreakdown">
+          <tr><td colspan="2"><div class="loading"><div class="spinner"></div></div></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="data-table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th colspan="2" style="background: var(--bg-soft);">Status das assinaturas</th>
+          </tr>
+        </thead>
+        <tbody id="tableFinanceStatus"></tbody>
+      </table>
+    </div>
+
+    <p style="text-align: center; color: var(--ink-3); font-size: 13px; margin-top: 20px;">
+      Pra ver detalhes de cobranças individuais, acessa o <a href="https://dashboard.stripe.com/test/payments" target="_blank" style="color: var(--cta); font-weight: 600;">dashboard do Stripe</a>.
+    </p>
+  </section>
+
 </main>
 
-  
+<!-- MODAL: Detalhes de babá -->
+<div class="modal-overlay" id="modalBaba" onclick="if(event.target===this) closeModal()">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-head">
+      <h2 id="modalBabaTitle">Detalhes da babá</h2>
+      <button class="modal-close" onclick="closeModal()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body" id="modalBabaBody"></div>
+    <div class="modal-foot" id="modalBabaFoot"></div>
+  </div>
+</div>
+
+<!-- MODAL: Detalhes de família -->
+<div class="modal-overlay" id="modalFamily" onclick="if(event.target===this) closeModal()">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-head">
+      <h2 id="modalFamilyTitle">Detalhes da família</h2>
+      <button class="modal-close" onclick="closeModal()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body" id="modalFamilyBody"></div>
+    <div class="modal-foot" id="modalFamilyFoot"></div>
+  </div>
+</div>
+
 <script>
-  const AVATAR_COLORS = ['av-1', 'av-3', 'av-4', 'av-5', 'av-6', 'av-7'];
-  function avatarColorFor(idx) { return AVATAR_COLORS[idx % AVATAR_COLORS.length]; }
-  function escapeHtml(str) {
-    if (!str) return '';
-    return String(str).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[m]);
-  }
+  let allPending = [], allApproved = [], allRejected = [], allFamilies = [], allSubs = [];
+  let subStatusFilter = 'all';
 
-  function timeAgo(dateStr) {
-    if (!dateStr) return '';
-    const d = new Date(dateStr);
-    const diffMs = Date.now() - d.getTime();
-    const hours = Math.floor(diffMs / 3600000);
-    if (hours < 1) return 'há menos de 1h';
-    if (hours < 24) return `há ${hours}h`;
-    const days = Math.floor(hours / 24);
-    return `há ${days}d`;
+  function escapeHtml(s) {
+    if (s == null) return '';
+    return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[m]);
   }
-
-  function isUrgent(dateStr) {
-    if (!dateStr) return false;
-    return (Date.now() - new Date(dateStr).getTime()) > 48 * 3600 * 1000;
+  function fmtDate(d) {
+    if (!d) return '—';
+    return new Date(d).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' });
+  }
+  function fmtBRL(v) {
+    return 'R$ ' + Number(v || 0).toLocaleString('pt-BR', { minimumFractionDigits: 0 });
+  }
+  function initial(name) {
+    return (name || '?').charAt(0).toUpperCase();
+  }
+  function avatarHTML(profile, sizeClass = 'row-avatar') {
+    if (profile?.avatar_url) {
+      return `<div class="${sizeClass}"><img src="${escapeHtml(profile.avatar_url)}" alt=""></div>`;
+    }
+    return `<div class="${sizeClass}">${initial(profile?.full_name || profile?.email)}</div>`;
   }
 
   window.addEventListener('DOMContentLoaded', async () => {
-    if (!window.dbClient) {
-      setTimeout(() => location.reload(), 800);
-      return;
-    }
+    if (!window.dbClient) { setTimeout(() => location.reload(), 800); return; }
 
-    // Exige admin
-    const adminProfile = await window.dbHelpers.requireAdmin();
-    if (!adminProfile) return;
+    await window.dbHelpers.requireAdmin();
+    const profile = await window.dbHelpers.getCurrentProfile();
+    if (!profile) { window.location.href = '/login.html'; return; }
 
-    // Atualizar chip do admin
-    if (adminProfile.full_name) {
-      const chipName = document.querySelector('.user-chip-name');
-      if (chipName) chipName.textContent = adminProfile.full_name.split(' ')[0];
-    }
+    document.getElementById('chipAvatar').textContent = initial(profile.full_name);
+    document.getElementById('chipName').textContent = (profile.full_name || '').split(' ')[0];
 
-    await loadPending();
+    renderNav();
+    setupTabs();
+    setupSearch();
+    setupSubFilter();
+    await loadAll();
   });
 
-  async function loadPending() {
-    const list = document.getElementById('applicationsList');
-    try {
-      const pending = await window.dbHelpers.getPendingBabas();
+  function renderNav() {
+    const items = [
+      { href: '/admin.html', label: 'Aprovações', active: true },
+      { href: '/dicas.html', label: 'Dicas' },
+      { href: '/chat.html', label: 'Mensagens' },
+    ];
+    document.getElementById('navLinks').innerHTML = items.map(i =>
+      `<li><a href="${i.href}" ${i.active ? 'class="active"' : ''}>${i.label}</a></li>`
+    ).join('');
+  }
 
-      // Atualiza stats
-      const statValues = document.querySelectorAll('.stat .value');
-      if (statValues[0]) statValues[0].textContent = pending.length;
-      if (statValues[1]) statValues[1].textContent = pending.filter(b => isUrgent(b.created_at)).length;
+  function setupTabs() {
+    document.querySelectorAll('.admin-tab').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.admin-tab').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('panel-' + btn.dataset.tab).classList.add('active');
+      });
+    });
+  }
 
-      if (pending.length === 0) {
-        list.innerHTML = `
-          <div style="padding: 80px 20px; text-align: center; background: var(--bg-soft); border-radius: 20px;">
-            <div style="font-size: 48px; margin-bottom: 12px;">✨</div>
-            <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 6px;">Fila vazia.</h3>
-            <p style="font-size: 14px; color: var(--ink-3);">Nenhuma babá aguardando aprovação.</p>
-          </div>`;
-        return;
-      }
+  function setupSearch() {
+    const setup = (inputId, getter, render) => {
+      const el = document.getElementById(inputId);
+      if (!el) return;
+      el.addEventListener('input', () => {
+        const q = el.value.toLowerCase();
+        const filtered = getter().filter(item => {
+          const txt = `${item.full_name || ''} ${item.email || ''} ${item.neighborhood || ''} ${(item.neighborhoods || []).join(' ')}`.toLowerCase();
+          return txt.includes(q);
+        });
+        render(filtered);
+      });
+    };
+    setup('searchPending', () => allPending, renderPendingTable);
+    setup('searchApproved', () => allApproved, renderApprovedTable);
+    setup('searchFamilies', () => allFamilies, renderFamiliesTable);
+    setup('searchSubs', () => filterSubs(allSubs), renderSubsTable);
+  }
 
-      list.innerHTML = pending.map((b, i) => {
-        const profile = b.profiles || {};
-        const fullName = profile.full_name || 'Sem nome';
-        const initial = fullName.charAt(0).toUpperCase();
-        const neighborhoods = (b.neighborhoods || []).join(', ') || 'Não informado';
-        const urgent = isUrgent(b.created_at);
-        const years = b.years_experience || 0;
-        const rate = b.hourly_rate || 0;
-        const bio = b.bio || '(Sem bio)';
+  function setupSubFilter() {
+    document.querySelectorAll('[data-sub-filter]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('[data-sub-filter]').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        subStatusFilter = btn.dataset.subFilter;
+        const search = document.getElementById('searchSubs').value.toLowerCase();
+        let arr = filterSubs(allSubs);
+        if (search) arr = arr.filter(s => `${s.full_name || ''} ${s.email || ''}`.toLowerCase().includes(search));
+        renderSubsTable(arr);
+      });
+    });
+  }
 
-        return `
-          <div class="application" data-baba-id="${b.id}">
-            <div class="app-avatar ${avatarColorFor(i)}">${initial}</div>
-            <div class="app-body">
-              <div class="app-head">
-                <div class="app-name">${escapeHtml(fullName)}</div>
-                <span class="app-time ${urgent ? 'urgent' : ''}">${timeAgo(b.created_at)}${urgent ? ' · urgente' : ''}</span>
-              </div>
-              <div class="app-meta">
-                <span><svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg> ${escapeHtml(neighborhoods)}</span>
-                <span>${years} ${years === 1 ? 'ano' : 'anos'} de experiência</span>
-                <span>R$ ${rate}/hora</span>
-                ${profile.email ? `<span>📧 ${escapeHtml(profile.email)}</span>` : ''}
-                ${profile.phone ? `<span>📱 ${escapeHtml(profile.phone)}</span>` : ''}
-              </div>
-              <p class="app-bio">${escapeHtml(bio)}</p>
-            </div>
-            <div class="app-actions">
-              <button class="btn-approve" onclick="doApprove('${b.id}', this)">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-                Aprovar
-              </button>
-              <button class="btn-reject" onclick="doReject('${b.id}', this)">Rejeitar</button>
+  function filterSubs(arr) {
+    if (subStatusFilter === 'all') return arr;
+    return arr.filter(s => s.status === subStatusFilter);
+  }
+
+  async function loadAll() {
+    await Promise.all([
+      loadStats(),
+      loadBabas(),
+      loadFamilies(),
+      loadSubs(),
+    ]);
+    renderFinance();
+  }
+
+  async function loadStats() {
+    const { data } = await window.dbClient.from('admin_stats').select('*').single();
+    if (!data) return;
+    document.getElementById('statPending').textContent = data.babas_pending || 0;
+    document.getElementById('statPendingSub').textContent = `${data.babas_approved} aprovadas, ${data.babas_rejected} rejeitadas`;
+
+    document.getElementById('statBabasVisible').textContent = data.babas_approved || 0;
+    document.getElementById('statBabasVisibleSub').textContent = `${data.babas_approved_month || 0} este mês`;
+
+    document.getElementById('statFamiliesActive').textContent = data.families_complete || 0;
+    document.getElementById('statFamiliesActiveSub').textContent = `${data.families_total} total cadastradas`;
+
+    document.getElementById('statMrr').textContent = fmtBRL(data.mrr_brl);
+    document.getElementById('statMrrSub').textContent = `${data.active_subs} assinaturas`;
+
+    document.getElementById('statTrial').textContent = data.trial_subs || 0;
+    document.getElementById('statTrialSub').textContent = data.past_due_subs ? `⚠️ ${data.past_due_subs} pagamento atrasado` : 'tudo OK';
+
+    // Tab counts
+    document.getElementById('tabCountPending').textContent = data.babas_pending || 0;
+    document.getElementById('tabCountApproved').textContent = data.babas_approved || 0;
+    document.getElementById('tabCountRejected').textContent = data.babas_rejected || 0;
+    document.getElementById('tabCountFamilies').textContent = data.families_total || 0;
+    document.getElementById('tabCountSubs').textContent = (data.active_subs + data.past_due_subs + data.canceled_subs) || 0;
+
+    // Finance panel
+    document.getElementById('financeMrr').textContent = fmtBRL(data.mrr_brl);
+    document.getElementById('financeArr').textContent = fmtBRL((data.mrr_brl || 0) * 12);
+    document.getElementById('financeMrrSub').textContent = `${data.active_subs} assinaturas (${data.trial_subs} em trial)`;
+  }
+
+  async function loadBabas() {
+    const { data, error } = await window.dbClient
+      .from('admin_babas_view')
+      .select('*')
+      .order('created_at', { ascending: false });
+    if (error) { console.error(error); return; }
+    allPending = (data || []).filter(b => b.approval_status === 'pending');
+    allApproved = (data || []).filter(b => b.approval_status === 'approved');
+    allRejected = (data || []).filter(b => b.approval_status === 'rejected');
+    renderPendingTable(allPending);
+    renderApprovedTable(allApproved);
+    renderRejectedTable(allRejected);
+  }
+
+  async function loadFamilies() {
+    const { data, error } = await window.dbClient
+      .from('admin_families_view')
+      .select('*')
+      .order('created_at', { ascending: false });
+    if (error) { console.error(error); return; }
+    allFamilies = data || [];
+    renderFamiliesTable(allFamilies);
+  }
+
+  async function loadSubs() {
+    const { data, error } = await window.dbClient
+      .from('admin_subscriptions_view')
+      .select('*')
+      .order('created_at', { ascending: false });
+    if (error) { console.error(error); return; }
+    allSubs = data || [];
+    renderSubsTable(filterSubs(allSubs));
+  }
+
+  // ============ RENDER ============
+
+  function emptyRow(cols, msg, sub) {
+    return `<tr><td colspan="${cols}">
+      <div class="empty-state">
+        <div class="ic">✨</div>
+        <h3>${msg}</h3>
+        ${sub ? `<p>${sub}</p>` : ''}
+      </div>
+    </td></tr>`;
+  }
+
+  function renderPendingTable(rows) {
+    const t = document.getElementById('tablePending');
+    if (rows.length === 0) {
+      t.innerHTML = emptyRow(6, 'Fila vazia.', 'Nenhuma babá aguardando aprovação.');
+      return;
+    }
+    t.innerHTML = rows.map(b => `
+      <tr>
+        <td>
+          <div class="row-user">
+            ${avatarHTML(b)}
+            <div class="info">
+              <strong>${escapeHtml(b.full_name || '—')}</strong>
+              <div class="meta">${escapeHtml(b.email || '')}</div>
             </div>
           </div>
-        `;
-      }).join('');
-    } catch (err) {
-      console.error('Erro carregando pending:', err);
-      list.innerHTML = `<div style="padding: 40px; text-align: center; color: var(--cta);">Erro: ${escapeHtml(err.message || 'desconhecido')}</div>`;
-    }
+        </td>
+        <td>${(b.neighborhoods || []).slice(0, 2).map(n => `<span class="tag-soft">${escapeHtml(n)}</span>`).join('')}${(b.neighborhoods || []).length > 2 ? ` +${b.neighborhoods.length - 2}` : ''}</td>
+        <td>${b.years_experience || 0} anos</td>
+        <td>R$ ${b.hourly_rate || 0}/h</td>
+        <td>${fmtDate(b.created_at)}</td>
+        <td>
+          <div class="row-actions">
+            <button class="btn-mini" onclick="openBabaModal('${b.id}', 'pending')">Ver</button>
+            <button class="btn-mini approve" onclick="approve('${b.id}')">Aprovar</button>
+            <button class="btn-mini reject" onclick="reject('${b.id}')">Rejeitar</button>
+          </div>
+        </td>
+      </tr>
+    `).join('');
   }
 
-  async function doApprove(babaId, btn) {
-    if (!confirm('Aprovar essa babá? Ela vai aparecer pras famílias.')) return;
-    const helpers = window.dbHelpers;
-    helpers.setLoading(btn, true);
-    try {
-      await helpers.approveBaba(babaId);
-      // remove o card
-      const card = document.querySelector(`[data-baba-id="${babaId}"]`);
-      if (card) card.remove();
-      await loadPending();
-    } catch (err) {
-      helpers.showError('Não conseguiu aprovar: ' + (err.message || 'erro'));
-      helpers.setLoading(btn, false);
+  function renderApprovedTable(rows) {
+    const t = document.getElementById('tableApproved');
+    if (rows.length === 0) {
+      t.innerHTML = emptyRow(5, 'Nenhuma babá aprovada ainda.');
+      return;
     }
+    t.innerHTML = rows.map(b => `
+      <tr>
+        <td>
+          <div class="row-user">
+            ${avatarHTML(b)}
+            <div class="info">
+              <strong>${escapeHtml(b.full_name || '—')}</strong>
+              <div class="meta">${escapeHtml(b.email || '')} · R$ ${b.hourly_rate || 0}/h</div>
+            </div>
+          </div>
+        </td>
+        <td>${(b.neighborhoods || []).slice(0, 2).map(n => `<span class="tag-soft">${escapeHtml(n)}</span>`).join('')}</td>
+        <td>${renderSubStatus(b.subscription_status)}</td>
+        <td>${fmtDate(b.approved_at || b.updated_at)}</td>
+        <td>
+          <div class="row-actions">
+            <button class="btn-mini" onclick="openBabaModal('${b.id}', 'approved')">Ver</button>
+            <button class="btn-mini danger" onclick="banUser('${b.id}', '${escapeHtml(b.full_name || 'esta babá')}', 'baba')">Banir</button>
+          </div>
+        </td>
+      </tr>
+    `).join('');
   }
 
-  async function doReject(babaId, btn) {
-    const reason = prompt('Motivo da rejeição (visível pra babá):');
-    if (!reason) return;
-    const helpers = window.dbHelpers;
-    helpers.setLoading(btn, true);
-    try {
-      await helpers.rejectBaba(babaId, reason);
-      const card = document.querySelector(`[data-baba-id="${babaId}"]`);
-      if (card) card.remove();
-      await loadPending();
-    } catch (err) {
-      helpers.showError('Não conseguiu rejeitar: ' + (err.message || 'erro'));
-      helpers.setLoading(btn, false);
+  function renderRejectedTable(rows) {
+    const t = document.getElementById('tableRejected');
+    if (rows.length === 0) {
+      t.innerHTML = emptyRow(4, 'Nenhuma babá rejeitada.');
+      return;
     }
+    t.innerHTML = rows.map(b => `
+      <tr>
+        <td>
+          <div class="row-user">
+            ${avatarHTML(b)}
+            <div class="info">
+              <strong>${escapeHtml(b.full_name || '—')}</strong>
+              <div class="meta">${escapeHtml(b.email || '')}</div>
+            </div>
+          </div>
+        </td>
+        <td style="color: var(--ink-3); font-size: 13px;">${escapeHtml(b.rejection_reason || '—')}</td>
+        <td>${fmtDate(b.updated_at)}</td>
+        <td>
+          <div class="row-actions">
+            <button class="btn-mini" onclick="openBabaModal('${b.id}', 'rejected')">Ver</button>
+            <button class="btn-mini approve" onclick="approve('${b.id}')">Reativar</button>
+          </div>
+        </td>
+      </tr>
+    `).join('');
   }
-</script>
 
-<script>
-  // Nav dinâmica + tracking de não-lidas (vive em TODA página logada)
-  (function() {
-    const ACTIVE_KEY = 'admin';
-    let _renderedFor = null;
-
-    async function renderNav() {
-      if (!window.dbClient || !window.dbHelpers) {
-        setTimeout(renderNav, 300);
-        return;
-      }
-      const profile = await window.dbHelpers.getCurrentProfile();
-      if (!profile) return;
-
-      // Chip
-      const chipAv = document.getElementById('chipAvatar');
-      const chipNm = document.getElementById('chipName');
-      if (chipAv) chipAv.textContent = (profile.full_name || '?').charAt(0).toUpperCase();
-      if (chipNm) chipNm.textContent = (profile.full_name || '').split(' ')[0];
-
-      const links = document.getElementById('navLinks');
-      if (!links) return;
-
-      let items = [];
-      if (profile.user_type === 'parent') {
-        items = [
-          { href: '/dashboard.html', label: 'Buscar babás', key: 'dashboard' },
-          { href: '/chat.html', label: 'Mensagens', key: 'chat', badge: 'unread' },
-        ];
-      } else if (profile.user_type === 'baba') {
-        items = [
-          { href: '/families.html', label: 'Buscar famílias', key: 'families' },
-          { href: '/chat.html', label: 'Mensagens', key: 'chat', badge: 'unread' },
-          { href: '/account.html', label: 'Meu perfil', key: 'account' },
-        ];
-      } else if (profile.user_type === 'admin') {
-        items = [
-          { href: '/admin.html', label: 'Aprovações', key: 'admin' },
-          { href: '/dicas.html', label: 'Dicas', key: 'dicas' },
-          { href: '/chat.html', label: 'Mensagens', key: 'chat', badge: 'unread' },
-        ];
-      }
-
-      links.innerHTML = items.map(it => {
-        const active = it.key === ACTIVE_KEY ? 'active' : '';
-        const badge = it.badge === 'unread' ? '<span class="nav-badge-dot" id="navUnreadDot" style="display:none;"></span>' : '';
-        return `<li><a href="${it.href}" class="${active}">${it.label}${badge}</a></li>`;
-      }).join('');
-
-      checkUnread(profile.id);
+  function renderFamiliesTable(rows) {
+    const t = document.getElementById('tableFamilies');
+    if (rows.length === 0) {
+      t.innerHTML = emptyRow(6, 'Nenhuma família cadastrada ainda.');
+      return;
     }
+    t.innerHTML = rows.map(f => `
+      <tr>
+        <td>
+          <div class="row-user">
+            ${avatarHTML({...f, full_name: f.full_name}, 'row-avatar')}
+            <div class="info">
+              <strong>${escapeHtml(f.full_name || '—')}</strong>
+              <div class="meta">${escapeHtml(f.email || '')}</div>
+            </div>
+          </div>
+        </td>
+        <td>${escapeHtml(f.neighborhood || '—')}</td>
+        <td>${f.children_count || 0} ${(f.children_count || 0) === 1 ? 'criança' : 'crianças'}</td>
+        <td>${renderSubStatus(f.subscription_status)}</td>
+        <td>${fmtDate(f.created_at)}</td>
+        <td>
+          <div class="row-actions">
+            <button class="btn-mini" onclick="openFamilyModal('${f.id}')">Ver</button>
+            <button class="btn-mini danger" onclick="banUser('${f.id}', '${escapeHtml(f.full_name || 'esta família')}', 'family')">Banir</button>
+          </div>
+        </td>
+      </tr>
+    `).join('');
+  }
 
-    async function checkUnread(myId) {
-      // Roda uma query simples: existe alguma mensagem em alguma das minhas convs
-      // onde sender != eu e created_at > meu last_read local pra essa conv?
-      const { data: convs } = await window.dbClient
-        .from('conversations')
-        .select('id, last_message_at')
-        .or(`parent_id.eq.${myId},baba_id.eq.${myId}`);
-      if (!convs || convs.length === 0) return;
-
-      let hasUnread = false;
-      for (const c of convs) {
-        const lastRead = localStorage.getItem(`lastRead:${c.id}`) || '1970-01-01';
-        if (c.last_message_at && c.last_message_at > lastRead) {
-          // Confere se a última mensagem foi do outro
-          const { data: lastMsgs } = await window.dbClient
-            .from('messages')
-            .select('sender_id, created_at')
-            .eq('conversation_id', c.id)
-            .order('created_at', { ascending: false })
-            .limit(1);
-          if (lastMsgs && lastMsgs[0] && lastMsgs[0].sender_id !== myId) {
-            hasUnread = true;
-            break;
-          }
-        }
-      }
-      const dot = document.getElementById('navUnreadDot');
-      if (dot) dot.style.display = hasUnread ? 'inline-block' : 'none';
+  function renderSubsTable(rows) {
+    const t = document.getElementById('tableSubs');
+    if (rows.length === 0) {
+      t.innerHTML = emptyRow(6, 'Nenhuma assinatura com esse filtro.');
+      return;
     }
+    t.innerHTML = rows.map(s => `
+      <tr>
+        <td>
+          <div class="row-user">
+            ${avatarHTML({full_name: s.full_name})}
+            <div class="info">
+              <strong>${escapeHtml(s.full_name || '—')}</strong>
+              <div class="meta">${escapeHtml(s.email || '')} · ${s.user_type || ''}</div>
+            </div>
+          </div>
+        </td>
+        <td>${escapeHtml(s.plan_name || '—')}</td>
+        <td>${renderSubStatus(s.status)}</td>
+        <td>${fmtDate(s.trial_end || s.current_period_end)}</td>
+        <td><strong>${fmtBRL(s.monthly_value_brl)}</strong></td>
+        <td>
+          <div class="row-actions">
+            <a class="btn-mini" href="https://dashboard.stripe.com/test/subscriptions/${escapeHtml(s.stripe_subscription_id || '')}" target="_blank">Stripe</a>
+          </div>
+        </td>
+      </tr>
+    `).join('');
+  }
 
-    // CSS pro badge
-    const style = document.createElement('style');
-    style.textContent = `
-      .nav-badge-dot {
-        display: inline-block; width: 8px; height: 8px;
-        background: var(--cta); border-radius: 50%;
-        margin-left: 6px; vertical-align: middle;
-      }
+  function renderSubStatus(status) {
+    if (!status) return '<span class="status-pill status-none">Sem plano</span>';
+    const labels = {
+      'active': 'Ativo', 'trialing': 'Em trial',
+      'past_due': 'Atrasado', 'canceled': 'Cancelado',
+      'incomplete': 'Incompleto', 'unpaid': 'Não pago',
+      'pending': 'Pendente', 'approved': 'Aprovado', 'rejected': 'Rejeitado'
+    };
+    return `<span class="status-pill status-${status}">${labels[status] || status}</span>`;
+  }
+
+  function renderFinance() {
+    // Breakdown
+    const byPlan = {};
+    allSubs.forEach(s => {
+      if (!['active', 'trialing'].includes(s.status)) return;
+      const key = s.plan_name || 'Outro';
+      if (!byPlan[key]) byPlan[key] = { count: 0, value: 0 };
+      byPlan[key].count++;
+      byPlan[key].value += s.monthly_value_brl || 0;
+    });
+    const breakdown = document.getElementById('tableFinanceBreakdown');
+    breakdown.innerHTML = Object.keys(byPlan).length === 0
+      ? '<tr><td colspan="2" style="text-align:center; padding: 30px; color: var(--ink-3);">Nenhuma assinatura ativa ainda</td></tr>'
+      : Object.entries(byPlan).map(([plan, info]) => `
+        <tr>
+          <td>${escapeHtml(plan)}<div style="color: var(--ink-3); font-size: 12px;">${info.count} assinantes</div></td>
+          <td style="text-align: right; font-weight: 700;">${fmtBRL(info.value)}/mês</td>
+        </tr>
+      `).join('');
+
+    // Status counts
+    const byStatus = {};
+    allSubs.forEach(s => { byStatus[s.status] = (byStatus[s.status] || 0) + 1; });
+    const statusRows = document.getElementById('tableFinanceStatus');
+    statusRows.innerHTML = Object.keys(byStatus).length === 0
+      ? '<tr><td colspan="2" style="text-align:center; padding: 30px; color: var(--ink-3);">Sem dados</td></tr>'
+      : Object.entries(byStatus).map(([status, count]) => `
+        <tr>
+          <td>${renderSubStatus(status)}</td>
+          <td style="text-align: right; font-weight: 700;">${count}</td>
+        </tr>
+      `).join('');
+  }
+
+  // ============ MODAL ============
+  function closeModal() {
+    document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('show'));
+  }
+
+  function openBabaModal(id, listType) {
+    const list = listType === 'pending' ? allPending : listType === 'approved' ? allApproved : allRejected;
+    const b = list.find(x => x.id === id);
+    if (!b) return;
+
+    document.getElementById('modalBabaTitle').textContent = b.full_name || 'Babá';
+
+    const ageLabels = { newborn: 'Recém-nascido', baby: 'Bebê', toddler: 'Pré-escolar', kid: 'Criança', older: 'Maior' };
+    const specLabels = {
+      'pedagoga': 'Pedagoga', 'enfermeira': 'Enfermeira', 'folguista': 'Folguista',
+      'noturna': 'Noturna', 'pos-parto': 'Pós-parto', 'ingles': 'Inglês',
+      'habilitada': 'Habilitada', 'viaja': 'Viaja'
+    };
+
+    document.getElementById('modalBabaBody').innerHTML = `
+      <div style="display: flex; gap: 20px; align-items: flex-start; margin-bottom: 24px;">
+        ${avatarHTML(b, 'big-avatar')}
+        <div style="flex: 1;">
+          <div style="font-size: 18px; font-weight: 700;">${escapeHtml(b.full_name || '—')}</div>
+          <div style="font-size: 13px; color: var(--ink-3); margin: 4px 0 8px;">${escapeHtml(b.email || '')}</div>
+          <div>${renderSubStatus(b.approval_status)}</div>
+        </div>
+      </div>
+
+      <div class="modal-section">
+        <h3>Contato</h3>
+        <div class="val">
+          Email: <strong>${escapeHtml(b.email || '—')}</strong><br>
+          WhatsApp: <strong>${escapeHtml(b.phone || '—')}</strong>
+        </div>
+      </div>
+
+      <div class="modal-section">
+        <h3>Bio</h3>
+        <div class="val">${escapeHtml(b.bio || '—')}</div>
+      </div>
+
+      <div class="modal-section">
+        <h3>Profissional</h3>
+        <div class="val">
+          Experiência: <strong>${b.years_experience || 0} anos</strong><br>
+          Valor/hora: <strong>R$ ${b.hourly_rate || 0}</strong><br>
+          Bairros: ${(b.neighborhoods || []).map(n => `<span class="tag-soft">${escapeHtml(n)}</span>`).join(' ') || '—'}<br>
+          <div style="margin-top: 8px;">Idades atendidas: ${(b.age_ranges || []).map(a => `<span class="tag-soft">${ageLabels[a] || a}</span>`).join(' ') || '—'}</div>
+          <div style="margin-top: 8px;">Especialidades: ${(b.specialties || []).map(s => `<span class="tag-soft">${specLabels[s] || s}</span>`).join(' ') || '—'}</div>
+        </div>
+      </div>
+
+      <div class="modal-section">
+        <h3>Assinatura</h3>
+        <div class="val">
+          ${b.subscription_status ? `${renderSubStatus(b.subscription_status)} · Plano: ${escapeHtml(b.plan_name || '—')}` : 'Sem plano ativo'}
+        </div>
+      </div>
+
+      ${b.rejection_reason ? `
+        <div class="modal-section">
+          <h3>Motivo da rejeição</h3>
+          <div class="val" style="color: #B53034;">${escapeHtml(b.rejection_reason)}</div>
+        </div>
+      ` : ''}
+
+      <div class="modal-section">
+        <h3>Datas</h3>
+        <div class="val" style="font-size: 12px;">
+          Cadastrada em: ${fmtDate(b.created_at)}<br>
+          ${b.approved_at ? `Aprovada em: ${fmtDate(b.approved_at)}` : ''}
+        </div>
+      </div>
     `;
-    document.head.appendChild(style);
 
-    window.addEventListener('DOMContentLoaded', renderNav);
-  })();
+    document.getElementById('modalBabaFoot').innerHTML = listType === 'pending' ? `
+      <button class="btn-mini approve" onclick="approve('${b.id}'); closeModal();">Aprovar</button>
+      <button class="btn-mini reject" onclick="reject('${b.id}'); closeModal();">Rejeitar</button>
+    ` : listType === 'rejected' ? `
+      <button class="btn-mini approve" onclick="approve('${b.id}'); closeModal();">Reativar</button>
+    ` : `
+      <button class="btn-mini danger" onclick="banUser('${b.id}', '${escapeHtml(b.full_name || 'esta babá')}', 'baba'); closeModal();">Banir</button>
+    `;
+
+    document.getElementById('modalBaba').classList.add('show');
+  }
+
+  function openFamilyModal(id) {
+    const f = allFamilies.find(x => x.id === id);
+    if (!f) return;
+
+    document.getElementById('modalFamilyTitle').textContent = f.full_name || 'Família';
+
+    const ageLabels = { newborn: 'Recém-nascido', baby: 'Bebê', toddler: 'Pré-escolar', kid: 'Criança', older: 'Maior', 'esperando': 'Esperando bebê', 'toddler-young': 'Bebê grande', 'kid-small': 'Pequena' };
+
+    document.getElementById('modalFamilyBody').innerHTML = `
+      <div style="display: flex; gap: 20px; align-items: flex-start; margin-bottom: 24px;">
+        ${avatarHTML(f, 'big-avatar')}
+        <div style="flex: 1;">
+          <div style="font-size: 18px; font-weight: 700;">${escapeHtml(f.full_name || '—')}</div>
+          <div style="font-size: 13px; color: var(--ink-3); margin: 4px 0 8px;">${escapeHtml(f.email || '')}</div>
+          <div>${renderSubStatus(f.subscription_status)}</div>
+        </div>
+      </div>
+
+      <div class="modal-section">
+        <h3>Contato</h3>
+        <div class="val">
+          Email: <strong>${escapeHtml(f.email || '—')}</strong><br>
+          WhatsApp: <strong>${escapeHtml(f.phone || '—')}</strong>
+        </div>
+      </div>
+
+      <div class="modal-section">
+        <h3>Crianças</h3>
+        <div class="val">
+          <strong>${f.children_count || 0}</strong> ${(f.children_count || 0) === 1 ? 'criança' : 'crianças'}<br>
+          Idades: ${(f.children_ages || []).map(a => `<span class="tag-soft">${ageLabels[a] || a}</span>`).join(' ') || '—'}
+        </div>
+      </div>
+
+      <div class="modal-section">
+        <h3>Procura</h3>
+        <div class="val">
+          Bairro: <strong>${escapeHtml(f.neighborhood || '—')}</strong><br>
+          Preferências: ${(f.schedule_preference || '').split(',').filter(Boolean).map(s => `<span class="tag-soft">${escapeHtml(s)}</span>`).join(' ') || '—'}
+        </div>
+      </div>
+
+      ${f.notes ? `
+        <div class="modal-section">
+          <h3>Observações</h3>
+          <div class="val">${escapeHtml(f.notes)}</div>
+        </div>
+      ` : ''}
+
+      <div class="modal-section">
+        <h3>Datas</h3>
+        <div class="val" style="font-size: 12px;">
+          Cadastrada em: ${fmtDate(f.created_at)}
+        </div>
+      </div>
+    `;
+
+    document.getElementById('modalFamilyFoot').innerHTML = `
+      <button class="btn-mini danger" onclick="banUser('${f.id}', '${escapeHtml(f.full_name || 'esta família')}', 'family'); closeModal();">Banir</button>
+    `;
+
+    document.getElementById('modalFamily').classList.add('show');
+  }
+
+  // ============ ACTIONS ============
+
+  async function approve(id) {
+    if (!confirm('Aprovar essa babá?')) return;
+    try {
+      await window.dbHelpers.approveBaba(id);
+      await loadAll();
+    } catch (err) {
+      alert('Erro: ' + err.message);
+    }
+  }
+
+  async function reject(id) {
+    const reason = prompt('Motivo da rejeição (vai aparecer pra babá):');
+    if (!reason) return;
+    try {
+      await window.dbHelpers.rejectBaba(id, reason);
+      await loadAll();
+    } catch (err) {
+      alert('Erro: ' + err.message);
+    }
+  }
+
+  async function banUser(id, name, type) {
+    const reason = prompt(`Tem certeza que quer banir ${name}? Isso vai cancelar a assinatura e remover da plataforma. Motivo:`);
+    if (!reason) return;
+    try {
+      const { data, error } = await window.dbClient.rpc('admin_ban_user', {
+        target_user_id: id,
+        reason: reason
+      });
+      if (error) throw error;
+      alert('Usuário banido. Cancele manualmente a assinatura no Stripe se necessário.');
+      await loadAll();
+    } catch (err) {
+      alert('Erro: ' + err.message);
+    }
+  }
+
+  // ESC fecha modal
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
 </script>
+
 </body>
 </html>

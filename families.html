@@ -167,7 +167,14 @@
     }
 
     // Atualiza chip
-    document.getElementById('chipAvatar').textContent = (myProfile.full_name || '?').charAt(0).toUpperCase();
+    const _chipAv = document.getElementById('chipAvatar');
+    if (myProfile.avatar_url) {
+      _chipAv.style.background = 'transparent';
+      _chipAv.style.overflow = 'hidden';
+      _chipAv.innerHTML = `<img src="${myProfile.avatar_url}" alt="" style="width:100%;height:100%;object-fit:cover;">`;
+    } else {
+      _chipAv.textContent = (myProfile.full_name || '?').charAt(0).toUpperCase();
+    }
     document.getElementById('chipName').textContent = (myProfile.full_name || '').split(' ')[0];
 
     renderNav();
@@ -227,16 +234,21 @@
     const fullName = family.profiles?.full_name || 'Família';
     const firstName = fullName.split(' ')[0];
     const initial = firstName.charAt(0).toUpperCase();
+    const avatarUrl = family.profiles?.avatar_url;
     const childCount = family.children_count || 0;
     const childAges = (family.children_ages || []).slice(0, 3).map(a => AGE_LABELS[a] || a).join(', ');
     const neighborhood = family.neighborhood || '—';
     const scheds = (family.schedule_preference || '').split(',').filter(Boolean).slice(0, 2);
     const notes = family.notes ? (family.notes.substring(0, 90) + (family.notes.length > 90 ? '...' : '')) : 'Sem observações.';
 
+    const avatarInner = avatarUrl
+      ? `<img src="${escapeHtml(avatarUrl)}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`
+      : initial;
+
     return `
       <a href="javascript:void(0)" onclick="openParentChat('${family.id}')" class="listing-card" style="text-decoration:none; color:inherit;">
         <div class="listing-head">
-          <div class="listing-avatar ${avatarColorFor(idx)}">${initial}</div>
+          <div class="listing-avatar ${avatarColorFor(idx)}" style="overflow:hidden;">${avatarInner}</div>
           <div>
             <div class="listing-name">Família ${escapeHtml(firstName)}</div>
             <div class="listing-loc">

@@ -491,6 +491,7 @@
     const fullName = baba.profiles?.full_name || 'Babá';
     const firstInitial = fullName.charAt(0).toUpperCase();
     const firstName = fullName.split(' ')[0];
+    const avatarUrl = baba.profiles?.avatar_url;
     const neighborhood = (baba.neighborhoods && baba.neighborhoods[0]) || 'Rio de Janeiro';
     const rate = baba.hourly_rate || 0;
     const bio = (baba.bio || '').substring(0, 100) + (baba.bio && baba.bio.length > 100 ? '...' : '');
@@ -505,10 +506,14 @@
       return `<span class="tag tag-warm">${labels[s] || s}</span>`;
     }).join('');
 
+    const avatarInner = avatarUrl
+      ? `<img src="${escapeHtml(avatarUrl)}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`
+      : firstInitial;
+
     return `
       <a href="profile.html?id=${baba.id}" class="listing-card" style="text-decoration:none; color:inherit;">
         <div class="listing-head">
-          <div class="listing-avatar ${avatarColorFor(idx)}">${firstInitial}</div>
+          <div class="listing-avatar ${avatarColorFor(idx)}" style="overflow:hidden;">${avatarInner}</div>
           <div>
             <div class="listing-name">${escapeHtml(firstName)}</div>
             <div class="listing-loc">
@@ -580,7 +585,15 @@
       // Chip
       const chipAv = document.getElementById('chipAvatar');
       const chipNm = document.getElementById('chipName');
-      if (chipAv) chipAv.textContent = (profile.full_name || '?').charAt(0).toUpperCase();
+      if (chipAv) {
+        if (profile.avatar_url) {
+          chipAv.style.background = 'transparent';
+          chipAv.style.overflow = 'hidden';
+          chipAv.innerHTML = `<img src="${profile.avatar_url}" alt="" style="width:100%;height:100%;object-fit:cover;">`;
+        } else {
+          chipAv.textContent = (profile.full_name || '?').charAt(0).toUpperCase();
+        }
+      }
       if (chipNm) chipNm.textContent = (profile.full_name || '').split(' ')[0];
 
       const links = document.getElementById('navLinks');

@@ -632,13 +632,17 @@
           ? `Família ${firstName}`
           : firstName;
         const initial = otherName.charAt(0).toUpperCase();
+        const avatarUrl = other?.avatar_url;
+        const avatarInner = avatarUrl
+          ? `<img src="${escapeHtml(avatarUrl)}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`
+          : initial;
         let preview = 'Toque pra abrir';
         if (lastMsg) {
           preview = (lastMsg.sender_id === me.id ? 'Você: ' : '') + lastMsg.content.substring(0, 40);
         }
         return `
           <div class="conv-item" data-conv-id="${conv.id}" onclick="openConvById('${conv.id}')">
-            <div class="conv-avatar ${avatarColorFor(idx)}">${initial}</div>
+            <div class="conv-avatar ${avatarColorFor(idx)}" style="overflow:hidden;">${avatarInner}</div>
             <div class="conv-info">
               <div class="conv-name">${escapeHtml(displayName)}</div>
               <div class="conv-preview" id="preview-${conv.id}">${escapeHtml(preview)}</div>
@@ -680,7 +684,16 @@
       ? `Família ${otherName.split(' ')[0]}`
       : otherName;
     const initial = otherName.charAt(0).toUpperCase();
-    document.getElementById('activeAvatar').textContent = initial;
+    const activeAv = document.getElementById('activeAvatar');
+    if (other?.avatar_url) {
+      activeAv.style.background = 'transparent';
+      activeAv.style.overflow = 'hidden';
+      activeAv.innerHTML = `<img src="${other.avatar_url}" alt="" style="width:100%;height:100%;object-fit:cover;">`;
+    } else {
+      activeAv.style.overflow = '';
+      activeAv.innerHTML = '';
+      activeAv.textContent = initial;
+    }
     document.getElementById('activeName').textContent = displayName;
     document.getElementById('activeStatus').textContent = other?.user_type === 'baba' ? 'Babá' : 'Família';
 
