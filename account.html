@@ -130,6 +130,44 @@
     }
     .info-item .value { font-size: 15px; font-weight: 500; }
 
+    /* Blocos de info expandida (babá/família) */
+    .info-block {
+      border-top: 1px solid var(--line);
+      padding: 20px 0;
+    }
+    .info-block-head {
+      font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
+      text-transform: uppercase; color: var(--ink-3); margin-bottom: 12px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .block-tag {
+      background: var(--bg-soft); color: var(--ink-3);
+      padding: 2px 8px; border-radius: 999px;
+      font-size: 10px; font-weight: 600; text-transform: lowercase; letter-spacing: 0;
+    }
+    .info-block-body { font-size: 14px; color: var(--ink-2); }
+    .info-block-body .tag-small {
+      display: inline-block; background: var(--baba-soft); color: var(--baba-deep);
+      padding: 4px 10px; border-radius: 999px;
+      font-size: 12px; font-weight: 600; margin: 2px 4px 2px 0;
+    }
+    .info-block-body .tag-neutral {
+      display: inline-block; background: var(--bg-soft); color: var(--ink-2);
+      padding: 4px 10px; border-radius: 999px;
+      font-size: 12px; font-weight: 600; margin: 2px 4px 2px 0;
+    }
+    .info-block-body .avail-item {
+      display: flex; align-items: center; gap: 8px;
+      padding: 4px 0;
+    }
+    .info-block-body .avail-item .ic { width: 18px; flex-shrink: 0; }
+    .info-block-body .doc-item {
+      background: var(--bg-soft); padding: 10px 14px; border-radius: 10px;
+      margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;
+      font-size: 13px;
+    }
+    .info-block-body .doc-item .doc-status { font-size: 11px; color: var(--ink-3); }
+
     /* Subscription card */
     .sub-card-active {
       background: linear-gradient(135deg, #F8F5FF 0%, #EFE9FA 100%);
@@ -402,6 +440,107 @@
               <div class="value" id="profileExtra2">—</div>
             </div>
           </div>
+
+          <!-- BLOCOS EXTRA PRA BABÁ -->
+          <div id="babaExtraSections" style="display:none;">
+
+            <!-- Bio -->
+            <div class="info-block" id="bioBlock">
+              <div class="info-block-head">Sobre você</div>
+              <div class="info-block-body" id="bioContent" style="white-space: pre-wrap; line-height: 1.6;">—</div>
+            </div>
+
+            <!-- Dados pessoais (privado) -->
+            <div class="info-block">
+              <div class="info-block-head">Dados pessoais <span class="block-tag">privado</span></div>
+              <div class="info-block-body">
+                <div class="info-grid">
+                  <div class="info-item"><div class="label">CPF</div><div class="value" id="bCpf">—</div></div>
+                  <div class="info-item"><div class="label">Data de nascimento</div><div class="value" id="bBirth">—</div></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Endereço (privado) -->
+            <div class="info-block">
+              <div class="info-block-head">Endereço residencial <span class="block-tag">privado</span></div>
+              <div class="info-block-body" id="bAddress">—</div>
+            </div>
+
+            <!-- Bairros que atende -->
+            <div class="info-block">
+              <div class="info-block-head">Bairros que atende</div>
+              <div class="info-block-body" id="bHoods">—</div>
+            </div>
+
+            <!-- Idades atendidas -->
+            <div class="info-block">
+              <div class="info-block-head">Idades com experiência</div>
+              <div class="info-block-body" id="bAgeRanges">—</div>
+            </div>
+
+            <!-- Especialidades -->
+            <div class="info-block" id="bSpecBlock" style="display:none;">
+              <div class="info-block-head">Especialidades</div>
+              <div class="info-block-body" id="bSpec">—</div>
+            </div>
+
+            <!-- Certificações -->
+            <div class="info-block" id="bCertBlock" style="display:none;">
+              <div class="info-block-head">Certificações</div>
+              <div class="info-block-body" id="bCert">—</div>
+            </div>
+
+            <!-- Idiomas -->
+            <div class="info-block" id="bLangBlock" style="display:none;">
+              <div class="info-block-head">Idiomas</div>
+              <div class="info-block-body" id="bLang">—</div>
+            </div>
+
+            <!-- Disponibilidade -->
+            <div class="info-block">
+              <div class="info-block-head">Disponibilidade e particularidades</div>
+              <div class="info-block-body">
+                <div id="bAvailability" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 14px;"></div>
+              </div>
+            </div>
+
+            <!-- Documentos -->
+            <div class="info-block">
+              <div class="info-block-head">Documentos</div>
+              <div class="info-block-body" id="bDocs">Carregando...</div>
+            </div>
+
+          </div>
+
+          <!-- BLOCOS EXTRA PRA FAMÍLIA -->
+          <div id="famExtraSections" style="display:none;">
+
+            <!-- Endereço (privado) -->
+            <div class="info-block">
+              <div class="info-block-head">Endereço residencial <span class="block-tag">privado</span></div>
+              <div class="info-block-body" id="fAddress">—</div>
+            </div>
+
+            <!-- Crianças -->
+            <div class="info-block">
+              <div class="info-block-head">Crianças</div>
+              <div class="info-block-body" id="fChildren">—</div>
+            </div>
+
+            <!-- Tipo de babá -->
+            <div class="info-block" id="fSchedBlock" style="display:none;">
+              <div class="info-block-head">Tipo de babá procurada</div>
+              <div class="info-block-body" id="fSched">—</div>
+            </div>
+
+            <!-- Observações -->
+            <div class="info-block" id="fNotesBlock" style="display:none;">
+              <div class="info-block-head">Observações</div>
+              <div class="info-block-body" id="fNotes" style="white-space: pre-wrap; line-height: 1.6;">—</div>
+            </div>
+
+          </div>
         </section>
 
         <!-- ASSINATURA -->
@@ -595,7 +734,10 @@
         document.getElementById('profileExtra1').textContent = (baba.years_experience || 0) + ' anos';
         document.getElementById('profileExtra2Label').textContent = 'Valor por hora';
         document.getElementById('profileExtra2').textContent = 'R$ ' + (baba.hourly_rate || 0);
-        document.getElementById('profileLoc').textContent = (baba.neighborhoods || []).join(', ') || 'Rio de Janeiro';
+        document.getElementById('profileLoc').textContent = (baba.neighborhoods || []).slice(0, 3).join(', ') || 'Rio de Janeiro';
+
+        // Popular blocos extras
+        populateBabaInfo(baba);
         // Status da aprovação
         if (baba.approval_status === 'pending') {
           badgeText.textContent = 'Aguardando aprovação';
@@ -653,7 +795,6 @@
       document.getElementById('profileExtra2').textContent = '—';
     } else {
       badgeText.textContent = 'Família';
-      document.getElementById('profileLoc').textContent = 'Rio de Janeiro';
       // Pra família: vamos puxar parent_profiles
       const { data: parent } = await window.dbClient
         .from('parent_profiles')
@@ -665,16 +806,186 @@
         document.getElementById('profileExtra1').textContent = qtde > 0
           ? `${qtde} ${qtde === 1 ? 'criança' : 'crianças'}`
           : 'Não informado';
-        document.getElementById('profileExtra2').textContent = parent.notes || '—';
+        document.getElementById('profileExtra2Label').textContent = 'Bairro';
+        document.getElementById('profileExtra2').textContent = parent.neighborhood || '—';
+        document.getElementById('profileLoc').textContent = parent.neighborhood || 'Rio de Janeiro';
+        populateFamilyInfo(parent);
       } else {
         document.getElementById('profileExtra1').textContent = 'Não informado';
         document.getElementById('profileExtra2').textContent = '—';
+        document.getElementById('profileLoc').textContent = 'Rio de Janeiro';
       }
     }
 
     // Renderiza seção de Assinatura
     await renderSubscription(profile);
   });
+
+  function escapeHtmlAcc(s) {
+    if (s == null) return '';
+    return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[m]);
+  }
+
+  function populateBabaInfo(baba) {
+    document.getElementById('babaExtraSections').style.display = 'block';
+
+    // Bio
+    if (baba.bio) document.getElementById('bioContent').textContent = baba.bio;
+
+    // CPF e data nasc
+    document.getElementById('bCpf').textContent = baba.cpf || '—';
+    if (baba.birth_date) {
+      const bd = new Date(baba.birth_date);
+      const age = Math.floor((new Date() - bd) / (365.25 * 24 * 3600 * 1000));
+      document.getElementById('bBirth').textContent = `${bd.toLocaleDateString('pt-BR')} (${age} anos)`;
+    }
+
+    // Endereço
+    if (baba.address_cep) {
+      const addr = `${baba.address_street || ''}, ${baba.address_number || ''}${baba.address_complement ? ' · ' + baba.address_complement : ''}<br>
+        ${baba.address_neighborhood || ''} · CEP ${baba.address_cep}<br>
+        ${baba.address_city || 'Rio de Janeiro'} - ${baba.address_state || 'RJ'}`;
+      document.getElementById('bAddress').innerHTML = addr;
+    }
+
+    // Bairros
+    const hoods = baba.neighborhoods || [];
+    if (hoods.length > 0) {
+      document.getElementById('bHoods').innerHTML = hoods.map(h => `<span class="tag-small">${escapeHtmlAcc(h)}</span>`).join('');
+    }
+
+    // Idades atendidas
+    const ageLabels = { newborn: 'Recém-nascido', baby: 'Bebê (3-12m)', toddler: 'Pré-escolar', kid: 'Criança', older: 'Maior (8+a)' };
+    const ages = baba.age_ranges || [];
+    if (ages.length > 0) {
+      document.getElementById('bAgeRanges').innerHTML = ages.map(a => `<span class="tag-neutral">${ageLabels[a] || a}</span>`).join('');
+    }
+
+    // Especialidades
+    const specLabels = {
+      'pedagoga': 'Pedagoga', 'enfermeira': 'Enfermeira', 'folguista': 'Folguista',
+      'noturna': 'Noturna', 'pos-parto': 'Pós-parto', 'autismo': 'Cuidados Especiais',
+      'gemeos': 'Gêmeos', 'amamentacao': 'Amamentação',
+    };
+    const specs = baba.specialties || [];
+    if (specs.length > 0) {
+      document.getElementById('bSpecBlock').style.display = 'block';
+      document.getElementById('bSpec').innerHTML = specs.map(s => `<span class="tag-small">${specLabels[s] || s}</span>`).join('');
+    }
+
+    // Certificações
+    const certLabels = {
+      'primeiros-socorros': 'Primeiros Socorros',
+      'cuidador-rn': 'Cuidados com Recém-Nascido',
+      'pedagogia': 'Pedagogia',
+      'enfermagem': 'Enfermagem',
+      'tec-enfermagem': 'Téc. Enfermagem',
+      'cuidador-especial': 'Cuidados Especiais',
+      'manobra-heimlich': 'Manobra de Heimlich',
+      'amamentacao': 'Apoio à Amamentação',
+    };
+    const certs = baba.certifications || [];
+    if (certs.length > 0) {
+      document.getElementById('bCertBlock').style.display = 'block';
+      document.getElementById('bCert').innerHTML = certs.map(c => `<span class="tag-neutral">${certLabels[c] || c}</span>`).join('');
+    }
+
+    // Idiomas
+    const langLabels = { 'ingles': 'Inglês', 'espanhol': 'Espanhol', 'frances': 'Francês', 'libras': 'Libras' };
+    const langs = baba.languages || [];
+    if (langs.length > 0) {
+      document.getElementById('bLangBlock').style.display = 'block';
+      document.getElementById('bLang').innerHTML = langs.map(l => `<span class="tag-neutral">${langLabels[l] || l}</span>`).join('');
+    }
+
+    // Disponibilidade
+    const items = [];
+    items.push({ ic: '🚗', text: 'CNH', val: baba.has_cnh });
+    items.push({ ic: '🚙', text: 'Veículo próprio', val: baba.has_vehicle });
+    items.push({ ic: '✈️', text: 'Passaporte', val: baba.has_passport === 'yes' ? true : (baba.has_passport === 'renewing' ? 'Em renovação' : false) });
+    items.push({ ic: '🌙', text: 'Pernoite', val: baba.accepts_overnight });
+    items.push({ ic: '🌍', text: 'Aceita viajar', val: baba.accepts_travel });
+    items.push({ ic: '👶', text: 'Filhos próprios', val: baba.has_own_children });
+    items.push({ ic: '🚭', text: 'Fumante', val: baba.is_smoker });
+
+    const yesno = (v) => {
+      if (v === true) return '<span style="color: var(--baba-deep); font-weight: 600;">✓ Sim</span>';
+      if (v === false) return '<span style="color: var(--ink-3);">— Não</span>';
+      if (typeof v === 'string') return `<span style="color: var(--cta); font-weight: 600;">${v}</span>`;
+      return '<span style="color: var(--ink-3);">—</span>';
+    };
+    document.getElementById('bAvailability').innerHTML = items.map(i =>
+      `<div class="avail-item"><span class="ic">${i.ic}</span><span>${i.text}: ${yesno(i.val)}</span></div>`
+    ).join('');
+
+    // Documentos
+    loadAccountDocs();
+  }
+
+  async function loadAccountDocs() {
+    const container = document.getElementById('bDocs');
+    try {
+      const docs = await window.dbHelpers.getMyDocuments();
+      if (!docs || docs.length === 0) {
+        container.innerHTML = '<div style="color: var(--ink-3); font-size: 13px;">⚠️ Você ainda não enviou seus antecedentes criminais.</div><a href="/onboarding-baba.html?edit=1" style="display: inline-block; margin-top: 10px; color: var(--cta); font-weight: 600; font-size: 13px; text-decoration: none;">Enviar agora →</a>';
+        return;
+      }
+      const typeLabels = { 'criminal_record': 'Antecedentes Criminais', 'rg': 'RG', 'cpf': 'CPF', 'residence_proof': 'Comprovante de Residência' };
+      const statusLabels = { 'pending': '⏳ Em análise', 'approved': '✅ Aprovado', 'rejected': '❌ Rejeitado' };
+      container.innerHTML = docs.map(d => `
+        <div class="doc-item">
+          <div>
+            <strong>${typeLabels[d.doc_type] || d.doc_type}</strong>
+            <div class="doc-status">${statusLabels[d.status] || d.status} · ${new Date(d.created_at).toLocaleDateString('pt-BR')}</div>
+            ${d.admin_note ? `<div class="doc-status" style="margin-top: 4px; font-style: italic;">Nota: ${escapeHtmlAcc(d.admin_note)}</div>` : ''}
+          </div>
+        </div>
+      `).join('');
+    } catch (err) {
+      container.innerHTML = '<div style="color: #B53034;">Erro carregando documentos.</div>';
+    }
+  }
+
+  function populateFamilyInfo(parent) {
+    document.getElementById('famExtraSections').style.display = 'block';
+
+    // Endereço
+    if (parent.address_cep) {
+      document.getElementById('fAddress').innerHTML = `
+        ${parent.address_street || ''}, ${parent.address_number || ''}${parent.address_complement ? ' · ' + parent.address_complement : ''}<br>
+        ${parent.address_neighborhood || parent.neighborhood || ''} · CEP ${parent.address_cep}
+      `;
+    } else {
+      document.getElementById('fAddress').textContent = '— Não cadastrado';
+    }
+
+    // Crianças
+    const ageLabels = { newborn: 'Recém-nascido', baby: 'Bebê', toddler: 'Pré-escolar', kid: 'Criança', older: 'Maior' };
+    const qtde = parent.children_count || 0;
+    const ages = parent.children_ages || [];
+    document.getElementById('fChildren').innerHTML = `
+      <div style="margin-bottom: 8px;"><strong>${qtde}</strong> ${qtde === 1 ? 'criança' : 'crianças'}</div>
+      <div>${ages.map(a => `<span class="tag-neutral">${ageLabels[a] || a}</span>`).join('') || '<span style="color: var(--ink-3);">Idades não informadas</span>'}</div>
+    `;
+
+    // Tipo de babá
+    const schedLabels = {
+      'integral': 'Período integral', 'meio-periodo': 'Meio período',
+      'folguista': 'Folguista', 'noturna': 'Noturna',
+      'eventual': 'Eventual', 'viagem': 'Pra viagem'
+    };
+    const scheds = (parent.schedule_preference || '').split(',').filter(Boolean);
+    if (scheds.length > 0) {
+      document.getElementById('fSchedBlock').style.display = 'block';
+      document.getElementById('fSched').innerHTML = scheds.map(s => `<span class="tag-neutral">${schedLabels[s] || s}</span>`).join('');
+    }
+
+    // Observações
+    if (parent.notes) {
+      document.getElementById('fNotesBlock').style.display = 'block';
+      document.getElementById('fNotes').textContent = parent.notes;
+    }
+  }
 
   function setupAvatarUpload(userId, fullName) {
     const btn = document.getElementById('avatarUploadBtn');
