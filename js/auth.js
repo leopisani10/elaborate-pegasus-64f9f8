@@ -401,6 +401,42 @@ function unsubscribe(channel) {
 }
 
 // =============================================
+// SUBSCRIPTION
+// =============================================
+
+// Pega minha subscription (null se não tem)
+async function getMySubscription() {
+  const me = await getCurrentUser();
+  if (!me) return null;
+  const { data, error } = await db
+    .from('subscriptions')
+    .select('*')
+    .eq('user_id', me.id)
+    .maybeSingle();
+  if (error) { console.error('getMySubscription:', error); return null; }
+  return data;
+}
+
+// Retorna true se a sub é trial OU active e não venceu
+function isSubActive(sub) {
+  if (!sub) return false;
+  if (!['active', 'trialing'].includes(sub.status)) return false;
+  if (sub.current_period_end && new Date(sub.current_period_end) < new Date()) return false;
+  return true;
+}
+
+// Bloqueio rápido: chamado antes de ações que exigem sub.
+// Se não tem, redireciona pro pricing.
+async function requireActiveSubscription() {
+  const sub = await getMySubscription();
+  if (!isSubActive(sub)) {
+    window.location.href = '/pricing.html';
+    return false;
+  }
+  return true;
+}
+
+// =============================================
 // EXPORT
 // =============================================
 
@@ -411,5 +447,6 @@ window.dbHelpers = {
   getPendingBabas, approveBaba, rejectBaba,
   getOrCreateConversation, getMyConversations, getOtherParticipant,
   getMessages, sendMessage, subscribeToMessages, unsubscribe,
+  getMySubscription, isSubActive, requireActiveSubscription,
   showError, showSuccess, setLoading,
 };
