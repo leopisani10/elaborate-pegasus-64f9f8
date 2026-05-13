@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Segurança e Confiança · Dona Baby+</title>
+  <meta name="description" content="Como a Dona Baby+ verifica babás e protege famílias.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="shared.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script defer src="js/auth.js"></script>
+  <script defer src="js/footer.js"></script>
+  <style>
+    body { background: #FAFBFC; }
+
+    /* Header público */
+    .pub-header { background: white; border-bottom: 1px solid var(--line); padding: 16px 0; position: sticky; top: 0; z-index: 50; }
+    .pub-header-inner { max-width: 1200px; margin: 0 auto; padding: 0 24px; display: flex; justify-content: space-between; align-items: center; }
+    .pub-header img { height: 32px; }
+    .pub-nav { display: flex; gap: 24px; align-items: center; }
+    .pub-nav a { color: var(--ink-2); text-decoration: none; font-weight: 500; font-size: 14px; }
+    .pub-nav a:hover { color: var(--cta); }
+    .pub-nav a.btn-pri { background: var(--cta); color: white; padding: 9px 18px; border-radius: 999px; font-weight: 600; }
+    .pub-nav a.btn-pri:hover { background: var(--cta-hover); color: white; }
+    @media (max-width: 700px) { .pub-nav a.hide-mobile { display: none; } }
+
+    /* Conteúdo institucional */
+    .doc-container { max-width: 800px; margin: 0 auto; padding: 56px 24px 80px; }
+    .doc-container .breadcrumb { font-size: 13px; color: var(--ink-3); margin-bottom: 24px; }
+    .doc-container .breadcrumb a { color: var(--ink-3); text-decoration: none; }
+    .doc-container .breadcrumb a:hover { color: var(--cta); }
+    .doc-container h1 { font-size: clamp(32px, 5vw, 44px); font-weight: 800; letter-spacing: -0.035em; margin-bottom: 12px; line-height: 1.1; }
+    .doc-container .sub { color: var(--ink-3); font-size: 16px; margin-bottom: 8px; }
+    .doc-container .updated { font-size: 13px; color: var(--ink-3); margin-bottom: 40px; padding-bottom: 24px; border-bottom: 1px solid var(--line); }
+    .doc-container h2 { font-size: 22px; font-weight: 700; margin: 40px 0 12px; letter-spacing: -0.02em; }
+    .doc-container h3 { font-size: 17px; font-weight: 700; margin: 24px 0 8px; }
+    .doc-container p { color: var(--ink-2); line-height: 1.7; font-size: 15px; margin-bottom: 14px; }
+    .doc-container ul, .doc-container ol { color: var(--ink-2); line-height: 1.7; font-size: 15px; padding-left: 22px; margin-bottom: 18px; }
+    .doc-container li { margin-bottom: 6px; }
+    .doc-container strong { color: var(--ink); font-weight: 600; }
+    .doc-container .legal-note {
+      background: var(--bg-soft); border: 1px solid var(--line); border-radius: 12px;
+      padding: 14px 16px; font-size: 13px; color: var(--ink-2); margin: 24px 0; line-height: 1.6;
+    }
+    .doc-container a { color: var(--cta); text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+<header class="pub-header">
+  <div class="pub-header-inner">
+    <a href="/"><img src="logo.png" alt="Dona Baby+"></a>
+    <nav class="pub-nav">
+      <a href="/dicas.html" class="hide-mobile">Dicas</a>
+      <a href="/sobre.html" class="hide-mobile">Sobre</a>
+      <a href="/pricing.html" class="hide-mobile">Planos</a>
+      <a href="/login.html">Entrar</a>
+      <a href="/signup.html" class="btn-pri">Criar conta</a>
+    </nav>
+  </div>
+</header>
+
+<main class="doc-container">
+  <div class="breadcrumb"><a href="/">Início</a> · Segurança e Confiança</div>
+
+  <h1>Como a gente cuida da segurança.</h1>
+  <p class="sub">Verificação real de cada babá, protocolos claros, e canais de denúncia.</p>
+  <div style="height: 32px;"></div>
+
+  <h2>Verificação de babás</h2>
+  <p>Toda profissional que entra na Dona Baby+ passa pela nossa equipe antes de aparecer pras famílias. A gente faz:</p>
+  <ul>
+    <li><strong>Conferência de identidade</strong> — RG e CPF, com cruzamento de dados.</li>
+    <li><strong>Antecedentes criminais</strong> — certidão atualizada da Polícia Federal e da Justiça Estadual do Rio.</li>
+    <li><strong>Referências profissionais</strong> — falamos com pelo menos 2 famílias anteriores.</li>
+    <li><strong>Entrevista por vídeo</strong> — bate-papo de 20-30 minutos com a nossa equipe pra entender perfil, expectativas e experiência.</li>
+  </ul>
+  <p>Só depois de tudo isso ok é que a babá é aprovada e pode aparecer nas buscas.</p>
+
+  <h2>Conversa segura</h2>
+  <p>O chat da Dona Baby+ é só pra membros assinantes. Isso significa que pessoas aleatórias não conseguem te abordar.</p>
+  <p>Recomendamos que você <strong>converse pelo menos 2-3 dias na plataforma</strong> antes de pular pra WhatsApp ou marcar entrevista presencial. Dá tempo de sentir se faz match.</p>
+
+  <h2>Pra famílias: o que fazer antes de contratar</h2>
+  <ol>
+    <li><strong>Entrevista presencial</strong> — sempre. Convide pra um café perto da sua casa antes de levar pra dentro.</li>
+    <li><strong>Confira documentos</strong> — peça RG, CPF, e referências (a gente já verifica, mas confirme você também).</li>
+    <li><strong>Período de adaptação</strong> — dias de "experiência" com você presente em casa antes de deixar sozinha com a criança.</li>
+    <li><strong>Formalize</strong> — contrato, registro em carteira, recolhimento de INSS. Não pague por fora — protege os dois lados.</li>
+    <li><strong>Comece devagar</strong> — primeiras semanas com mais supervisão, conforme confiança cresce, autonomia também.</li>
+  </ol>
+
+  <h2>Pra babás: como se proteger</h2>
+  <ol>
+    <li><strong>Entrevista em local público</strong> — café, padaria. Nunca vá direto pra dentro da casa de alguém que você nem conhece.</li>
+    <li><strong>Combine valores por escrito</strong> — antes de começar, deixe claro: valor/hora, horários, atividades incluídas, almoço/transporte.</li>
+    <li><strong>Exija contrato</strong> — formal, com registro. Família que se recusa a formalizar é sinal de alerta.</li>
+    <li><strong>Confie no seu sentimento</strong> — se algo te dá má sensação na primeira conversa, não vá adiante. Tem outras famílias.</li>
+  </ol>
+
+  <h2>O que a gente NÃO faz</h2>
+  <p>Pra ser claro:</p>
+  <ul>
+    <li>Não somos empregadores nem agência. A relação é direta entre você e a babá/família.</li>
+    <li>Não fazemos mediação trabalhista (contrato, salário, registro) — isso é com você e seu advogado/contador.</li>
+    <li>Não temos seguro contra danos ou acidentes envolvendo o trabalho contratado.</li>
+    <li>Não fazemos checagem médica/psicológica completa — apenas antecedentes criminais e referências.</li>
+  </ul>
+
+  <h2>Denúncias e ocorrências</h2>
+  <p>Se algo der errado, escreva pra <a href="mailto:contato@donababy.com">contato@donababy.com</a> com o que aconteceu. A gente:</p>
+  <ul>
+    <li>Toma providências internas (suspensão, banimento) em até 48h se confirmado</li>
+    <li>Compartilha com autoridades se for caso de crime</li>
+    <li>Notifica outras famílias que possam ter contratado a mesma pessoa, quando justificado</li>
+  </ul>
+
+  <p style="margin-top: 40px; font-size: 14px; color: var(--ink-3);">Em emergências reais, ligue 190 (Polícia Militar) ou 197 (Polícia Civil) antes de qualquer coisa.</p>
+</main>
+
+</body>
+</html>

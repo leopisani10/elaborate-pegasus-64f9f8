@@ -10,6 +10,7 @@
   <link rel="stylesheet" href="shared.css">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script defer src="js/auth.js"></script>
+  <script defer src="js/footer.js"></script>
   <style>
     body { background: #FAFBFC; }
     .search-hero { background: white; padding: 36px 0 32px; border-bottom: 1px solid var(--line); }
@@ -134,6 +135,7 @@
     const links = document.getElementById('navLinks');
     const items = [
       { href: '/families.html', label: 'Buscar famílias', key: 'families', active: true },
+      { href: '/dicas.html', label: 'Dicas', key: 'dicas' },
       { href: '/chat.html', label: 'Mensagens', key: 'chat', badge: 'unread' },
       { href: '/account.html', label: 'Meu perfil', key: 'account' },
     ];

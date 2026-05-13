@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Perguntas Frequentes · Dona Baby+</title>
+  <meta name="description" content="Tudo que você quer saber sobre o Dona Baby+.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="shared.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script defer src="js/auth.js"></script>
+  <script defer src="js/footer.js"></script>
+  <style>
+    body { background: #FAFBFC; }
+
+    /* Header público */
+    .pub-header { background: white; border-bottom: 1px solid var(--line); padding: 16px 0; position: sticky; top: 0; z-index: 50; }
+    .pub-header-inner { max-width: 1200px; margin: 0 auto; padding: 0 24px; display: flex; justify-content: space-between; align-items: center; }
+    .pub-header img { height: 32px; }
+    .pub-nav { display: flex; gap: 24px; align-items: center; }
+    .pub-nav a { color: var(--ink-2); text-decoration: none; font-weight: 500; font-size: 14px; }
+    .pub-nav a:hover { color: var(--cta); }
+    .pub-nav a.btn-pri { background: var(--cta); color: white; padding: 9px 18px; border-radius: 999px; font-weight: 600; }
+    .pub-nav a.btn-pri:hover { background: var(--cta-hover); color: white; }
+    @media (max-width: 700px) { .pub-nav a.hide-mobile { display: none; } }
+
+    /* Conteúdo institucional */
+    .doc-container { max-width: 800px; margin: 0 auto; padding: 56px 24px 80px; }
+    .doc-container .breadcrumb { font-size: 13px; color: var(--ink-3); margin-bottom: 24px; }
+    .doc-container .breadcrumb a { color: var(--ink-3); text-decoration: none; }
+    .doc-container .breadcrumb a:hover { color: var(--cta); }
+    .doc-container h1 { font-size: clamp(32px, 5vw, 44px); font-weight: 800; letter-spacing: -0.035em; margin-bottom: 12px; line-height: 1.1; }
+    .doc-container .sub { color: var(--ink-3); font-size: 16px; margin-bottom: 8px; }
+    .doc-container .updated { font-size: 13px; color: var(--ink-3); margin-bottom: 40px; padding-bottom: 24px; border-bottom: 1px solid var(--line); }
+    .doc-container h2 { font-size: 22px; font-weight: 700; margin: 40px 0 12px; letter-spacing: -0.02em; }
+    .doc-container h3 { font-size: 17px; font-weight: 700; margin: 24px 0 8px; }
+    .doc-container p { color: var(--ink-2); line-height: 1.7; font-size: 15px; margin-bottom: 14px; }
+    .doc-container ul, .doc-container ol { color: var(--ink-2); line-height: 1.7; font-size: 15px; padding-left: 22px; margin-bottom: 18px; }
+    .doc-container li { margin-bottom: 6px; }
+    .doc-container strong { color: var(--ink); font-weight: 600; }
+    .doc-container .legal-note {
+      background: var(--bg-soft); border: 1px solid var(--line); border-radius: 12px;
+      padding: 14px 16px; font-size: 13px; color: var(--ink-2); margin: 24px 0; line-height: 1.6;
+    }
+    .doc-container a { color: var(--cta); text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+<header class="pub-header">
+  <div class="pub-header-inner">
+    <a href="/"><img src="logo.png" alt="Dona Baby+"></a>
+    <nav class="pub-nav">
+      <a href="/dicas.html" class="hide-mobile">Dicas</a>
+      <a href="/sobre.html" class="hide-mobile">Sobre</a>
+      <a href="/pricing.html" class="hide-mobile">Planos</a>
+      <a href="/login.html">Entrar</a>
+      <a href="/signup.html" class="btn-pri">Criar conta</a>
+    </nav>
+  </div>
+</header>
+
+<style>
+  .faq-cats { display: flex; gap: 8px; margin-bottom: 32px; flex-wrap: wrap; }
+  .faq-cat {
+    background: white; border: 1.5px solid var(--line-strong); border-radius: 999px;
+    padding: 8px 16px; font-size: 13px; font-weight: 600; cursor: pointer;
+    color: var(--ink-2); transition: all 0.15s;
+  }
+  .faq-cat:hover { border-color: var(--ink); }
+  .faq-cat.active { background: var(--ink); color: white; border-color: var(--ink); }
+
+  .faq-item {
+    background: white; border: 1px solid var(--line); border-radius: 16px;
+    margin-bottom: 12px; overflow: hidden; transition: all 0.15s;
+  }
+  .faq-item summary {
+    padding: 20px 24px; cursor: pointer; list-style: none;
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 15px; font-weight: 600; color: var(--ink);
+  }
+  .faq-item summary::-webkit-details-marker { display: none; }
+  .faq-item summary::after { content: '+'; font-size: 24px; color: var(--ink-3); font-weight: 300; }
+  .faq-item[open] summary::after { content: '−'; }
+  .faq-item[open] { border-color: var(--line-strong); }
+  .faq-item .faq-body {
+    padding: 0 24px 20px;
+    color: var(--ink-2); font-size: 14px; line-height: 1.7;
+  }
+  .faq-item .faq-body p { margin-bottom: 10px; }
+  .faq-item .faq-body p:last-child { margin-bottom: 0; }
+  .faq-item.hidden { display: none; }
+
+  .faq-still { background: var(--bg-soft); border-radius: 20px; padding: 28px; margin-top: 40px; text-align: center; }
+  .faq-still h3 { font-size: 17px; font-weight: 700; margin-bottom: 6px; }
+  .faq-still p { color: var(--ink-3); font-size: 14px; margin-bottom: 16px; }
+  .faq-still a { background: var(--cta); color: white; padding: 12px 22px; border-radius: 999px; font-weight: 600; text-decoration: none; font-size: 14px; }
+</style>
+
+<main class="doc-container">
+  <div class="breadcrumb"><a href="/">Início</a> · Perguntas Frequentes</div>
+
+  <h1>Perguntas frequentes.</h1>
+  <p class="sub" style="margin-bottom: 40px;">Buscando algo específico? Filtra por categoria.</p>
+
+  <div class="faq-cats">
+    <button class="faq-cat active" data-cat="all">Todas</button>
+    <button class="faq-cat" data-cat="geral">Geral</button>
+    <button class="faq-cat" data-cat="familia">Pra famílias</button>
+    <button class="faq-cat" data-cat="baba">Pra babás</button>
+    <button class="faq-cat" data-cat="pagamento">Pagamento</button>
+  </div>
+
+  <details class="faq-item" data-cat="geral">
+    <summary>O que é o Dona Baby+?</summary>
+    <div class="faq-body">
+      <p>É uma plataforma online que conecta famílias do Rio de Janeiro com babás verificadas. Famílias procuram babás, babás encontram famílias, e a conversa começa pela plataforma de forma segura.</p>
+    </div>
+  </details>
+
+  <details class="faq-item" data-cat="geral">
+    <summary>É grátis pra usar?</summary>
+    <div class="faq-body">
+      <p>O cadastro é grátis. Pra trocar mensagens com a outra parte, é necessário ter assinatura ativa de um dos planos. Oferecemos 3 dias grátis pra testar antes da primeira cobrança.</p>
+    </div>
+  </details>
+
+  <details class="faq-item" data-cat="geral">
+    <summary>Em quais cidades vocês atuam?</summary>
+    <div class="faq-body">
+      <p>No momento, apenas no Rio de Janeiro. Focamos em Zona Sul, Tijuca, Barra e Recreio. Pretendemos expandir nos próximos meses pra outras cidades.</p>
+    </div>
+  </details>
+
+  <details class="faq-item" data-cat="familia">
+    <summary>Como vocês verificam as babás?</summary>
+    <div class="faq-body">
+      <p>Toda babá passa por: conferência de identidade (RG, CPF), antecedentes criminais (PF + Justiça Estadual), pelo menos 2 referências profissionais, e entrevista por vídeo com nossa equipe. Mais detalhes em <a href="/seguranca.html">Segurança</a>.</p>
+    </div>
+  </details>
+
+  <details class="faq-item" data-cat="familia">
+    <summary>Vocês também cuidam do contrato de trabalho?</summary>
+    <div class="faq-body">
+      <p>Não. A Dona Baby+ é uma plataforma de conexão. A relação de trabalho (contrato, registro, salário, INSS) é direta entre você e a babá. Recomendamos fortemente formalizar tudo com um contador ou advogado.</p>
+    </div>
+  </details>
+
+  <details class="faq-item" data-cat="familia">
+    <summary>Quanto vou gastar com a babá em si?</summary>
+    <div class="faq-body">
+      <p>Depende do tipo de trabalho. Hoje no Rio, valores comuns:</p>
+      <ul style="padding-left: 22px; margin-top: 8px;">
+        <li><strong>Hora avulsa:</strong> R$ 25-50/h</li>
+        <li><strong>Diária integral (8h):</strong> R$ 180-280</li>
+        <li><strong>Salário mensal CLT:</strong> R$ 1.700-2.800 (varia por experiência e bairro)</li>
+      </ul>
+      <p>Cada babá tem seu valor combinado no perfil — você fala diretamente com ela.</p>
+    </div>
+  </details>
+
+  <details class="faq-item" data-cat="baba">
+    <summary>Como faço pra entrar como babá?</summary>
+    <div class="faq-body">
+      <p>É só criar conta como babá no signup, preencher seu perfil (bio, experiência, bairros, valor/hora), enviar seus documentos. A gente analisa em 24-48h e aprova se tudo estiver ok.</p>
+    </div>
+  </details>
+
+  <details class="faq-item" data-cat="baba">
+    <summary>Quanto custa pra babá usar?</summary>
+    <div class="faq-body">
+      <p>R$ 19/mês, com 3 dias grátis pra testar. Cobrança recorrente, sem fidelidade. Cancele quando quiser.</p>
+    </div>
+  </details>
+
+  <details class="faq-item" data-cat="baba">
+    <summary>Vocês cobram comissão sobre o que recebo?</summary>
+    <div class="faq-body">
+      <p><strong>Não.</strong> Você paga só a mensalidade fixa (R$ 19). O que você combina e recebe da família é 100% seu. Sem comissão, sem taxa de sucesso, sem nada extra.</p>
+    </div>
+  </details>
+
+  <details class="faq-item" data-cat="baba">
+    <summary>Por que minha aprovação demorou?</summary>
+    <div class="faq-body">
+      <p>Geralmente em 24-48h tá aprovado. Se passou disso, pode ser que algum documento veio ilegível ou alguma referência não atendeu. Escreve pra contato@donababy.com que a gente confere na hora.</p>
+    </div>
+  </details>
+
+  <details class="faq-item" data-cat="pagamento">
+    <summary>Como funcionam os 3 dias grátis?</summary>
+    <div class="faq-body">
+      <p>Você cadastra o cartão na hora da assinatura, mas a primeira cobrança só acontece no dia 4. Se você cancelar antes, não paga nada. Esse modelo serve pra você testar de verdade o produto antes de comprometer.</p>
+    </div>
+  </details>
+
+  <details class="faq-item" data-cat="pagamento">
+    <summary>Posso cancelar a qualquer momento?</summary>
+    <div class="faq-body">
+      <p>Pode. Escreve pra contato@donababy.com pedindo cancelamento. Não temos fidelidade, e durante o trial você cancela sem cobrança nenhuma.</p>
+    </div>
+  </details>
+
+  <details class="faq-item" data-cat="pagamento">
+    <summary>E se meu cartão for recusado?</summary>
+    <div class="faq-body">
+      <p>A conta entra em "pagamento atrasado" e perde acesso aos recursos pagos (não consegue conversar). Você atualiza o cartão e volta a usar.</p>
+    </div>
+  </details>
+
+  <details class="faq-item" data-cat="pagamento">
+    <summary>Meus dados de cartão ficam seguros?</summary>
+    <div class="faq-body">
+      <p>Sim. A gente <strong>nunca vê</strong> seu cartão — quem processa pagamento é a Stripe, processadora certificada pelos maiores padrões internacionais de segurança (PCI-DSS Level 1). A gente recebe só status (paguei, não paguei) e os últimos 4 dígitos pra identificação.</p>
+    </div>
+  </details>
+
+  <div class="faq-still">
+    <h3>Não achou sua dúvida?</h3>
+    <p>Escreve pra gente que respondemos rápido.</p>
+    <a href="mailto:contato@donababy.com">Falar com a equipe</a>
+  </div>
+</main>
+
+<script>
+  document.querySelectorAll('.faq-cat').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.faq-cat').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const cat = btn.dataset.cat;
+      document.querySelectorAll('.faq-item').forEach(item => {
+        if (cat === 'all' || item.dataset.cat === cat) {
+          item.classList.remove('hidden');
+        } else {
+          item.classList.add('hidden');
+        }
+      });
+    });
+  });
+</script>
+
+</body>
+</html>

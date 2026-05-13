@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Política de Privacidade · Dona Baby+</title>
+  <meta name="description" content="Como o Dona Baby+ trata seus dados pessoais. Em conformidade com a LGPD.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="shared.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script defer src="js/auth.js"></script>
+  <script defer src="js/footer.js"></script>
+  <style>
+    body { background: #FAFBFC; }
+
+    /* Header público */
+    .pub-header { background: white; border-bottom: 1px solid var(--line); padding: 16px 0; position: sticky; top: 0; z-index: 50; }
+    .pub-header-inner { max-width: 1200px; margin: 0 auto; padding: 0 24px; display: flex; justify-content: space-between; align-items: center; }
+    .pub-header img { height: 32px; }
+    .pub-nav { display: flex; gap: 24px; align-items: center; }
+    .pub-nav a { color: var(--ink-2); text-decoration: none; font-weight: 500; font-size: 14px; }
+    .pub-nav a:hover { color: var(--cta); }
+    .pub-nav a.btn-pri { background: var(--cta); color: white; padding: 9px 18px; border-radius: 999px; font-weight: 600; }
+    .pub-nav a.btn-pri:hover { background: var(--cta-hover); color: white; }
+    @media (max-width: 700px) { .pub-nav a.hide-mobile { display: none; } }
+
+    /* Conteúdo institucional */
+    .doc-container { max-width: 800px; margin: 0 auto; padding: 56px 24px 80px; }
+    .doc-container .breadcrumb { font-size: 13px; color: var(--ink-3); margin-bottom: 24px; }
+    .doc-container .breadcrumb a { color: var(--ink-3); text-decoration: none; }
+    .doc-container .breadcrumb a:hover { color: var(--cta); }
+    .doc-container h1 { font-size: clamp(32px, 5vw, 44px); font-weight: 800; letter-spacing: -0.035em; margin-bottom: 12px; line-height: 1.1; }
+    .doc-container .sub { color: var(--ink-3); font-size: 16px; margin-bottom: 8px; }
+    .doc-container .updated { font-size: 13px; color: var(--ink-3); margin-bottom: 40px; padding-bottom: 24px; border-bottom: 1px solid var(--line); }
+    .doc-container h2 { font-size: 22px; font-weight: 700; margin: 40px 0 12px; letter-spacing: -0.02em; }
+    .doc-container h3 { font-size: 17px; font-weight: 700; margin: 24px 0 8px; }
+    .doc-container p { color: var(--ink-2); line-height: 1.7; font-size: 15px; margin-bottom: 14px; }
+    .doc-container ul, .doc-container ol { color: var(--ink-2); line-height: 1.7; font-size: 15px; padding-left: 22px; margin-bottom: 18px; }
+    .doc-container li { margin-bottom: 6px; }
+    .doc-container strong { color: var(--ink); font-weight: 600; }
+    .doc-container .legal-note {
+      background: var(--bg-soft); border: 1px solid var(--line); border-radius: 12px;
+      padding: 14px 16px; font-size: 13px; color: var(--ink-2); margin: 24px 0; line-height: 1.6;
+    }
+    .doc-container a { color: var(--cta); text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+<header class="pub-header">
+  <div class="pub-header-inner">
+    <a href="/"><img src="logo.png" alt="Dona Baby+"></a>
+    <nav class="pub-nav">
+      <a href="/dicas.html" class="hide-mobile">Dicas</a>
+      <a href="/sobre.html" class="hide-mobile">Sobre</a>
+      <a href="/pricing.html" class="hide-mobile">Planos</a>
+      <a href="/login.html">Entrar</a>
+      <a href="/signup.html" class="btn-pri">Criar conta</a>
+    </nav>
+  </div>
+</header>
+
+<main class="doc-container">
+  <div class="breadcrumb">
+    <a href="/">Início</a> · Política de Privacidade
+  </div>
+
+  <h1>Política de Privacidade</h1>
+  <p class="sub">Em conformidade com a Lei Geral de Proteção de Dados (LGPD - Lei nº 13.709/2018)</p>
+  <p class="updated">Atualizado em: 13 de maio de 2026</p>
+
+  <div class="legal-note">
+    <strong>Aviso:</strong> Este documento foi redigido pela equipe técnica do Dona Baby+ e ainda passará por revisão jurídica. Em caso de dúvida específica sobre seus direitos, entre em contato pelo email <a href="mailto:contato@donababy.com">contato@donababy.com</a>.
+  </div>
+
+  <h2>1. Quem somos</h2>
+  <p>Dona Baby+ Tecnologia LTDA, com sede na Av. Ataulfo de Paiva, 1235, sala 303, Leblon, Rio de Janeiro/RJ, é a controladora dos dados pessoais tratados nesta plataforma. Você pode falar com a gente pelo WhatsApp (21) 99548-8295 ou pelo email contato@donababy.com.</p>
+
+  <h2>2. Dados que coletamos</h2>
+  <h3>Cadastro</h3>
+  <ul>
+    <li>Nome completo, email, telefone (WhatsApp)</li>
+    <li>Tipo de usuário (família ou babá)</li>
+    <li>Senha (criptografada — nem nós conseguimos ler)</li>
+  </ul>
+
+  <h3>Perfil de família</h3>
+  <ul>
+    <li>Quantidade e idades das crianças</li>
+    <li>Bairro de residência</li>
+    <li>Tipo de babá procurada</li>
+    <li>Observações que você compartilhar</li>
+  </ul>
+
+  <h3>Perfil de babá</h3>
+  <ul>
+    <li>Bio profissional, anos de experiência, valor/hora</li>
+    <li>Bairros que atende e especialidades</li>
+    <li>Foto de perfil (opcional)</li>
+    <li>Documentos pra verificação (RG/CPF) — armazenados de forma protegida e nunca expostos publicamente</li>
+  </ul>
+
+  <h3>Pagamentos</h3>
+  <p>Os dados do seu cartão são processados <strong>exclusivamente pela Stripe</strong> (processadora de pagamentos certificada PCI-DSS Level 1). A gente não armazena, vê ou tem acesso ao número do seu cartão. A Stripe nos envia apenas: status da assinatura, datas de cobrança, e os últimos 4 dígitos pra você identificar o cartão no painel.</p>
+
+  <h3>Uso da plataforma</h3>
+  <ul>
+    <li>Mensagens trocadas no chat (criptografadas em trânsito)</li>
+    <li>Logs de acesso e cookies essenciais pra autenticação</li>
+  </ul>
+
+  <h2>3. Pra que usamos seus dados</h2>
+  <ul>
+    <li><strong>Pra fazer o produto funcionar:</strong> conectar famílias e babás, processar pagamentos, enviar mensagens.</li>
+    <li><strong>Pra você confiar:</strong> verificar identidade das babás antes da aprovação.</li>
+    <li><strong>Pra te avisar:</strong> notificações de mensagens novas, pagamentos, mudanças importantes.</li>
+    <li><strong>Pra melhorar:</strong> métricas agregadas e anônimas sobre uso da plataforma.</li>
+  </ul>
+  <p>A gente <strong>não vende seus dados</strong>. Nunca.</p>
+
+  <h2>4. Com quem compartilhamos</h2>
+  <ul>
+    <li><strong>Outras pessoas na plataforma:</strong> babás veem dados de famílias procurando (e vice-versa) apenas se ambas têm assinatura ativa. Mensagens são visíveis só entre os participantes da conversa.</li>
+    <li><strong>Stripe:</strong> processadora de pagamentos. Email e ID interno do usuário são compartilhados pra associar pagamentos.</li>
+    <li><strong>Supabase:</strong> infraestrutura de banco de dados onde seus dados são armazenados (servidores em São Paulo).</li>
+    <li><strong>Autoridades:</strong> apenas mediante ordem judicial ou exigência legal.</li>
+  </ul>
+
+  <h2>5. Seus direitos (LGPD)</h2>
+  <p>Você tem o direito de a qualquer momento:</p>
+  <ul>
+    <li><strong>Acessar</strong> os dados que temos sobre você</li>
+    <li><strong>Corrigir</strong> dados incorretos ou desatualizados</li>
+    <li><strong>Excluir</strong> sua conta e dados (algumas informações financeiras podem ser retidas por obrigação fiscal, conforme legislação brasileira)</li>
+    <li><strong>Exportar</strong> seus dados em formato legível</li>
+    <li><strong>Revogar</strong> consentimentos previamente dados</li>
+    <li><strong>Reclamar</strong> à Autoridade Nacional de Proteção de Dados (ANPD)</li>
+  </ul>
+  <p>Pra exercer qualquer um desses direitos, basta enviar email pra <a href="mailto:contato@donababy.com">contato@donababy.com</a>. Respondemos em até 15 dias úteis.</p>
+
+  <h2>6. Cookies</h2>
+  <p>Usamos cookies essenciais pra manter você logado e pra fazer o produto funcionar. Não usamos cookies de rastreamento de terceiros nem publicidade.</p>
+
+  <h2>7. Segurança</h2>
+  <p>Seus dados ficam armazenados em servidores seguros, com criptografia em trânsito e em repouso. Acesso interno é restrito por necessidade. Em caso de incidente de segurança, comunicaremos você e a ANPD em até 72 horas.</p>
+
+  <h2>8. Crianças</h2>
+  <p>A plataforma é destinada a maiores de 18 anos. Não coletamos intencionalmente dados de menores. Se você é responsável e identificou que dados do seu filho foram cadastrados sem permissão, escreva pra contato@donababy.com pra remoção imediata.</p>
+
+  <h2>9. Atualizações</h2>
+  <p>Esta política pode ser atualizada. Mudanças significativas serão comunicadas por email com pelo menos 15 dias de antecedência.</p>
+
+  <p style="margin-top: 40px; font-size: 13px; color: var(--ink-3);">Em caso de dúvida, escreva pra <a href="mailto:contato@donababy.com">contato@donababy.com</a>.</p>
+</main>
+
+</body>
+</html>

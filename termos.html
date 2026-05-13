@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Termos de Uso · Dona Baby+</title>
+  <meta name="description" content="Regras de uso da plataforma Dona Baby+.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="shared.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script defer src="js/auth.js"></script>
+  <script defer src="js/footer.js"></script>
+  <style>
+    body { background: #FAFBFC; }
+
+    /* Header público */
+    .pub-header { background: white; border-bottom: 1px solid var(--line); padding: 16px 0; position: sticky; top: 0; z-index: 50; }
+    .pub-header-inner { max-width: 1200px; margin: 0 auto; padding: 0 24px; display: flex; justify-content: space-between; align-items: center; }
+    .pub-header img { height: 32px; }
+    .pub-nav { display: flex; gap: 24px; align-items: center; }
+    .pub-nav a { color: var(--ink-2); text-decoration: none; font-weight: 500; font-size: 14px; }
+    .pub-nav a:hover { color: var(--cta); }
+    .pub-nav a.btn-pri { background: var(--cta); color: white; padding: 9px 18px; border-radius: 999px; font-weight: 600; }
+    .pub-nav a.btn-pri:hover { background: var(--cta-hover); color: white; }
+    @media (max-width: 700px) { .pub-nav a.hide-mobile { display: none; } }
+
+    /* Conteúdo institucional */
+    .doc-container { max-width: 800px; margin: 0 auto; padding: 56px 24px 80px; }
+    .doc-container .breadcrumb { font-size: 13px; color: var(--ink-3); margin-bottom: 24px; }
+    .doc-container .breadcrumb a { color: var(--ink-3); text-decoration: none; }
+    .doc-container .breadcrumb a:hover { color: var(--cta); }
+    .doc-container h1 { font-size: clamp(32px, 5vw, 44px); font-weight: 800; letter-spacing: -0.035em; margin-bottom: 12px; line-height: 1.1; }
+    .doc-container .sub { color: var(--ink-3); font-size: 16px; margin-bottom: 8px; }
+    .doc-container .updated { font-size: 13px; color: var(--ink-3); margin-bottom: 40px; padding-bottom: 24px; border-bottom: 1px solid var(--line); }
+    .doc-container h2 { font-size: 22px; font-weight: 700; margin: 40px 0 12px; letter-spacing: -0.02em; }
+    .doc-container h3 { font-size: 17px; font-weight: 700; margin: 24px 0 8px; }
+    .doc-container p { color: var(--ink-2); line-height: 1.7; font-size: 15px; margin-bottom: 14px; }
+    .doc-container ul, .doc-container ol { color: var(--ink-2); line-height: 1.7; font-size: 15px; padding-left: 22px; margin-bottom: 18px; }
+    .doc-container li { margin-bottom: 6px; }
+    .doc-container strong { color: var(--ink); font-weight: 600; }
+    .doc-container .legal-note {
+      background: var(--bg-soft); border: 1px solid var(--line); border-radius: 12px;
+      padding: 14px 16px; font-size: 13px; color: var(--ink-2); margin: 24px 0; line-height: 1.6;
+    }
+    .doc-container a { color: var(--cta); text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+<header class="pub-header">
+  <div class="pub-header-inner">
+    <a href="/"><img src="logo.png" alt="Dona Baby+"></a>
+    <nav class="pub-nav">
+      <a href="/dicas.html" class="hide-mobile">Dicas</a>
+      <a href="/sobre.html" class="hide-mobile">Sobre</a>
+      <a href="/pricing.html" class="hide-mobile">Planos</a>
+      <a href="/login.html">Entrar</a>
+      <a href="/signup.html" class="btn-pri">Criar conta</a>
+    </nav>
+  </div>
+</header>
+
+<main class="doc-container">
+  <div class="breadcrumb"><a href="/">Início</a> · Termos de Uso</div>
+
+  <h1>Termos de Uso</h1>
+  <p class="sub">Regras da plataforma Dona Baby+</p>
+  <p class="updated">Atualizado em: 13 de maio de 2026</p>
+
+  <div class="legal-note">
+    <strong>Aviso:</strong> Este documento foi redigido pela equipe técnica do Dona Baby+ e ainda passará por revisão jurídica. Ao usar a plataforma, você concorda com estes termos.
+  </div>
+
+  <h2>1. Sobre o serviço</h2>
+  <p>Dona Baby+ é uma plataforma online de <strong>conexão</strong> entre famílias que procuram babás e profissionais de cuidado infantil. A gente:</p>
+  <ul>
+    <li>Conecta as duas partes</li>
+    <li>Verifica identidade e antecedentes básicos das babás antes de aprová-las</li>
+    <li>Provê canal de mensagens entre famílias e babás</li>
+    <li>Processa cobranças mensais de assinatura</li>
+  </ul>
+  <p>A gente <strong>não é empregadora</strong> de nenhuma babá, nem agente, nem responsável pelo serviço prestado. A relação de trabalho é direta entre família e babá.</p>
+
+  <h2>2. Cadastro</h2>
+  <ul>
+    <li>Você precisa ser maior de 18 anos pra criar conta.</li>
+    <li>Os dados que você fornece precisam ser verdadeiros, completos e atualizados.</li>
+    <li>Você é responsável por manter sua senha em segredo.</li>
+    <li>Cada pessoa pode ter apenas uma conta.</li>
+    <li>Babás passam por processo de aprovação manual pela equipe Dona Baby+.</li>
+  </ul>
+
+  <h2>3. Planos e cobrança</h2>
+  <ul>
+    <li>O cadastro é grátis. Pra trocar mensagens, é necessário assinar um dos planos pagos.</li>
+    <li>Oferecemos <strong>3 dias grátis de teste</strong>. Você cadastra o cartão e a primeira cobrança só acontece no dia 4, caso não cancele antes.</li>
+    <li>Plano Família: R$ 29/mês. Plano Babá: R$ 19/mês.</li>
+    <li>Cobrança recorrente mensal, processada pela Stripe.</li>
+    <li>Sem fidelidade — cancele a qualquer momento pelo email contato@donababy.com.</li>
+    <li>Se o cartão falhar, a conta entra em "pagamento atrasado" e perde acesso até regularizar.</li>
+  </ul>
+
+  <h2>4. Reembolso</h2>
+  <ul>
+    <li><strong>Durante o trial de 3 dias:</strong> cancelamento garante zero cobrança.</li>
+    <li><strong>Após cobrança:</strong> não fazemos reembolso parcial proporcional. Mas se houver problema técnico ou ocorrência específica, escreva pra gente — analisamos caso a caso.</li>
+    <li>Em até 7 dias da primeira cobrança paga (não trial), aplicamos o direito de arrependimento previsto no Código de Defesa do Consumidor.</li>
+  </ul>
+
+  <h2>5. Conduta esperada</h2>
+  <p>É proibido na plataforma:</p>
+  <ul>
+    <li>Criar conta falsa ou se passar por outra pessoa</li>
+    <li>Compartilhar dados de contato (telefone, email, WhatsApp) antes de assinar — isso evita pessoas que usam a plataforma só pra prospectar e fechar por fora</li>
+    <li>Enviar conteúdo ofensivo, ameaçador, ilegal, discriminatório ou de assédio</li>
+    <li>Tentar burlar o sistema de pagamento</li>
+    <li>Coletar dados de outros usuários (scraping, etc.)</li>
+    <li>Usar a plataforma pra finalidades não relacionadas à conexão família-babá</li>
+  </ul>
+  <p>Violações podem resultar em suspensão temporária ou banimento definitivo, sem reembolso.</p>
+
+  <h2>6. Responsabilidades</h2>
+  <p><strong>Da família:</strong></p>
+  <ul>
+    <li>Verificar referências e fazer entrevista presencial antes de contratar</li>
+    <li>Formalizar a relação de trabalho (contrato, registro, recolhimentos)</li>
+    <li>Tratar a babá com respeito e pagar o combinado</li>
+  </ul>
+
+  <p><strong>Da babá:</strong></p>
+  <ul>
+    <li>Fornecer dados verdadeiros sobre experiência e qualificações</li>
+    <li>Cumprir o que combinou com a família (horários, atribuições)</li>
+    <li>Tratar a família com profissionalismo</li>
+  </ul>
+
+  <p><strong>Da Dona Baby+:</strong></p>
+  <ul>
+    <li>Manter a plataforma funcionando, segura e disponível</li>
+    <li>Verificar identidade básica das babás antes da aprovação</li>
+    <li>Mediar disputas razoáveis entre as partes (sem garantia de resolução)</li>
+  </ul>
+
+  <p>A Dona Baby+ <strong>não se responsabiliza por</strong>:</p>
+  <ul>
+    <li>Qualidade do serviço prestado pela babá</li>
+    <li>Inadimplência da família com a babá</li>
+    <li>Disputas trabalhistas ou cíveis entre as partes</li>
+    <li>Danos materiais ou morais decorrentes da relação família-babá fora da plataforma</li>
+  </ul>
+
+  <h2>7. Privacidade</h2>
+  <p>Veja nossa <a href="/privacidade.html">Política de Privacidade</a>.</p>
+
+  <h2>8. Mudanças nestes termos</h2>
+  <p>A gente pode atualizar esses termos a qualquer momento. Mudanças relevantes serão comunicadas por email com pelo menos 15 dias de antecedência. Continuar usando a plataforma após o aviso significa que você concorda com a nova versão.</p>
+
+  <h2>9. Lei aplicável e foro</h2>
+  <p>Esses termos são regidos pelas leis brasileiras. Qualquer disputa será resolvida no foro da comarca do Rio de Janeiro/RJ.</p>
+
+  <p style="margin-top: 40px; font-size: 13px; color: var(--ink-3);">Em caso de dúvida, escreva pra <a href="mailto:contato@donababy.com">contato@donababy.com</a>.</p>
+</main>
+
+</body>
+</html>

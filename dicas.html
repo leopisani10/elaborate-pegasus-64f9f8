@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dicas e blog · Dona Baby+</title>
+  <meta name="description" content="Conteúdo prático pra famílias contratarem melhor e babás se valorizarem mais.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="shared.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script defer src="js/auth.js"></script>
+  <script defer src="js/footer.js"></script>
+  <style>
+    body { background: #FAFBFC; }
+
+    /* Header público */
+    .pub-header { background: white; border-bottom: 1px solid var(--line); padding: 16px 0; position: sticky; top: 0; z-index: 50; }
+    .pub-header-inner { max-width: 1200px; margin: 0 auto; padding: 0 24px; display: flex; justify-content: space-between; align-items: center; }
+    .pub-header img { height: 32px; }
+    .pub-nav { display: flex; gap: 24px; align-items: center; }
+    .pub-nav a { color: var(--ink-2); text-decoration: none; font-weight: 500; font-size: 14px; }
+    .pub-nav a:hover { color: var(--cta); }
+    .pub-nav a.btn-pri { background: var(--cta); color: white; padding: 9px 18px; border-radius: 999px; font-weight: 600; }
+    .pub-nav a.btn-pri:hover { background: var(--cta-hover); color: white; }
+    @media (max-width: 700px) { .pub-nav a.hide-mobile { display: none; } }
+
+    /* Conteúdo institucional */
+    .doc-container { max-width: 800px; margin: 0 auto; padding: 56px 24px 80px; }
+    .doc-container .breadcrumb { font-size: 13px; color: var(--ink-3); margin-bottom: 24px; }
+    .doc-container .breadcrumb a { color: var(--ink-3); text-decoration: none; }
+    .doc-container .breadcrumb a:hover { color: var(--cta); }
+    .doc-container h1 { font-size: clamp(32px, 5vw, 44px); font-weight: 800; letter-spacing: -0.035em; margin-bottom: 12px; line-height: 1.1; }
+    .doc-container .sub { color: var(--ink-3); font-size: 16px; margin-bottom: 8px; }
+    .doc-container .updated { font-size: 13px; color: var(--ink-3); margin-bottom: 40px; padding-bottom: 24px; border-bottom: 1px solid var(--line); }
+    .doc-container h2 { font-size: 22px; font-weight: 700; margin: 40px 0 12px; letter-spacing: -0.02em; }
+    .doc-container h3 { font-size: 17px; font-weight: 700; margin: 24px 0 8px; }
+    .doc-container p { color: var(--ink-2); line-height: 1.7; font-size: 15px; margin-bottom: 14px; }
+    .doc-container ul, .doc-container ol { color: var(--ink-2); line-height: 1.7; font-size: 15px; padding-left: 22px; margin-bottom: 18px; }
+    .doc-container li { margin-bottom: 6px; }
+    .doc-container strong { color: var(--ink); font-weight: 600; }
+    .doc-container .legal-note {
+      background: var(--bg-soft); border: 1px solid var(--line); border-radius: 12px;
+      padding: 14px 16px; font-size: 13px; color: var(--ink-2); margin: 24px 0; line-height: 1.6;
+    }
+    .doc-container a { color: var(--cta); text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+<header class="pub-header">
+  <div class="pub-header-inner">
+    <a href="/"><img src="logo.png" alt="Dona Baby+"></a>
+    <nav class="pub-nav">
+      <a href="/dicas.html" class="hide-mobile">Dicas</a>
+      <a href="/sobre.html" class="hide-mobile">Sobre</a>
+      <a href="/pricing.html" class="hide-mobile">Planos</a>
+      <a href="/login.html">Entrar</a>
+      <a href="/signup.html" class="btn-pri">Criar conta</a>
+    </nav>
+  </div>
+</header>
+
+<style>
+  .dicas-hero { background: white; padding: 56px 0 32px; }
+  .dicas-hero-inner { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+  .dicas-hero h1 { font-size: clamp(32px, 5vw, 48px); font-weight: 800; letter-spacing: -0.035em; margin-bottom: 12px; }
+  .dicas-hero p { color: var(--ink-3); font-size: 16px; max-width: 580px; }
+
+  .dicas-filters { display: flex; gap: 8px; margin: 32px 0 24px; flex-wrap: wrap; }
+  .dicas-filter {
+    background: white; border: 1.5px solid var(--line-strong); border-radius: 999px;
+    padding: 8px 16px; font-size: 13px; font-weight: 600; cursor: pointer;
+    color: var(--ink-2); transition: all 0.15s; text-decoration: none;
+  }
+  .dicas-filter:hover { border-color: var(--ink); }
+  .dicas-filter.active { background: var(--ink); color: white; border-color: var(--ink); }
+
+  .dicas-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 24px 80px;
+  }
+  .dica-card {
+    background: white; border: 1px solid var(--line); border-radius: 24px;
+    overflow: hidden; transition: all 0.2s; cursor: pointer;
+    text-decoration: none; color: inherit; display: flex; flex-direction: column;
+  }
+  .dica-card:hover { transform: translateY(-4px); box-shadow: 0 20px 40px -16px rgba(14,22,32,0.12); border-color: var(--line-strong); }
+  .dica-card-head { height: 140px; display: flex; align-items: flex-end; padding: 20px; }
+  .dica-card-tag {
+    background: white; color: var(--ink); font-size: 11px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.06em; padding: 5px 12px; border-radius: 999px;
+  }
+  .dica-card-body { padding: 20px 24px 24px; flex: 1; display: flex; flex-direction: column; }
+  .dica-card h3 { font-size: 17px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.3; margin-bottom: 10px; }
+  .dica-card p { font-size: 14px; color: var(--ink-2); line-height: 1.55; flex: 1; margin-bottom: 14px; }
+  .dica-card-foot { font-size: 12px; color: var(--ink-3); font-weight: 600; }
+
+  @media (max-width: 900px) { .dicas-grid { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 600px) { .dicas-grid { grid-template-columns: 1fr; } }
+</style>
+
+<section class="dicas-hero">
+  <div class="dicas-hero-inner">
+    <h1>Dicas pra famílias e babás.</h1>
+    <p>Conteúdo prático, direto, baseado no que vemos funcionar (e o que não). Lê o que faz sentido pra você.</p>
+    <div class="dicas-filters" id="filters">
+      <a href="#" class="dicas-filter active" data-tag="all">Todas</a>
+      <a href="#" class="dicas-filter" data-tag="familia">Pra famílias</a>
+      <a href="#" class="dicas-filter" data-tag="baba">Pra babás</a>
+    </div>
+  </div>
+</section>
+
+<div class="dicas-grid" id="grid">
+
+  <a href="/dicas/como-avaliar-uma-baba.html" class="dica-card" data-tag="familia">
+    <div class="dica-card-head" style="background: linear-gradient(135deg, #7C5BD3, #7C5BD3cc);">
+      <span class="dica-card-tag">Pra famílias</span>
+    </div>
+    <div class="dica-card-body">
+      <h3>Como avaliar uma babá: 7 sinais que importam mais que o currículo</h3>
+      <p>Tempo de experiência é só uma parte. Veja o que realmente diz se essa pessoa pode cuidar bem do seu filho.</p>
+      <div class="dica-card-foot">📖 6 min de leitura</div>
+    </div>
+  </a>
+
+  <a href="/dicas/sinais-de-alerta-na-entrevista.html" class="dica-card" data-tag="familia">
+    <div class="dica-card-head" style="background: linear-gradient(135deg, #E63A6F, #E63A6Fcc);">
+      <span class="dica-card-tag">Pra famílias</span>
+    </div>
+    <div class="dica-card-body">
+      <h3>5 sinais de alerta numa entrevista de babá</h3>
+      <p>Não é sobre achar problema em tudo — é sobre prestar atenção em coisas que famílias subestimam.</p>
+      <div class="dica-card-foot">📖 5 min de leitura</div>
+    </div>
+  </a>
+
+  <a href="/dicas/conversa-sobre-rotina.html" class="dica-card" data-tag="familia">
+    <div class="dica-card-head" style="background: linear-gradient(135deg, #1FA8E5, #1FA8E5cc);">
+      <span class="dica-card-tag">Pra famílias</span>
+    </div>
+    <div class="dica-card-body">
+      <h3>A conversa sobre rotina: 10 perguntas pra alinhar antes de começar</h3>
+      <p>Maior fonte de conflito no primeiro mês é desencontro de expectativas. Aqui ficam alinhadas.</p>
+      <div class="dica-card-foot">📖 4 min de leitura</div>
+    </div>
+  </a>
+
+  <a href="/dicas/destacar-perfil-baba.html" class="dica-card" data-tag="baba">
+    <div class="dica-card-head" style="background: linear-gradient(135deg, #1A9D85, #1A9D85cc);">
+      <span class="dica-card-tag">Pra babás</span>
+    </div>
+    <div class="dica-card-body">
+      <h3>Como destacar seu perfil pra ser escolhida</h3>
+      <p>A diferença entre receber 1 mensagem por semana e 5 não é experiência — é como você se apresenta.</p>
+      <div class="dica-card-foot">📖 5 min de leitura</div>
+    </div>
+  </a>
+
+  <a href="/dicas/primeira-conversa-baba.html" class="dica-card" data-tag="baba">
+    <div class="dica-card-head" style="background: linear-gradient(135deg, #F5933C, #F5933Ccc);">
+      <span class="dica-card-tag">Pra babás</span>
+    </div>
+    <div class="dica-card-body">
+      <h3>Primeira conversa com família: o que falar (e o que não)</h3>
+      <p>O objetivo da primeira conversa não é fechar — é qualificar se vai dar certo.</p>
+      <div class="dica-card-foot">📖 4 min de leitura</div>
+    </div>
+  </a>
+
+  <a href="/dicas/cobrando-o-justo.html" class="dica-card" data-tag="baba">
+    <div class="dica-card-head" style="background: linear-gradient(135deg, #EB5F2D, #EB5F2Dcc);">
+      <span class="dica-card-tag">Pra babás</span>
+    </div>
+    <div class="dica-card-body">
+      <h3>Como cobrar o valor justo (sem se subvalorizar)</h3>
+      <p>Babá brasileira historicamente cobra menos do que vale. Aqui vai como mudar isso, com números.</p>
+      <div class="dica-card-foot">📖 6 min de leitura</div>
+    </div>
+  </a>
+
+</div>
+
+<script>
+  // Filter handling
+  document.querySelectorAll('.dicas-filter').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      document.querySelectorAll('.dicas-filter').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const tag = btn.dataset.tag;
+      document.querySelectorAll('.dica-card').forEach(card => {
+        card.style.display = (tag === 'all' || card.dataset.tag === tag) ? 'flex' : 'none';
+      });
+    });
+  });
+
+  // Inicializa filtro pela URL (?tag=baba)
+  const params = new URLSearchParams(window.location.search);
+  const initTag = params.get('tag');
+  if (initTag) {
+    const btn = document.querySelector(`.dicas-filter[data-tag="${initTag}"]`);
+    if (btn) btn.click();
+  }
+</script>
+
+</body>
+</html>
