@@ -346,6 +346,9 @@
       <!-- Content -->
       <div class="acc-content">
 
+        <!-- Banner de aprovação pendente (oculto por padrão, mostrado via JS pra babás pending) -->
+        <div id="approvalBanner" style="display: none;"></div>
+
         <!-- PERFIL -->
         <section id="perfil">
           <div class="acc-section-head">
@@ -579,9 +582,47 @@
         if (baba.approval_status === 'pending') {
           badgeText.textContent = 'Aguardando aprovação';
           document.getElementById('verifiedBadge').style.color = 'var(--cta)';
+          // Banner grande
+          const banner = document.getElementById('approvalBanner');
+          banner.style.display = 'block';
+          banner.innerHTML = `
+            <div style="background: linear-gradient(135deg, #FFF7E6, #FFEDCF); border: 1px solid #F5C36B; border-radius: 20px; padding: 24px 28px; margin-bottom: 28px; display: flex; gap: 18px; align-items: flex-start;">
+              <div style="width: 48px; height: 48px; border-radius: 50%; background: #B5530F; color: white; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              </div>
+              <div style="flex: 1;">
+                <h3 style="font-size: 17px; font-weight: 800; color: #663300; margin-bottom: 6px; letter-spacing: -0.02em;">Seu cadastro está em análise</h3>
+                <p style="color: #7A4715; font-size: 14px; line-height: 1.55; margin: 0 0 8px 0;">
+                  A equipe Dona Baby+ está conferindo seus dados. Em até <strong>24 horas</strong> você recebe um aviso e libera o acesso pra buscar famílias.
+                </p>
+                <p style="color: #7A4715; font-size: 13px; line-height: 1.5; margin: 0;">
+                  <strong>Você não vai ser cobrada até estar aprovada.</strong> Se já passou de 24h, escreve pra <a href="mailto:contato@donababy.com" style="color: var(--cta); font-weight: 700;">contato@donababy.com</a>.
+                </p>
+              </div>
+            </div>
+          `;
         } else if (baba.approval_status === 'rejected') {
           badgeText.textContent = 'Aprovação recusada';
           document.getElementById('verifiedBadge').style.color = 'var(--cta)';
+          // Banner rejeição
+          const banner = document.getElementById('approvalBanner');
+          banner.style.display = 'block';
+          banner.innerHTML = `
+            <div style="background: #FCE7E7; border: 1px solid #F5BCBC; border-radius: 20px; padding: 24px 28px; margin-bottom: 28px; display: flex; gap: 18px; align-items: flex-start;">
+              <div style="width: 48px; height: 48px; border-radius: 50%; background: #B53034; color: white; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+              </div>
+              <div style="flex: 1;">
+                <h3 style="font-size: 17px; font-weight: 800; color: #5C1F22; margin-bottom: 6px; letter-spacing: -0.02em;">Cadastro não aprovado</h3>
+                <p style="color: #7A2C30; font-size: 14px; line-height: 1.55; margin: 0 0 8px 0;">
+                  ${baba.rejection_reason ? `<strong>Motivo:</strong> ${baba.rejection_reason.replace(/[<>"']/g,'')}` : 'Não pudemos aprovar seu cadastro nesta plataforma.'}
+                </p>
+                <p style="color: #7A2C30; font-size: 13px; line-height: 1.5; margin: 0;">
+                  <strong>Sua cobrança foi cancelada e você não foi cobrada.</strong> Pra entender mais, fala com a gente: <a href="mailto:contato@donababy.com" style="color: var(--cta); font-weight: 700;">contato@donababy.com</a>.
+                </p>
+              </div>
+            </div>
+          `;
         }
       }
     } else if (profile.user_type === 'admin') {
@@ -653,7 +694,7 @@
     });
   }
 
-  async function renderSubscription(profile) {
+  async function renderSubscription(profile, retryCount = 0) {
     const sub = await window.dbHelpers.getMySubscription();
     const isActive = window.dbHelpers.isSubActive(sub);
 
@@ -661,11 +702,45 @@
     const stateActive = document.getElementById('subStateActive');
     const stateIssue = document.getElementById('subStateIssue');
 
+    // Reset estados
+    stateNone.style.display = 'none';
+    stateActive.style.display = 'none';
+    if (stateIssue) stateIssue.style.display = 'none';
+
     if (!sub) {
-      // Nunca assinou
+      // Veio do Stripe Checkout? Confere URL — pode ser race condition do webhook
+      const cameFromCheckout = window.location.search.includes('from=checkout') || sessionStorage.getItem('justPaid') === '1';
+
+      if (cameFromCheckout && retryCount < 10) {
+        // Tenta de novo em 2 segundos (webhook tá processando)
+        stateNone.style.display = 'block';
+        stateNone.innerHTML = `
+          <div style="padding: 20px; text-align: center;">
+            <div style="display: inline-block; width: 32px; height: 32px; border: 3px solid var(--line); border-top-color: var(--cta); border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 16px;"></div>
+            <h3 style="margin-bottom: 8px;">Confirmando sua assinatura...</h3>
+            <p style="color: var(--ink-3); font-size: 14px;">Só um instante, estamos sincronizando com o Stripe.</p>
+            <style>@keyframes spin { to { transform: rotate(360deg); } }</style>
+          </div>
+        `;
+        setTimeout(() => renderSubscription(profile, retryCount + 1), 2000);
+        return;
+      }
+
+      // Nunca assinou (ou esgotou retries)
+      sessionStorage.removeItem('justPaid');
       stateNone.style.display = 'block';
+      // Recarrega HTML original se foi alterado pelo loading
+      if (stateNone.querySelector('h3') && stateNone.querySelector('h3').textContent.includes('Confirmando')) {
+        stateNone.innerHTML = `
+          <h3 style="margin-bottom: 8px;">Você ainda não tem assinatura.</h3>
+          <p style="color: var(--ink-3); margin-bottom: 16px;">Comece o trial de 3 dias — cadastre o cartão, sem cobrança até o dia 4. Cancele antes e não paga nada.</p>
+          <a href="/pricing.html" class="btn-cta-account">Começar 3 dias grátis</a>
+        `;
+      }
       return;
     }
+
+    sessionStorage.removeItem('justPaid');
 
     if (isActive) {
       // Ativa ou em trial

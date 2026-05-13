@@ -139,18 +139,18 @@
   <div class="bg-blob bg-blob-2"></div>
 
   <div class="success-card">
-    <div class="check-icon">
+    <div class="check-icon" id="successIcon">
       <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
     </div>
-    <h1>Pagamento confirmado!</h1>
+    <h1 id="successTitle">Pagamento confirmado!</h1>
     <p id="successMsg">Sua assinatura está ativa. Você já pode aproveitar todos os recursos do Dona Baby+.</p>
     <div class="loading-state" id="loadingState">Confirmando com o banco...</div>
     <div class="actions" id="actions" style="display: none;">
       <a href="#" id="goNext" class="btn-cta-lg">
-        Continuar
+        <span id="goNextLabel">Continuar</span>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
       </a>
-      <a href="account.html" class="btn-secondary-lg">Ver minha conta</a>
+      <a href="account.html" class="btn-secondary-lg" id="goAccount">Ver minha conta</a>
     </div>
   </div>
 </main>
@@ -188,32 +188,45 @@
   async function showReady(profile, sub) {
     document.getElementById('loadingState').style.display = 'none';
 
-    const nextBtn = document.getElementById('goNext');
+    const successIcon = document.getElementById('successIcon');
+    const successTitle = document.getElementById('successTitle');
+    const successMsg = document.getElementById('successMsg');
+    const goNext = document.getElementById('goNext');
+    const goNextLabel = document.getElementById('goNextLabel');
+    const goAccount = document.getElementById('goAccount');
 
     if (profile.user_type === 'baba') {
-      // Babá: depois de pagar, ainda precisa de aprovação
+      // Babá: confere se já tá aprovada
       const baba = await window.dbHelpers.getBabaProfile(profile.id);
+      // Marca pra account.html saber que veio do checkout
+      try { sessionStorage.setItem('justPaid', '1'); } catch(e) {}
 
       if (baba && baba.approval_status === 'approved') {
-        document.getElementById('successMsg').textContent =
-          `${sub.plan_name} ativo. Sua conta já tá aprovada, pode buscar famílias.`;
-        nextBtn.href = '/families.html';
-        nextBtn.querySelector('svg').previousSibling.textContent = 'Buscar famílias ';
+        // Aprovada — pode ir buscar famílias
+        successTitle.textContent = 'Pagamento confirmado!';
+        successMsg.innerHTML = `<strong>${sub.plan_name}</strong> ativo. Sua conta já tá aprovada e pode buscar famílias.`;
+        goNext.href = '/families.html';
+        goNextLabel.textContent = 'Buscar famílias';
       } else {
-        document.getElementById('successMsg').innerHTML =
-          `${sub.plan_name} ativo. Agora seu cadastro está em análise pela nossa equipe — em até 24h te avisamos. <strong>Você não será cobrado até a aprovação.</strong>`;
-        nextBtn.href = '/onboarding-baba.html?status=pending';
-        nextBtn.querySelector('svg').previousSibling.textContent = 'Ver status ';
+        // Pending — mensagem clara que tá em análise
+        successIcon.style.background = '#FFF7E6';
+        successIcon.style.color = '#B5530F';
+        successIcon.innerHTML = '<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>';
+        successTitle.textContent = 'Pagamento garantido, agora é a nossa vez.';
+        successMsg.innerHTML = `Seu cadastro tá em análise pela equipe Dona Baby+. <strong>Em até 24 horas</strong> a gente confere seus dados e libera você pra buscar famílias.<br><br><strong style="color: var(--baba-deep);">Você não será cobrada enquanto não estiver aprovada.</strong>`;
+        goNext.href = '/account.html';
+        goNextLabel.textContent = 'Ver meu perfil';
+        goAccount.style.display = 'none';
       }
     } else if (profile.user_type === 'parent') {
-      document.getElementById('successMsg').textContent =
-        `${sub.plan_name} ativo. Você já pode aproveitar todos os recursos do Dona Baby+.`;
-      nextBtn.href = '/dashboard.html';
-      nextBtn.querySelector('svg').previousSibling.textContent = 'Buscar babás ';
+      successTitle.textContent = 'Pagamento confirmado!';
+      successMsg.innerHTML = `<strong>${sub.plan_name}</strong> ativo. Você já pode buscar babás verificadas no Rio.`;
+      goNext.href = '/dashboard.html';
+      goNextLabel.textContent = 'Buscar babás';
     } else {
-      document.getElementById('successMsg').textContent =
-        `${sub.plan_name} ativo. Você já pode aproveitar todos os recursos do Dona Baby+.`;
-      nextBtn.href = '/';
+      successTitle.textContent = 'Pagamento confirmado!';
+      successMsg.textContent = `${sub.plan_name} ativo.`;
+      goNext.href = '/';
     }
     document.getElementById('actions').style.display = 'flex';
   }
@@ -221,13 +234,17 @@
   async function showSlowConfirm(profile) {
     document.getElementById('loadingState').innerHTML =
       'Pagamento confirmado pelo Stripe. A ativação está demorando um pouco — atualize a página em 1 minuto se ainda não aparecer aqui.';
-    const nextBtn = document.getElementById('goNext');
+    const goNext = document.getElementById('goNext');
+    const goNextLabel = document.getElementById('goNextLabel');
     if (profile.user_type === 'baba') {
-      nextBtn.href = '/onboarding-baba.html?status=pending';
+      goNext.href = '/account.html';
+      goNextLabel.textContent = 'Ver meu perfil';
+      document.getElementById('goAccount').style.display = 'none';
     } else if (profile.user_type === 'parent') {
-      nextBtn.href = '/dashboard.html';
+      goNext.href = '/dashboard.html';
+      goNextLabel.textContent = 'Buscar babás';
     } else {
-      nextBtn.href = '/';
+      goNext.href = '/';
     }
     document.getElementById('actions').style.display = 'flex';
   }

@@ -162,8 +162,27 @@
     // Confere se babá tá aprovada
     const baba = await window.dbHelpers.getBabaProfile(myProfile.id);
     if (!baba || baba.approval_status !== 'approved') {
-      alert('Você precisa estar aprovada pra buscar famílias.');
-      window.location.href = '/onboarding-baba.html';
+      // Status diferente, mensagem diferente
+      if (baba && baba.approval_status === 'rejected') {
+        await window.dbHelpers.showDbModal({
+          type: 'paywall',
+          title: 'Cadastro não aprovado',
+          message: `Não pudemos aprovar seu cadastro nesta plataforma. <strong>Sua cobrança foi cancelada</strong> e você não foi cobrada.<br><br>Se quiser entender o motivo, fala com a gente.`,
+          primaryLabel: 'Falar com a equipe',
+          primaryHref: 'mailto:contato@donababy.com',
+          secondaryLabel: 'Voltar pro perfil',
+          secondaryHref: '/account.html'
+        });
+      } else {
+        await window.dbHelpers.showDbModal({
+          type: 'pending',
+          title: 'Aguardando aprovação',
+          message: `Seu cadastro tá em análise pela equipe Dona Baby+. <strong>Em até 24 horas</strong> a gente libera seu acesso.<br><br>Você vai receber um aviso assim que estiver aprovada — e <strong style="color: var(--baba-deep);">não vai ser cobrada até lá</strong>.<br><br>Dúvidas? <a href="mailto:contato@donababy.com" style="color: var(--cta);">contato@donababy.com</a>`,
+          primaryLabel: 'Voltar pro meu perfil',
+          primaryHref: '/account.html'
+        });
+      }
+      window.location.href = '/account.html';
       return;
     }
 
