@@ -441,22 +441,29 @@ async function getMySubscription() {
     .eq('user_id', me.id)
     .order('created_at', { ascending: false })
     .limit(1);
-  if (error) { console.error('getMySubscription:', error); return null; }
-  return (data && data[0]) || null;
+  if (error) {
+    console.error('[DonaBaby] getMySubscription error:', error);
+    return null;
+  }
+  const sub = (data && data[0]) || null;
+  console.log('[DonaBaby] getMySubscription returned:', sub);
+  return sub;
 }
 
-// Retorna true se a sub é trial OU active e não venceu
+// Retorna true se a sub é trial OU active.
+// Tolerante: se datas estão null/inválidas mas status é trialing/active, considera ativa.
 function isSubActive(sub) {
   if (!sub) return false;
   if (!['active', 'trialing'].includes(sub.status)) return false;
   const now = new Date();
-  // Pra trial: confere trial_end
-  if (sub.status === 'trialing' && sub.trial_end) {
-    if (new Date(sub.trial_end) < now) return false;
+  // Se as datas estão null, dá benefício da dúvida — webhook pode ter chegado parcial
+  if (sub.status === 'trialing') {
+    if (sub.trial_end && new Date(sub.trial_end) < now) return false;
+    return true; // trial_end null tudo bem
   }
-  // Pra active: confere current_period_end
-  if (sub.status === 'active' && sub.current_period_end) {
-    if (new Date(sub.current_period_end) < now) return false;
+  if (sub.status === 'active') {
+    if (sub.current_period_end && new Date(sub.current_period_end) < now) return false;
+    return true; // current_period_end null tudo bem
   }
   return true;
 }
@@ -470,6 +477,36 @@ async function requireActiveSubscription() {
     return false;
   }
   return true;
+}
+
+// Força sync da subscription com o Stripe (fallback se webhook falhou)
+// Retorna { synced, status, plan_name, error }
+async function syncSubscription() {
+  try {
+    const { data: { session } } = await db.auth.getSession();
+    if (!session) return { error: 'Sem sessão' };
+
+    // Pega URL do supabase a partir do db.supabaseUrl
+    const SUPABASE_URL = db.supabaseUrl || 'https://cvvdmgoyvozzjsrswyzg.supabase.co';
+    const res = await fetch(`${SUPABASE_URL}/functions/v1/sync-subscription`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${session.access_token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({}),
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      console.error('[DonaBaby] syncSubscription failed:', data);
+      return { error: data.error || data.message || 'Erro' };
+    }
+    console.log('[DonaBaby] syncSubscription:', data);
+    return data;
+  } catch (err) {
+    console.error('[DonaBaby] syncSubscription error:', err);
+    return { error: err.message };
+  }
 }
 
 // =============================================
@@ -649,7 +686,7 @@ window.dbHelpers = {
   getPendingBabas, approveBaba, rejectBaba,
   getOrCreateConversation, getMyConversations, getOtherParticipant,
   getMessages, sendMessage, subscribeToMessages, unsubscribe,
-  getMySubscription, isSubActive, requireActiveSubscription,
+  getMySubscription, isSubActive, requireActiveSubscription, syncSubscription,
   uploadAvatar, avatarHTML, showDbModal,
   showError, showSuccess, setLoading,
 };
