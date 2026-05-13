@@ -863,6 +863,9 @@
         accepts_travel: travel === 'yes',
         has_own_children: ownChildren === 'yes' ? true : (ownChildren === 'no' ? false : null),
         is_smoker: smoker === 'yes',
+      }, {
+        // Em modo edição, NÃO força volta pra pending — fica como tava
+        forcePending: !isEditMode
       });
 
       // Próximo passo: sub ativa? aproveite. Senão, pricing.
