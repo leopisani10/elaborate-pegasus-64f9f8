@@ -130,7 +130,7 @@ async function getApprovedBabas(filters = {}) {
     .from('baba_profiles')
     .select(`
       *,
-      profiles!inner(full_name, avatar_url)
+      profiles!baba_profiles_id_fkey(full_name, avatar_url)
     `)
     .eq('approval_status', 'approved');
 
@@ -150,7 +150,7 @@ async function getBabaById(babaId) {
     .from('baba_profiles')
     .select(`
       *,
-      profiles!inner(full_name, avatar_url, phone)
+      profiles!baba_profiles_id_fkey(full_name, avatar_url, phone)
     `)
     .eq('id', babaId)
     .single();
@@ -167,7 +167,7 @@ async function getPendingBabas() {
     .from('baba_profiles')
     .select(`
       *,
-      profiles!inner(full_name, email, phone, avatar_url)
+      profiles!baba_profiles_id_fkey(full_name, email, phone, avatar_url)
     `)
     .eq('approval_status', 'pending')
     .order('created_at', { ascending: true });
