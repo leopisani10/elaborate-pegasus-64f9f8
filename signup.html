@@ -338,12 +338,8 @@
           console.warn('Não conseguiu salvar o telefone, mas conta foi criada:', updateError);
         }
 
-        // 3. Redireciona pra próxima tela
-        if (userType === 'baba') {
-          window.location.href = '/onboarding-baba.html';
-        } else {
-          window.location.href = '/dashboard.html';
-        }
+        // 3. Redireciona pra próxima tela (lógica centralizada no helper)
+        await helpers.redirectToDashboard();
 
       } catch (err) {
         console.error('Erro no signup:', err);
