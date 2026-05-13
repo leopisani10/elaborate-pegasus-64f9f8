@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Maria Silva · Babá em Copacabana · Dona Baby+</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="shared.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script defer src="js/auth.js"></script>
+  <style>
+    body { background: #FAFBFC; }
+
+    .breadcrumb {
+      padding: 18px 0;
+      font-size: 13px;
+      color: var(--ink-3);
+    }
+    .breadcrumb a { color: var(--ink-3); }
+    .breadcrumb a:hover { color: var(--cta); }
+
+    .profile-layout {
+      display: grid;
+      grid-template-columns: 380px 1fr;
+      gap: 40px;
+      padding-bottom: 80px;
+    }
+
+    /* LEFT — sticky sidebar */
+    .profile-side {
+      position: sticky;
+      top: 80px;
+      align-self: start;
+    }
+    .profile-photo-card {
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      padding: 28px;
+      box-shadow: 0 16px 40px -20px rgba(14,22,32,0.08);
+    }
+    .profile-big-avatar {
+      width: 100%;
+      aspect-ratio: 1;
+      border-radius: 20px;
+      background: var(--baba);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 100px;
+      font-weight: 700;
+      margin-bottom: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+    .profile-big-avatar .verified-stamp {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      background: white;
+      color: var(--baba-deep);
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .profile-name-big {
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+      margin-bottom: 4px;
+    }
+    .profile-loc-big {
+      font-size: 14px;
+      color: var(--ink-3);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      margin-bottom: 18px;
+    }
+    .profile-price-big {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+      margin-bottom: 20px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--line);
+    }
+    .profile-price-big .val {
+      font-size: 36px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      color: var(--baba);
+    }
+    .profile-price-big .per { font-size: 14px; color: var(--ink-3); }
+
+    .profile-key-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 20px;
+    }
+
+    .conversar-cta {
+      background: var(--cta);
+      color: white;
+      padding: 16px;
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: 15px;
+      border: none;
+      cursor: pointer;
+      width: 100%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 8px 20px -4px rgba(235,95,45,0.4);
+      transition: all 0.2s;
+    }
+    .conversar-cta:hover {
+      background: var(--cta-hover);
+      transform: translateY(-1px);
+    }
+    .save-btn {
+      background: white;
+      color: var(--ink);
+      padding: 14px;
+      border-radius: 999px;
+      border: 1px solid var(--line-strong);
+      font-family: inherit;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 10px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .save-btn:hover { border-color: var(--ink); }
+
+    .gated-notice {
+      margin-top: 14px;
+      padding: 12px 14px;
+      background: var(--bg-warm);
+      border-radius: 12px;
+      font-size: 12px;
+      color: var(--ink-2);
+      line-height: 1.5;
+      display: flex;
+      gap: 10px;
+    }
+    .gated-notice svg { color: var(--cta); flex-shrink: 0; margin-top: 1px; }
+    .gated-notice a { color: var(--cta); font-weight: 700; }
+
+    /* RIGHT — content */
+    .profile-content > .section {
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      padding: 32px;
+      margin-bottom: 16px;
+    }
+    .profile-content h2 {
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      letter-spacing: -0.02em;
+    }
+    .profile-content p { color: var(--ink-2); line-height: 1.7; font-size: 15px; }
+
+    /* Verification grid */
+    .verification-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .ver-item {
+      background: var(--baba-soft);
+      border-radius: 14px;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .ver-item-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--baba);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .ver-item-text { font-size: 13px; }
+    .ver-item-text strong { display: block; font-weight: 700; color: var(--baba-deep); margin-bottom: 1px; }
+    .ver-item-text span { color: var(--baba-deep); opacity: 0.75; }
+
+    /* Experience timeline */
+    .exp-timeline { list-style: none; }
+    .exp-timeline li {
+      display: grid;
+      grid-template-columns: 80px 1fr;
+      gap: 20px;
+      padding: 16px 0;
+      border-top: 1px solid var(--line);
+    }
+    .exp-timeline li:first-child { border-top: none; padding-top: 0; }
+    .exp-period {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--ink-3);
+      letter-spacing: -0.01em;
+    }
+    .exp-detail strong { display: block; font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+    .exp-detail p { font-size: 13px; color: var(--ink-2); line-height: 1.55; }
+
+    /* Schedule */
+    .schedule {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 6px;
+    }
+    .day {
+      text-align: center;
+      padding: 12px 6px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: white;
+    }
+    .day.available { background: var(--baba-soft); border-color: var(--baba); }
+    .day-name { font-size: 11px; font-weight: 600; color: var(--ink-3); text-transform: uppercase; }
+    .day.available .day-name { color: var(--baba-deep); }
+    .day-time { font-size: 11px; color: var(--ink); margin-top: 4px; font-weight: 600; }
+    .day.available .day-time { color: var(--baba-deep); }
+
+    /* Reviews */
+    .review {
+      padding: 18px 0;
+      border-top: 1px solid var(--line);
+    }
+    .review:first-of-type { border-top: none; padding-top: 0; }
+    .review-head {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+    .review-av {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--familia);
+      color: white;
+      font-weight: 700;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .review-name { font-size: 14px; font-weight: 700; }
+    .review-date { font-size: 12px; color: var(--ink-3); }
+    .stars { color: var(--yellow); margin-left: auto; }
+    .review-text { font-size: 14px; color: var(--ink-2); line-height: 1.6; }
+
+    @media (max-width: 960px) {
+      .profile-layout { grid-template-columns: 1fr; }
+      .profile-side { position: static; }
+      .verification-grid { grid-template-columns: 1fr; }
+      .schedule { grid-template-columns: repeat(4, 1fr); }
+    }
+  </style>
+</head>
+<body>
+
+<header class="app-nav">
+  <div class="app-nav-inner">
+    <a class="app-logo" href="/"><img src="logo.png" alt="Dona Baby+"></a>
+    <ul class="app-nav-links">
+      <li><a href="dashboard.html">Buscar babás</a></li>
+      <li><a href="chat.html">Mensagens</a></li>
+      <li><a href="#">Salvas</a></li>
+    </ul>
+    <div class="app-nav-right">
+      <button class="icon-btn" aria-label="Notificações">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/></svg>
+        <span class="badge"></span>
+      </button>
+      <a class="user-chip" href="account.html">
+        <div class="user-chip-avatar">F</div>
+        <div class="user-chip-name">Fernanda</div>
+      </a>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="container">
+    <div class="breadcrumb">
+      <a href="dashboard.html">← Buscar babás</a>  ·  <span id="bcName">Carregando...</span>
+    </div>
+
+    <div class="profile-layout" id="profileLayout" style="opacity: 0.3;">
+      <!-- LEFT — preenchido pelo JS -->
+      <aside class="profile-side">
+        <div class="profile-photo-card">
+          <div class="profile-big-avatar" id="bigAvatar" style="background: var(--baba);">
+            M
+          </div>
+          <h1 class="profile-name-big" id="profileName">Carregando...</h1>
+          <div class="profile-loc-big" id="profileLoc">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg>
+            <span id="locText">...</span>
+          </div>
+
+          <div class="profile-price-big">
+            <span class="val" id="priceVal">R$ 0</span>
+            <span class="per">/hora · negociável</span>
+          </div>
+
+          <div class="profile-key-tags" id="keyTags"></div>
+
+          <button class="conversar-cta" onclick="openChat()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+            Conversar com <span id="firstName">babá</span>
+          </button>
+
+          <div class="gated-notice">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+            <div>Conversa direta precisa do <a href="account.html">Plano Família</a> (R$ 29/mês). Sem fidelidade.</div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- RIGHT — preenchido pelo JS -->
+      <div class="profile-content">
+        <div class="section">
+          <h2>Sobre</h2>
+          <p id="bioText">Carregando...</p>
+        </div>
+
+        <div class="section">
+          <h2>Verificações</h2>
+          <div class="verification-grid">
+            <div class="ver-item">
+              <div class="ver-item-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+              <div class="ver-item-text"><strong>Cadastro aprovado</strong><span>Pelo time Dona Baby+</span></div>
+            </div>
+            <div class="ver-item">
+              <div class="ver-item-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+              <div class="ver-item-text"><strong>Identidade conferida</strong><span>RG/CPF validados</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <h2>Bairros que atende</h2>
+          <div id="hoodsList" class="profile-key-tags"></div>
+        </div>
+
+        <div class="section" id="specialtiesSection" style="display:none;">
+          <h2>Especialidades</h2>
+          <div id="specialtiesList" class="profile-key-tags"></div>
+        </div>
+      </div>
+    </div>
+    </div>
+  </main>
+
+  
+<script>
+  let currentBaba = null;
+
+  window.addEventListener('DOMContentLoaded', async () => {
+    if (!window.dbClient) {
+      setTimeout(() => location.reload(), 800);
+      return;
+    }
+
+    await window.dbHelpers.requireAuth();
+
+    // Pega ID da URL: profile.html?id=xxx
+    const params = new URLSearchParams(window.location.search);
+    const babaId = params.get('id');
+
+    if (!babaId) {
+      alert('ID da babá não foi passado na URL.');
+      window.location.href = '/dashboard.html';
+      return;
+    }
+
+    // Atualizar user chip
+    const profile = await window.dbHelpers.getCurrentProfile();
+    if (profile && profile.full_name) {
+      const chipAvatar = document.querySelector('.user-chip-avatar');
+      const chipName = document.querySelector('.user-chip-name');
+      if (chipAvatar) chipAvatar.textContent = profile.full_name.charAt(0).toUpperCase();
+      if (chipName) chipName.textContent = profile.full_name.split(' ')[0];
+    }
+
+    try {
+      currentBaba = await window.dbHelpers.getBabaById(babaId);
+      if (!currentBaba) {
+        alert('Babá não encontrada.');
+        window.location.href = '/dashboard.html';
+        return;
+      }
+      renderBaba(currentBaba);
+    } catch (err) {
+      console.error('Erro carregando babá:', err);
+      alert('Erro carregando perfil: ' + (err.message || 'desconhecido'));
+    }
+  });
+
+  function escapeHtml(str) {
+    if (!str) return '';
+    return String(str).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[m]);
+  }
+
+  function renderBaba(baba) {
+    const profile = baba.profiles || {};
+    const fullName = profile.full_name || 'Babá';
+    const firstName = fullName.split(' ')[0];
+    const initial = fullName.charAt(0).toUpperCase();
+    const hoods = baba.neighborhoods || [];
+    const firstHood = hoods[0] || 'Rio de Janeiro';
+
+    document.title = `${firstName} · Dona Baby+`;
+    document.getElementById('bcName').textContent = firstName;
+    document.getElementById('bigAvatar').textContent = initial;
+    document.getElementById('profileName').textContent = fullName;
+    document.getElementById('locText').textContent = `${firstHood} · Rio de Janeiro`;
+    document.getElementById('priceVal').textContent = `R$ ${baba.hourly_rate || 0}`;
+    document.getElementById('firstName').textContent = firstName;
+    document.getElementById('bioText').textContent = baba.bio || 'Sem descrição.';
+
+    // Tags principais (anos exp + ages)
+    const tagsEl = document.getElementById('keyTags');
+    const tags = [];
+    if (baba.years_experience) {
+      tags.push(`<span class="tag tag-baba">${baba.years_experience} ${baba.years_experience === 1 ? 'ano' : 'anos'} exp.</span>`);
+    }
+    const ageLabels = { newborn: 'Recém-nascido', baby: 'Bebê', toddler: 'Pré-escolar', kid: 'Criança', older: 'Maior' };
+    (baba.age_ranges || []).slice(0, 3).forEach(a => {
+      tags.push(`<span class="tag tag-warm">${ageLabels[a] || a}</span>`);
+    });
+    tagsEl.innerHTML = tags.join('');
+
+    // Bairros
+    const hoodsEl = document.getElementById('hoodsList');
+    hoodsEl.innerHTML = hoods.map(h => `<span class="tag tag-soft">${escapeHtml(h)}</span>`).join('');
+
+    // Especialidades
+    const specs = baba.specialties || [];
+    if (specs.length > 0) {
+      const specLabels = {
+        'pedagoga': 'Pedagoga', 'enfermeira': 'Enfermeira', 'folguista': 'Folguista',
+        'noturna': 'Noturna', 'pos-parto': 'Pós-parto', 'ingles': 'Inglês',
+        'habilitada': 'Habilitada', 'viaja': 'Viaja'
+      };
+      document.getElementById('specialtiesSection').style.display = 'block';
+      document.getElementById('specialtiesList').innerHTML = specs.map(s =>
+        `<span class="tag tag-baba">${specLabels[s] || s}</span>`
+      ).join('');
+    }
+
+    document.getElementById('profileLayout').style.opacity = '1';
+  }
+
+  function openChat() {
+    if (!currentBaba) return;
+    // Vai pro chat com a babá. Próximo batch implementa de verdade.
+    window.location.href = `chat.html?baba=${currentBaba.id}`;
+  }
+</script>
+</body>
+</html>
