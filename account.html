@@ -334,19 +334,7 @@
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="3"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
             Assinatura
           </a></li>
-          <li><a href="#cobrancas">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2h14a2 2 0 002-2v-5"/><polyline points="3 7 12 13 21 7"/></svg>
-            Cobranças
-          </a></li>
-          <li><a href="#notificacoes">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/></svg>
-            Notificações
-          </a></li>
-          <li><a href="#privacidade">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
-            Privacidade
-          </a></li>
-          <li><a href="/" class="danger">
+          <li><a href="#" onclick="event.preventDefault(); window.dbHelpers.signOut();" class="danger">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
             Sair
           </a></li>
@@ -404,7 +392,7 @@
         </section>
 
         <!-- ASSINATURA -->
-        <section id="assinatura" data-section="subscription" style="display:none;">
+        <section id="assinatura" data-section="subscription">
           <div class="acc-section-head">
             <div>
               <h2>Plano e assinatura</h2>
@@ -412,30 +400,46 @@
             </div>
           </div>
 
-          <div class="sub-card-active">
-            <span class="sub-status-pill"><span class="dot"></span>Plano ativo</span>
-            <h3>Plano Família</h3>
-            <div class="price">R$ 29<small>/mês</small></div>
+          <!-- Estado: SEM assinatura -->
+          <div id="subStateNone" class="sub-card-active" style="display:none; background: var(--bg-soft);">
+            <h3 style="margin-bottom: 8px;">Você ainda não tem assinatura.</h3>
+            <p style="color: var(--ink-3); font-size: 14px; line-height: 1.5; margin-bottom: 16px;">
+              Comece o trial de 3 dias — cadastre o cartão, sem cobrança até o dia 4. Cancele antes e não paga nada.
+            </p>
+            <a href="pricing.html" class="btn btn-cta">Começar 3 dias grátis</a>
+          </div>
+
+          <!-- Estado: ATIVA / TRIAL -->
+          <div id="subStateActive" class="sub-card-active" style="display:none;">
+            <span class="sub-status-pill" id="subPill"><span class="dot"></span><span id="subPillText">Ativo</span></span>
+            <h3 id="subPlanName">Plano</h3>
+            <div class="price" id="subPrice">R$ —</div>
 
             <div class="sub-meta">
               <div class="sub-meta-item">
-                <div class="lbl">Próxima cobrança</div>
-                <div class="val">12 de junho de 2026</div>
+                <div class="lbl" id="subPeriodLbl">Próxima cobrança</div>
+                <div class="val" id="subPeriodVal">—</div>
               </div>
               <div class="sub-meta-item">
-                <div class="lbl">Conversas este mês</div>
-                <div class="val">5 babás contatadas</div>
+                <div class="lbl">Status</div>
+                <div class="val" id="subStatusVal">—</div>
               </div>
               <div class="sub-meta-item">
                 <div class="lbl">Cliente desde</div>
-                <div class="val">março de 2026</div>
+                <div class="val" id="subStartVal">—</div>
               </div>
             </div>
 
             <div class="sub-actions">
-              <button class="btn-text">Pausar assinatura</button>
-              <button class="btn-text danger">Cancelar assinatura</button>
+              <button class="btn-text danger" id="cancelSubBtn">Cancelar assinatura</button>
             </div>
+          </div>
+
+          <!-- Estado: PROBLEMA (past_due, canceled) -->
+          <div id="subStateIssue" class="sub-card-active" style="display:none; background: #FFF7E6; border: 1px solid #FFD89E;">
+            <h3 id="subIssueTitle">Tem um problema com a assinatura</h3>
+            <p id="subIssueDesc" style="color: #6B3408; font-size: 14px; margin-bottom: 16px;">—</p>
+            <a href="pricing.html" class="btn btn-cta">Renovar assinatura</a>
           </div>
         </section>
 
@@ -536,8 +540,8 @@
     const firstName = fullName.split(' ')[0];
 
     // Nav chip
-    document.getElementById('chipAvatar').textContent = initial;
-    document.getElementById('chipName').textContent = firstName;
+    document.getElementById('navAvatar').textContent = initial;
+    document.getElementById('navName').textContent = firstName;
 
     // Big avatar e nome
     document.getElementById('bigAvatar').textContent = initial;
@@ -594,7 +598,96 @@
         document.getElementById('profileExtra2').textContent = '—';
       }
     }
+
+    // Renderiza seção de Assinatura
+    await renderSubscription(profile);
   });
+
+  async function renderSubscription(profile) {
+    const sub = await window.dbHelpers.getMySubscription();
+    const isActive = window.dbHelpers.isSubActive(sub);
+
+    const stateNone = document.getElementById('subStateNone');
+    const stateActive = document.getElementById('subStateActive');
+    const stateIssue = document.getElementById('subStateIssue');
+
+    if (!sub) {
+      // Nunca assinou
+      stateNone.style.display = 'block';
+      return;
+    }
+
+    if (isActive) {
+      // Ativa ou em trial
+      stateActive.style.display = 'block';
+      document.getElementById('subPlanName').textContent = sub.plan_name || 'Plano';
+
+      const isTrialing = sub.status === 'trialing';
+      const pillText = document.getElementById('subPillText');
+      const pill = document.getElementById('subPill');
+
+      if (isTrialing) {
+        pillText.textContent = 'Em teste grátis';
+        pill.style.background = '#FFF7E6';
+        pill.style.color = '#B5530F';
+        document.getElementById('subPeriodLbl').textContent = 'Primeira cobrança';
+      } else {
+        pillText.textContent = 'Ativo';
+        document.getElementById('subPeriodLbl').textContent = 'Próxima cobrança';
+      }
+
+      // Preço
+      const price = sub.plan_name?.includes('Família') ? 29 : 19;
+      document.getElementById('subPrice').innerHTML = `R$ ${price}<small>/mês</small>`;
+
+      // Próxima cobrança
+      const nextDate = sub.trial_end ? new Date(sub.trial_end) : (sub.current_period_end ? new Date(sub.current_period_end) : null);
+      if (nextDate) {
+        document.getElementById('subPeriodVal').textContent = nextDate.toLocaleDateString('pt-BR', {
+          day: '2-digit', month: 'long', year: 'numeric'
+        });
+      }
+
+      // Status humanizado
+      const statusMap = {
+        'active': 'Ativo',
+        'trialing': 'Em período de teste',
+        'past_due': 'Pagamento atrasado',
+        'canceled': 'Cancelado',
+        'unpaid': 'Não pago',
+      };
+      document.getElementById('subStatusVal').textContent = statusMap[sub.status] || sub.status;
+
+      // Cliente desde
+      if (sub.created_at) {
+        document.getElementById('subStartVal').textContent = new Date(sub.created_at).toLocaleDateString('pt-BR', {
+          month: 'long', year: 'numeric'
+        });
+      }
+
+      // Botão cancelar
+      document.getElementById('cancelSubBtn').addEventListener('click', () => {
+        alert('Pra cancelar, escreve pra leonardo@donababy.com — vamos resolver na hora.');
+      });
+    } else {
+      // Problema: past_due, canceled
+      stateIssue.style.display = 'block';
+      const titleMap = {
+        'past_due': 'Pagamento atrasado',
+        'canceled': 'Assinatura cancelada',
+        'unpaid': 'Pagamento não foi processado',
+        'incomplete': 'Assinatura incompleta',
+      };
+      const descMap = {
+        'past_due': 'Tivemos problemas com seu último pagamento. Renove pra voltar a acessar.',
+        'canceled': 'Sua assinatura foi cancelada. Renove pra continuar usando.',
+        'unpaid': 'Não conseguimos processar seu pagamento. Renove pra reativar.',
+        'incomplete': 'A assinatura ficou incompleta. Tente novamente.',
+      };
+      document.getElementById('subIssueTitle').textContent = titleMap[sub.status] || 'Há um problema com a assinatura';
+      document.getElementById('subIssueDesc').textContent = descMap[sub.status] || `Status: ${sub.status}`;
+    }
+  }
 </script>
 
 <script>

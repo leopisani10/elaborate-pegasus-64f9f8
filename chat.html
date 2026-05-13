@@ -536,6 +536,13 @@
     const otherUserId = params.get('baba') || params.get('parent');
 
     if (otherUserId) {
+      // Paywall antes de criar conversa
+      const sub = await window.dbHelpers.getMySubscription();
+      if (!window.dbHelpers.isSubActive(sub)) {
+        window.location.href = '/pricing.html';
+        return;
+      }
+
       try {
         const conv = await window.dbHelpers.getOrCreateConversation(otherUserId);
         await loadConversations();
@@ -558,6 +565,16 @@
       const input = document.getElementById('msgInput');
       const content = input.value.trim();
       if (!content || !activeConv) return;
+
+      // Paywall: precisa de sub ativa pra enviar
+      const sub = await window.dbHelpers.getMySubscription();
+      if (!window.dbHelpers.isSubActive(sub)) {
+        if (confirm('Sua assinatura não está ativa. Deseja assinar agora?')) {
+          window.location.href = '/pricing.html';
+        }
+        return;
+      }
+
       input.value = '';
       try {
         appendMessage({

@@ -169,6 +169,18 @@
     @media (max-width: 700px) {
       .plan-grid { grid-template-columns: 1fr; }
     }
+
+    .trial-badge {
+      display: inline-block;
+      background: #FFF7E6;
+      color: #B5530F;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 6px 12px;
+      border-radius: 999px;
+      margin: 0 0 14px;
+      border: 1px solid #FFD89E;
+    }
   </style>
 </head>
 <body>
@@ -183,8 +195,8 @@
 <div class="pricing-container">
 
   <div class="pricing-head">
-    <h1>Escolha seu plano.</h1>
-    <p>Cobrança mensal, sem fidelidade. Cancele quando quiser.</p>
+    <h1>3 dias grátis pra testar.</h1>
+    <p>Cadastre o cartão agora · sem cobrança até o dia 4 · cancele antes e não paga nada.</p>
   </div>
 
   <div class="plan-grid" id="planGrid">
@@ -196,7 +208,7 @@
     <p class="sub" id="actionSub">Pagamento seguro processado pela Stripe.</p>
     <button class="pay-btn" id="payBtn" disabled>
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
-      Assinar agora
+      Começar 3 dias grátis
     </button>
     <div class="stripe-foot">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
@@ -227,71 +239,64 @@
 
   function renderPlans() {
     const grid = document.getElementById('planGrid');
-
-    // Mostra o plano relevante pro tipo de usuário primeiro
     const isParent = myProfile.user_type === 'parent';
     const isBaba = myProfile.user_type === 'baba';
 
-    const familiaCard = `
-      <button class="plan-card familia ${isParent ? 'selected' : ''}" data-price="${PRICE_FAMILIA}" data-name="Plano Família" type="button">
-        <div class="plan-label">Pra famílias</div>
-        <h2>Plano Família</h2>
-        <div class="plan-price">R$ 29<small>/mês</small></div>
-        <div class="plan-meta">Cobrança recorrente · sem fidelidade</div>
-        <ul class="plan-features">
-          <li>Conversa direta com babás verificadas</li>
-          <li>Quantas babás precisar</li>
-          <li>Cancele a qualquer momento</li>
-          <li>Recibo automático por email</li>
-        </ul>
-      </button>
-    `;
-
-    const babaCard = `
-      <button class="plan-card baba ${isBaba ? 'selected' : ''}" data-price="${PRICE_BABA}" data-name="Plano Babá" type="button">
-        <div class="plan-label">Pra babás</div>
-        <h2>Plano Babá</h2>
-        <div class="plan-price">R$ 19<small>/mês</small></div>
-        <div class="plan-meta">Cobrança recorrente · sem fidelidade</div>
-        <ul class="plan-features">
-          <li>Apareça pras famílias buscando babá</li>
-          <li>Receba mensagens diretas</li>
-          <li>Apareça em buscas filtradas</li>
-          <li>Cancele a qualquer momento</li>
-        </ul>
-      </button>
-    `;
-
-    // Ordena: o plano relevante primeiro
-    grid.innerHTML = isBaba ? babaCard + familiaCard : familiaCard + babaCard;
-
-    // Pre-seleciona o plano que faz sentido
+    // Mostra SOMENTE o plano relevante ao tipo de usuário
     if (isParent) {
+      grid.style.gridTemplateColumns = '1fr';
+      grid.style.maxWidth = '480px';
+      grid.style.margin = '0 auto 28px';
+      grid.innerHTML = `
+        <div class="plan-card familia selected" data-price="${PRICE_FAMILIA}" data-name="Plano Família">
+          <div class="plan-label">Pra famílias</div>
+          <h2>Plano Família</h2>
+          <div class="plan-price">R$ 29<small>/mês</small></div>
+          <div class="trial-badge">🎁 3 dias grátis pra testar</div>
+          <div class="plan-meta">Cobrança recorrente · sem fidelidade · cancele antes do dia 3 e não paga nada</div>
+          <ul class="plan-features">
+            <li>Conversa direta com babás verificadas</li>
+            <li>Quantas babás precisar</li>
+            <li>Cancele a qualquer momento</li>
+            <li>Recibo automático por email</li>
+          </ul>
+        </div>
+      `;
       selectedPriceId = PRICE_FAMILIA;
       updateActionText('Plano Família', 29);
     } else if (isBaba) {
+      grid.style.gridTemplateColumns = '1fr';
+      grid.style.maxWidth = '480px';
+      grid.style.margin = '0 auto 28px';
+      grid.innerHTML = `
+        <div class="plan-card baba selected" data-price="${PRICE_BABA}" data-name="Plano Babá">
+          <div class="plan-label">Pra babás</div>
+          <h2>Plano Babá</h2>
+          <div class="plan-price">R$ 19<small>/mês</small></div>
+          <div class="trial-badge">🎁 3 dias grátis pra testar</div>
+          <div class="plan-meta">Cobrança recorrente · sem fidelidade · cancele antes do dia 3 e não paga nada</div>
+          <ul class="plan-features">
+            <li>Apareça pras famílias buscando babá</li>
+            <li>Receba mensagens diretas</li>
+            <li>Apareça em buscas filtradas</li>
+            <li>Cancele a qualquer momento</li>
+          </ul>
+        </div>
+      `;
       selectedPriceId = PRICE_BABA;
       updateActionText('Plano Babá', 19);
+    } else {
+      // Admin ou outro tipo — não devia ver pricing
+      grid.innerHTML = '<div style="grid-column: 1/-1; padding: 40px; text-align: center;">Sem plano pra esse tipo de conta.</div>';
+      return;
     }
 
     document.getElementById('payBtn').disabled = !selectedPriceId;
-
-    // Click handler
-    grid.querySelectorAll('.plan-card').forEach(card => {
-      card.addEventListener('click', () => {
-        grid.querySelectorAll('.plan-card').forEach(c => c.classList.remove('selected'));
-        card.classList.add('selected');
-        selectedPriceId = card.dataset.price;
-        const price = card.dataset.price === PRICE_FAMILIA ? 29 : 19;
-        updateActionText(card.dataset.name, price);
-        document.getElementById('payBtn').disabled = false;
-      });
-    });
   }
 
   function updateActionText(planName, price) {
-    document.getElementById('actionTitle').textContent = `Assinar ${planName} — R$ ${price}/mês`;
-    document.getElementById('actionSub').textContent = 'Você vai pra página segura da Stripe pra completar o pagamento.';
+    document.getElementById('actionTitle').textContent = `${planName} — 3 dias grátis, depois R$ ${price}/mês`;
+    document.getElementById('actionSub').textContent = 'Cobrança só no dia 4. Cancele antes e não paga nada.';
   }
 
   function setupPayButton() {

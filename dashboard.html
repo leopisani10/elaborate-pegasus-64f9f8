@@ -383,16 +383,16 @@
 
   <section class="results-section">
     <div class="container">
-      <!-- Free-tier banner -->
-      <div class="sub-banner">
+      <!-- Free-tier banner (escondido se tem sub ativa) -->
+      <div class="sub-banner" id="freeBanner" style="display:none;">
         <div class="sub-banner-icon">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
         </div>
         <div class="sub-banner-text">
           <h4>Você está navegando no plano grátis.</h4>
-          <p>Assine o Plano Família por R$ 29/mês pra desbloquear conversas com as babás. Sem fidelidade, cancele quando quiser.</p>
+          <p>Comece o trial de 3 dias do Plano Família pra desbloquear conversas com as babás. Cadastre o cartão · cancele antes do dia 4 e não paga nada.</p>
         </div>
-        <a href="account.html" class="btn btn-cta btn-sm">Assinar agora</a>
+        <a href="pricing.html" class="btn btn-cta btn-sm">Começar 3 dias grátis</a>
       </div>
 
       <div class="results-head">
@@ -474,6 +474,12 @@
 
     // Busca babás aprovadas
     await loadBabas();
+
+    // Mostra banner se NÃO tem subscription ativa
+    const sub = await window.dbHelpers.getMySubscription();
+    if (!window.dbHelpers.isSubActive(sub)) {
+      document.getElementById('freeBanner').style.display = 'flex';
+    }
   });
 
   // Cor de avatar baseada no índice

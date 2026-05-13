@@ -471,9 +471,14 @@
     document.getElementById('profileLayout').style.opacity = '1';
   }
 
-  function openChat() {
+  async function openChat() {
     if (!currentBaba) return;
-    // Vai pro chat com a babá. Próximo batch implementa de verdade.
+    // Família precisa de sub ativa pra conversar
+    const sub = await window.dbHelpers.getMySubscription();
+    if (!window.dbHelpers.isSubActive(sub)) {
+      window.location.href = '/pricing.html';
+      return;
+    }
     window.location.href = `chat.html?baba=${currentBaba.id}`;
   }
 </script>
