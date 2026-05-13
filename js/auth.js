@@ -78,27 +78,53 @@ async function requireAdmin() {
 async function redirectToDashboard() {
   const profile = await getCurrentProfile();
   if (!profile) { window.location.href = '/login.html'; return; }
+
+  if (profile.user_type === 'admin') {
+    window.location.href = '/admin.html';
+    return;
+  }
+
   if (profile.user_type === 'baba') {
+    // Babá: 1) preenche perfil → 2) pricing → 3) aguarda aprovação → 4) families
     const baba = await getBabaProfile(profile.id);
     if (!baba || !baba.bio) {
       window.location.href = '/onboarding-baba.html';
-    } else if (baba.approval_status === 'pending') {
+      return;
+    }
+
+    // Já preencheu perfil. Tem subscription?
+    const sub = await getMySubscription();
+    if (!isSubActive(sub)) {
+      window.location.href = '/pricing.html';
+      return;
+    }
+
+    // Tem sub. Tá aprovada?
+    if (baba.approval_status === 'pending') {
       window.location.href = '/onboarding-baba.html?status=pending';
-    } else {
-      // Babá aprovada vai buscar famílias
-      window.location.href = '/families.html';
+      return;
     }
-  } else if (profile.user_type === 'admin') {
-    window.location.href = '/admin.html';
-  } else {
-    // Família: se ainda não preencheu perfil, manda pra onboarding
-    const parent = await getParentProfile(profile.id);
-    if (!parent || !parent.children_count) {
-      window.location.href = '/onboarding-familia.html';
-    } else {
-      window.location.href = '/dashboard.html';
+    if (baba.approval_status === 'rejected') {
+      window.location.href = '/onboarding-baba.html?status=rejected';
+      return;
     }
+    // Aprovada e com sub → buscar famílias
+    window.location.href = '/families.html';
+    return;
   }
+
+  // Família: 1) preenche perfil → 2) pricing → 3) dashboard
+  const parent = await getParentProfile(profile.id);
+  if (!parent || !parent.children_count) {
+    window.location.href = '/onboarding-familia.html';
+    return;
+  }
+  const sub = await getMySubscription();
+  if (!isSubActive(sub)) {
+    window.location.href = '/pricing.html';
+    return;
+  }
+  window.location.href = '/dashboard.html';
 }
 
 // =============================================
