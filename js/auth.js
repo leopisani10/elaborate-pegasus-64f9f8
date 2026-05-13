@@ -5,10 +5,8 @@
 const SUPABASE_URL = 'https://cvvdmgoyvozzjsrswyzg.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN2dmRtZ295dm96empzcnN3eXpnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg2NDUyNjMsImV4cCI6MjA5NDIyMTI2M30.AfVR9iNjctz8mCdvF12N88fwivL9DjTnTbLkXcsBCr0';
 
-// IMPORTANTE: usar nome diferente de 'supabase' pra não conflitar
-// com a global que o SDK CDN expõe.
-const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-window.dbClient = db;
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+window.dbClient = supabase;
 
 // =============================================
 // UI HELPERS
@@ -38,14 +36,14 @@ function setLoading(button, isLoading) {
 // =============================================
 
 async function getCurrentUser() {
-  const { data: { user } } = await db.auth.getUser();
+  const { data: { user } } = await supabase.auth.getUser();
   return user;
 }
 
 async function getCurrentProfile() {
   const user = await getCurrentUser();
   if (!user) return null;
-  const { data, error } = await db
+  const { data, error } = await supabase
     .from('profiles')
     .select('*')
     .eq('id', user.id)
@@ -55,7 +53,7 @@ async function getCurrentProfile() {
 }
 
 async function signOut() {
-  await db.auth.signOut();
+  await supabase.auth.signOut();
   window.location.href = '/';
 }
 
@@ -79,6 +77,7 @@ async function redirectToDashboard() {
   const profile = await getCurrentProfile();
   if (!profile) { window.location.href = '/login.html'; return; }
   if (profile.user_type === 'baba') {
+    // Se babá ainda não preencheu perfil, manda pro onboarding
     const baba = await getBabaProfile(profile.id);
     if (!baba || !baba.bio) {
       window.location.href = '/onboarding-baba.html';
@@ -99,7 +98,7 @@ async function redirectToDashboard() {
 // =============================================
 
 async function getBabaProfile(userId) {
-  const { data, error } = await db
+  const { data, error } = await supabase
     .from('baba_profiles')
     .select('*')
     .eq('id', userId)
@@ -109,7 +108,9 @@ async function getBabaProfile(userId) {
 }
 
 async function upsertBabaProfile(userId, fields) {
-  const { data, error } = await db
+  // O trigger handle_new_user já criou um baba_profiles vazio.
+  // Aqui só atualizamos com os dados do form.
+  const { data, error } = await supabase
     .from('baba_profiles')
     .update({
       ...fields,
@@ -126,7 +127,7 @@ async function upsertBabaProfile(userId, fields) {
 }
 
 async function getApprovedBabas(filters = {}) {
-  let query = db
+  let query = supabase
     .from('baba_profiles')
     .select(`
       *,
@@ -134,6 +135,7 @@ async function getApprovedBabas(filters = {}) {
     `)
     .eq('approval_status', 'approved');
 
+  // Aplica filtros opcionais
   if (filters.neighborhood) {
     query = query.contains('neighborhoods', [filters.neighborhood]);
   }
@@ -146,7 +148,7 @@ async function getApprovedBabas(filters = {}) {
 }
 
 async function getBabaById(babaId) {
-  const { data, error } = await db
+  const { data, error } = await supabase
     .from('baba_profiles')
     .select(`
       *,
@@ -163,7 +165,7 @@ async function getBabaById(babaId) {
 // =============================================
 
 async function getPendingBabas() {
-  const { data, error } = await db
+  const { data, error } = await supabase
     .from('baba_profiles')
     .select(`
       *,
@@ -176,7 +178,7 @@ async function getPendingBabas() {
 }
 
 async function approveBaba(babaId) {
-  const { data, error } = await db
+  const { data, error } = await supabase
     .from('baba_profiles')
     .update({
       approval_status: 'approved',
@@ -190,7 +192,7 @@ async function approveBaba(babaId) {
 }
 
 async function rejectBaba(babaId, reason) {
-  const { data, error } = await db
+  const { data, error } = await supabase
     .from('baba_profiles')
     .update({
       approval_status: 'rejected',
@@ -208,8 +210,12 @@ async function rejectBaba(babaId, reason) {
 // =============================================
 
 window.dbHelpers = {
+  // Auth
   getCurrentUser, getCurrentProfile, signOut, requireAuth, requireAdmin, redirectToDashboard,
+  // Babá
   getBabaProfile, upsertBabaProfile, getApprovedBabas, getBabaById,
+  // Admin
   getPendingBabas, approveBaba, rejectBaba,
+  // UI
   showError, showSuccess, setLoading,
 };
