@@ -133,6 +133,18 @@
 
     <form id="babaForm">
       <div class="field">
+        <label class="field-label">Foto de perfil <span style="color: var(--ink-3); font-weight: 400; font-size: 12px;">(opcional, recomendado)</span></label>
+        <div style="display: flex; align-items: center; gap: 16px; padding: 12px 0;">
+          <div id="avatarPreview" style="width: 72px; height: 72px; border-radius: 50%; background: var(--baba-soft); color: var(--baba-deep); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 28px; overflow: hidden; flex-shrink: 0;">?</div>
+          <div style="flex: 1;">
+            <button type="button" id="uploadBtn" style="background: white; border: 1.5px solid var(--line-strong); border-radius: 999px; padding: 9px 18px; font-family: inherit; font-size: 13px; font-weight: 600; cursor: pointer;">Escolher foto</button>
+            <input type="file" id="avatarFile" accept="image/*" style="display: none;">
+            <p style="font-size: 12px; color: var(--ink-3); margin-top: 6px; line-height: 1.4;">JPG ou PNG até 5MB. Foto profissional ajuda você a ser contratada mais rápido.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="field">
         <label class="field-label" for="bio">Bio · fala um pouco da sua experiência <span class="req">*</span></label>
         <textarea class="textarea" id="bio" name="bio" rows="5" required minlength="50" placeholder="Ex: Sou babá há 7 anos, especializada em recém-nascidos. Trabalhei em famílias de Ipanema e Leblon..."></textarea>
         <div class="field-help">Mínimo 50 caracteres. Conte sua experiência, especialidades, abordagem.</div>
@@ -245,16 +257,31 @@
       return;
     }
 
-    // Se já tem perfil salvo e está pending, mostra estado de espera
+    // Se já tem perfil salvo
     const baba = await window.dbHelpers.getBabaProfile(currentUser.id);
-    if (baba && baba.bio && baba.approval_status === 'pending') {
-      showPending();
-      return;
-    }
-    if (baba && baba.approval_status === 'approved') {
-      // já aprovada — vai pra conta
-      window.location.href = '/account.html';
-      return;
+
+    if (baba && baba.bio) {
+      // Preencheu perfil. Confere se tem sub.
+      const sub = await window.dbHelpers.getMySubscription();
+      const hasSub = window.dbHelpers.isSubActive(sub);
+
+      if (baba.approval_status === 'approved') {
+        window.location.href = '/families.html';
+        return;
+      }
+      if (baba.approval_status === 'pending' && hasSub) {
+        showPending();
+        return;
+      }
+      if (baba.approval_status === 'rejected') {
+        showRejected(baba.rejection_reason);
+        return;
+      }
+      // Preencheu mas não tem sub → vai pricing
+      if (!hasSub) {
+        window.location.href = '/pricing.html';
+        return;
+      }
     }
 
     // Preenche form com dados existentes (se houver de tentativa anterior)
@@ -266,6 +293,35 @@
       if (baba.age_ranges) checkBoxes('ageRanges', baba.age_ranges);
       if (baba.specialties) checkBoxes('specialties', baba.specialties);
     }
+
+    // Carrega avatar atual (se existe)
+    if (profile.avatar_url) {
+      document.getElementById('avatarPreview').innerHTML = `<img src="${profile.avatar_url}" alt="" style="width:100%;height:100%;object-fit:cover;">`;
+    } else {
+      document.getElementById('avatarPreview').textContent = (profile.full_name || '?').charAt(0).toUpperCase();
+    }
+
+    // Setup upload avatar
+    document.getElementById('uploadBtn').addEventListener('click', () => {
+      document.getElementById('avatarFile').click();
+    });
+    document.getElementById('avatarFile').addEventListener('change', async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const preview = document.getElementById('avatarPreview');
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        preview.innerHTML = `<img src="${ev.target.result}" alt="" style="width:100%;height:100%;object-fit:cover;opacity:0.6;">`;
+      };
+      reader.readAsDataURL(file);
+      try {
+        const url = await window.dbHelpers.uploadAvatar(file, currentUser.id);
+        preview.innerHTML = `<img src="${url}" alt="" style="width:100%;height:100%;object-fit:cover;">`;
+      } catch (err) {
+        alert('Erro no upload: ' + (err.message || 'tente outra imagem'));
+        preview.textContent = (profile.full_name || '?').charAt(0).toUpperCase();
+      }
+    });
   });
 
   function checkBoxes(containerId, values) {
@@ -286,6 +342,25 @@
   function showPending() {
     document.getElementById('formPanel').style.display = 'none';
     document.getElementById('pendingPanel').style.display = 'block';
+  }
+
+  function showRejected(reason) {
+    document.getElementById('formPanel').style.display = 'none';
+    const pending = document.getElementById('pendingPanel');
+    pending.innerHTML = `
+      <div style="text-align: center; padding: 40px 20px;">
+        <div style="font-size: 48px; margin-bottom: 16px;">😔</div>
+        <h2 style="font-size: 24px; font-weight: 800; margin-bottom: 12px;">Não pudemos aprovar seu cadastro</h2>
+        <p style="color: var(--ink-3); font-size: 15px; max-width: 480px; margin: 0 auto 20px; line-height: 1.6;">
+          ${reason ? `<strong>Motivo:</strong> ${reason.replace(/[<>"']/g,'')}` : 'Entre em contato pra saber mais.'}
+        </p>
+        <p style="color: var(--ink-3); font-size: 13px; max-width: 480px; margin: 0 auto 24px; line-height: 1.6;">
+          Sua cobrança foi cancelada — você não foi e não vai ser cobrado por isso.
+        </p>
+        <a href="mailto:contato@donababy.com" style="background: var(--cta); color: white; padding: 12px 24px; border-radius: 999px; font-weight: 700; text-decoration: none; font-size: 14px;">Falar com a equipe</a>
+      </div>
+    `;
+    pending.style.display = 'block';
   }
 
   document.getElementById('babaForm').addEventListener('submit', async (e) => {
@@ -323,7 +398,14 @@
         age_ranges: ageRanges,
         specialties,
       });
-      showPending();
+      // NOVO FLUXO: salva → vai pra pricing (cobra o trial) → depois mostra "Aguardando aprovação"
+      // Verifica se já tem sub ativa (caso ela já tenha passado pelo pricing antes)
+      const sub = await helpers.getMySubscription();
+      if (helpers.isSubActive(sub)) {
+        showPending();
+      } else {
+        window.location.href = '/pricing.html';
+      }
     } catch (err) {
       helpers.showError('Não conseguiu salvar: ' + (err.message || 'erro desconhecido'));
       helpers.setLoading(submitBtn, false);

@@ -10,6 +10,8 @@
   <link rel="stylesheet" href="shared.css">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script defer src="js/auth.js"></script>
+  <script defer src="js/footer.js"></script>
+  <script defer src="js/mobile-menu.js"></script>
   <style>
     body { background: #FAFBFC; min-height: 100vh; display: flex; flex-direction: column; }
     .header { padding: 18px 0; border-bottom: 1px solid var(--line); background: white; text-align: center; }
@@ -183,28 +185,50 @@
     }, 1500);
   });
 
-  function showReady(profile, sub) {
+  async function showReady(profile, sub) {
     document.getElementById('loadingState').style.display = 'none';
-    document.getElementById('successMsg').textContent =
-      `${sub.plan_name} ativo. Você já pode aproveitar todos os recursos do Dona Baby+.`;
+
     const nextBtn = document.getElementById('goNext');
-    if (profile.user_type === 'parent') {
+
+    if (profile.user_type === 'baba') {
+      // Babá: depois de pagar, ainda precisa de aprovação
+      const baba = await window.dbHelpers.getBabaProfile(profile.id);
+
+      if (baba && baba.approval_status === 'approved') {
+        document.getElementById('successMsg').textContent =
+          `${sub.plan_name} ativo. Sua conta já tá aprovada, pode buscar famílias.`;
+        nextBtn.href = '/families.html';
+        nextBtn.querySelector('svg').previousSibling.textContent = 'Buscar famílias ';
+      } else {
+        document.getElementById('successMsg').innerHTML =
+          `${sub.plan_name} ativo. Agora seu cadastro está em análise pela nossa equipe — em até 24h te avisamos. <strong>Você não será cobrado até a aprovação.</strong>`;
+        nextBtn.href = '/onboarding-baba.html?status=pending';
+        nextBtn.querySelector('svg').previousSibling.textContent = 'Ver status ';
+      }
+    } else if (profile.user_type === 'parent') {
+      document.getElementById('successMsg').textContent =
+        `${sub.plan_name} ativo. Você já pode aproveitar todos os recursos do Dona Baby+.`;
       nextBtn.href = '/dashboard.html';
       nextBtn.querySelector('svg').previousSibling.textContent = 'Buscar babás ';
-    } else if (profile.user_type === 'baba') {
-      nextBtn.href = '/families.html';
-      nextBtn.querySelector('svg').previousSibling.textContent = 'Buscar famílias ';
     } else {
+      document.getElementById('successMsg').textContent =
+        `${sub.plan_name} ativo. Você já pode aproveitar todos os recursos do Dona Baby+.`;
       nextBtn.href = '/';
     }
     document.getElementById('actions').style.display = 'flex';
   }
 
-  function showSlowConfirm(profile) {
+  async function showSlowConfirm(profile) {
     document.getElementById('loadingState').innerHTML =
       'Pagamento confirmado pelo Stripe. A ativação está demorando um pouco — atualize a página em 1 minuto se ainda não aparecer aqui.';
     const nextBtn = document.getElementById('goNext');
-    nextBtn.href = profile.user_type === 'baba' ? '/families.html' : '/dashboard.html';
+    if (profile.user_type === 'baba') {
+      nextBtn.href = '/onboarding-baba.html?status=pending';
+    } else if (profile.user_type === 'parent') {
+      nextBtn.href = '/dashboard.html';
+    } else {
+      nextBtn.href = '/';
+    }
     document.getElementById('actions').style.display = 'flex';
   }
 </script>

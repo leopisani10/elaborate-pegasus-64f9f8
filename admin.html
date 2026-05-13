@@ -1058,11 +1058,40 @@
     }
   }
 
+  // Função reutilizável: cancela sub no Stripe via Edge Function
+  async function cancelStripeSub(userId) {
+    try {
+      const { data: { session } } = await window.dbClient.auth.getSession();
+      if (!session) return { error: 'Sem sessão' };
+      const SUPABASE_URL = window.dbClient.supabaseUrl || 'https://cvvdmgoyvozzjsrswyzg.supabase.co';
+      const res = await fetch(`${SUPABASE_URL}/functions/v1/cancel-subscription`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${session.access_token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ target_user_id: userId })
+      });
+      const data = await res.json();
+      if (!res.ok) return { error: data.error || 'Erro' };
+      return { success: true, message: data.message };
+    } catch (err) {
+      return { error: err.message };
+    }
+  }
+
   async function reject(id) {
     const reason = prompt('Motivo da rejeição (vai aparecer pra babá):');
     if (!reason) return;
     try {
       await window.dbHelpers.rejectBaba(id, reason);
+      // Cancela sub no Stripe (não cobra ela)
+      const cancelRes = await cancelStripeSub(id);
+      if (cancelRes.error) {
+        alert('Babá rejeitada, mas ATENÇÃO: não consegui cancelar a sub no Stripe automaticamente. Cancela manualmente no painel Stripe. Erro: ' + cancelRes.error);
+      } else {
+        alert('Babá rejeitada. ' + (cancelRes.message || 'Assinatura cancelada — não será cobrada.'));
+      }
       await loadAll();
     } catch (err) {
       alert('Erro: ' + err.message);
@@ -1078,7 +1107,13 @@
         reason: reason
       });
       if (error) throw error;
-      alert('Usuário banido. Cancele manualmente a assinatura no Stripe se necessário.');
+      // Cancela no Stripe também
+      const cancelRes = await cancelStripeSub(id);
+      if (cancelRes.error) {
+        alert('Usuário banido, mas ATENÇÃO: não consegui cancelar a sub no Stripe. Cancela manualmente. Erro: ' + cancelRes.error);
+      } else {
+        alert('Usuário banido. ' + (cancelRes.message || 'Assinatura cancelada.'));
+      }
       await loadAll();
     } catch (err) {
       alert('Erro: ' + err.message);
