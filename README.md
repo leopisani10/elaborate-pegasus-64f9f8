@@ -37,8 +37,7 @@ python3 -m http.server 8000
 
 ```
 .
-├── index.html                  # Página de boas-vindas com menu de telas
-├── landing.html                # Landing page pública
+├── index.html                  # Landing page (página inicial pública)
 ├── signup.html                 # Cadastro (escolha babá/família)
 ├── login.html                  # Entrar
 ├── onboarding-baba.html        # Onboarding multi-step babá
@@ -49,6 +48,7 @@ python3 -m http.server 8000
 ├── pricing.html                # Checkout com Stripe Elements visual
 ├── admin.html                  # Painel admin de aprovação
 ├── account.html                # Minha conta + assinatura
+├── demo.html                   # 🔒 Overview interno (acesse via /demo) — uso seu
 ├── shared.css                  # Design system compartilhado
 ├── logo.png                    # Logo com transparência
 ├── donababy_schema_v1.sql      # Schema do banco pra Supabase
@@ -56,6 +56,8 @@ python3 -m http.server 8000
 ├── netlify.toml                # Config do Netlify
 └── README.md                   # Este arquivo
 ```
+
+**Sobre o `demo.html`:** é uma página oculta com cards de todas as telas pra você navegar durante o desenvolvimento. Não tem link nem busca apontando pra ela — só funciona se acessar direto `donababy.com/demo`. Você pode bookmarcar pra uso pessoal.
 
 ---
 

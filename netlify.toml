@@ -5,18 +5,7 @@
   publish = "."
   command = ""
 
-# Garante a página inicial
-[[redirects]]
-  from = "/"
-  to = "/index.html"
-  status = 200
-
-# URLs limpas: /landing → /landing.html (e por aí)
-[[redirects]]
-  from = "/landing"
-  to = "/landing.html"
-  status = 200
-
+# URLs limpas: /signup → /signup.html (e por aí)
 [[redirects]]
   from = "/signup"
   to = "/signup.html"
@@ -65,6 +54,12 @@
 [[redirects]]
   from = "/account"
   to = "/account.html"
+  status = 200
+
+# /demo é a URL escondida pro overview de todas as telas (uso interno)
+[[redirects]]
+  from = "/demo"
+  to = "/demo.html"
   status = 200
 
 # Cache agressivo pra assets estáticos

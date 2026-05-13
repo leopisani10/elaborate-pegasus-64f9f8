@@ -13,8 +13,8 @@
 - Logo PNG com transparência funcionando
 
 **Falta pra ir ao ar:**
-1. Você criar 4 contas (Stripe, Supabase, Vercel, Resend) — todas free tier no começo
-2. Você apontar o domínio `donababy.com.br` (ou o que tiver) pro Vercel
+1. Você criar 3 contas (Stripe, Supabase, Resend) — todas free tier no começo (Netlify ✓ já tem)
+2. Confirmar que o domínio `donababy.com` já tá apontando pro Netlify ✓
 3. Conversão dos mockups HTML em app React real (vou fazer, mas precisa do seu ok)
 4. Wire-up de auth + Stripe + chat realtime + admin (várias conversas seguintes)
 
@@ -84,19 +84,31 @@ Depois de configurado, me passa:
 
 ---
 
-## Conta 3 — Vercel
+## Conta 3 — Netlify (você já tem ✓)
 
-**Pra que serve:** hospedar o site/app. Deploy automático sempre que você (ou eu) atualizar o código.
+**Pra que serve:** hospedar o site. Deploy automático sempre que você empurrar commit pro GitHub.
 
-### Passos pra você
+### Status atual
 
-1. Crie conta em [vercel.com](https://vercel.com) com seu GitHub (você vai precisar de uma conta GitHub também — gratuita).
-2. Conecte o GitHub.
-3. Por enquanto não precisa fazer mais nada — vamos importar o projeto quando o código React estiver pronto.
+- ✓ Conta Netlify já criada
+- ✓ Domínio `donababy.com` já apontando pro Netlify
+- ✓ Mockups estáticos já no ar (essa entrega)
+
+### Passos pra você (quando virar projeto React)
+
+1. Quando o código React estiver pronto, atualizar build settings:
+   - **Build command:** `npm run build`
+   - **Publish directory:** `dist`
+   - **Node version:** 20 (definir em variável de ambiente `NODE_VERSION=20`)
+2. Adicionar variáveis de ambiente no painel do Netlify (`Site settings` → `Environment variables`):
+   - `VITE_SUPABASE_URL`
+   - `VITE_SUPABASE_ANON_KEY`
+   - `VITE_STRIPE_PUBLISHABLE_KEY`
+   - (a `SUPABASE_SERVICE_ROLE_KEY` e a `STRIPE_SECRET_KEY` vão pro Supabase Edge Functions, NÃO pro Netlify)
 
 ### O que me mandar
-- Confirmação de que conta foi criada
-- Nome do usuário GitHub (pra eu indicar como criar o repo)
+- Confirmação de que GitHub tá conectado ao Netlify
+- Nome do usuário GitHub (pra eu indicar como configurar o repo)
 
 ---
 
@@ -112,7 +124,7 @@ Depois de configurado, me passa:
 ### Passos pra você
 
 1. Crie conta em [resend.com](https://resend.com).
-2. Adicione e verifique o domínio `donababy.com.br` (ou o que for) em **Domains**. Eles vão te dar registros DNS (DKIM, SPF) pra adicionar onde o domínio tá hospedado.
+2. Adicione e verifique o domínio `donababy.com` (ou o que for) em **Domains**. Eles vão te dar registros DNS (DKIM, SPF) pra adicionar onde o domínio tá hospedado.
 3. Em **API Keys**, gere uma key.
 
 ### O que me mandar
@@ -123,7 +135,7 @@ Depois de configurado, me passa:
 
 ---
 
-## Conta 5 — Domínio (`donababy.com.br` ou similar)
+## Conta 5 — Domínio (`donababy.com` ou similar)
 
 **Pra que serve:** o endereço público do site.
 
@@ -134,7 +146,7 @@ Depois de configurado, me passa:
    - É `.com.br`, `.com`, ou outro?
    - Onde tá registrado (Registro.br, GoDaddy, Hostinger)?
 2. Se expirou, registre de novo no [Registro.br](https://registro.br) — custa cerca de R$ 40/ano pra `.com.br`.
-3. Depois que o Vercel tiver o projeto, configuramos o DNS pra apontar o domínio.
+3. Depois que o Netlify tiver o projeto, configuramos o DNS pra apontar o domínio.
 
 ---
 
@@ -149,7 +161,7 @@ Depois de configurado, me passa:
 7. **Eu** implemento chat com Supabase Realtime
 8. **Eu** implemento Stripe Checkout + Customer Portal + Webhook handler (Supabase Edge Function)
 9. **Eu** implemento painel admin pra aprovar babás
-10. **Nós** fazemos deploy no Vercel, conectamos domínio, configuramos webhook do Stripe pra apontar pro endpoint do Supabase
+10. **Nós** fazemos deploy no Netlify, conectamos domínio, configuramos webhook do Stripe pra apontar pro endpoint do Supabase
 11. **Você** testa, eu corrijo, repete
 12. **Nós** viramos o Stripe pra modo produção
 13. **Lançamento.**
@@ -170,7 +182,7 @@ Algumas decisões de produto que ficaram pendentes ou viraram placeholder. Confi
 | Trial grátis? | Não (paga no dia 1) | ___ |
 | Bairros que cobre no lançamento | Zona Sul + Tijuca + Barra | ___ |
 | Endereço fiscal/contato | Av. Ataulfo de Paiva, 1235 (Leblon) | ___ |
-| Email de contato | contato@donababy.com.br | ___ |
+| Email de contato | contato@donababy.com | ___ |
 | WhatsApp de suporte | (21) 99548-8295 | ___ |
 | Logo é definitiva? | Sim, vamos usar essa | ___ |
 
@@ -183,13 +195,13 @@ Algumas decisões de produto que ficaram pendentes ou viraram placeholder. Confi
 | Domínio | R$ 0 | R$ 40 |
 | Stripe (taxa por venda) | 3.99% + R$ 0,39 por transação | varia |
 | Supabase | R$ 0 (free tier até ~50k usuários) | R$ 0 |
-| Vercel | R$ 0 (free tier sobra) | R$ 0 |
+| Netlify | R$ 0 (free tier sobra) | R$ 0 |
 | Resend | R$ 0 (3.000 emails/mês grátis) | R$ 0 |
 | **Total fixo** | ~R$ 0 | ~R$ 40 |
 
 Quando crescer:
 - Supabase Pro: US$ 25/mês (~R$ 130) quando passar de 50k usuários ativos ou precisar de backups diários
-- Vercel Pro: US$ 20/mês (~R$ 105) quando precisar de mais bandwidth
+- Netlify Pro: US$ 20/mês (~R$ 105) quando precisar de mais bandwidth
 - Resend pago: US$ 20/mês (~R$ 105) quando passar de 3.000 emails/mês
 
 Cenário realista: durante todo o MVP e validação, **custo de infra ≈ R$ 0**. Só Stripe que tira percentual de cada venda, mas só quando você fatura.
@@ -201,15 +213,15 @@ Cenário realista: durante todo o MVP e validação, **custo de infra ≈ R$ 0**
 Quando você terminar de:
 1. Criar a conta Stripe e os 2 produtos lá dentro
 2. Criar o projeto Supabase, rodar o SQL, criar os buckets de Storage
-3. Criar conta Vercel + GitHub
-4. Confirmar status do domínio
+3. Criar a conta Resend e verificar o domínio
+4. Confirmar que GitHub já tá conectado ao Netlify do `donababy.com`
 
 Me manda nesta ordem (em mensagem separada por segurança):
 - Project URL Supabase + anon key
 - Service role key Supabase (em mensagem separada)
 - Publishable key Stripe + price IDs
 - API key Resend
-- Usuário GitHub + status do domínio
+- Usuário GitHub
 
 **A partir disso, eu monto o projeto React e a gente faz a primeira tela funcional juntos.**
 
