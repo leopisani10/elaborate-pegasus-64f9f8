@@ -368,6 +368,21 @@
           <h2>Especialidades</h2>
           <div id="specialtiesList" class="profile-key-tags"></div>
         </div>
+
+        <div class="section" id="certificationsSection" style="display:none;">
+          <h2>Certificações</h2>
+          <div id="certificationsList" class="profile-key-tags"></div>
+        </div>
+
+        <div class="section" id="languagesSection" style="display:none;">
+          <h2>Idiomas</h2>
+          <div id="languagesList" class="profile-key-tags"></div>
+        </div>
+
+        <div class="section" id="availabilitySection" style="display:none;">
+          <h2>Disponibilidade e particularidades</h2>
+          <div id="availabilityList" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 14px; color: var(--ink-2);"></div>
+        </div>
       </div>
     </div>
     </div>
@@ -468,12 +483,59 @@
     if (specs.length > 0) {
       const specLabels = {
         'pedagoga': 'Pedagoga', 'enfermeira': 'Enfermeira', 'folguista': 'Folguista',
-        'noturna': 'Noturna', 'pos-parto': 'Pós-parto', 'ingles': 'Inglês',
-        'habilitada': 'Habilitada', 'viaja': 'Viaja'
+        'noturna': 'Noturna', 'pos-parto': 'Pós-parto', 'autismo': 'Cuidados Especiais',
+        'gemeos': 'Gêmeos', 'amamentacao': 'Apoio à amamentação',
+        'ingles': 'Inglês', 'habilitada': 'Habilitada', 'viaja': 'Viaja'
       };
       document.getElementById('specialtiesSection').style.display = 'block';
       document.getElementById('specialtiesList').innerHTML = specs.map(s =>
         `<span class="tag tag-baba">${specLabels[s] || s}</span>`
+      ).join('');
+    }
+
+    // Certificações
+    const certs = baba.certifications || [];
+    if (certs.length > 0) {
+      const certLabels = {
+        'primeiros-socorros': 'Primeiros Socorros',
+        'cuidador-rn': 'Cuidados com Recém-Nascido',
+        'pedagogia': 'Pedagogia',
+        'enfermagem': 'Enfermagem',
+        'tec-enfermagem': 'Téc. Enfermagem',
+        'cuidador-especial': 'Cuidados Especiais',
+        'manobra-heimlich': 'Manobra de Heimlich',
+        'amamentacao': 'Apoio à Amamentação',
+      };
+      document.getElementById('certificationsSection').style.display = 'block';
+      document.getElementById('certificationsList').innerHTML = certs.map(c =>
+        `<span class="tag tag-soft">${certLabels[c] || c}</span>`
+      ).join('');
+    }
+
+    // Idiomas
+    const langs = baba.languages || [];
+    if (langs.length > 0) {
+      const langLabels = { 'ingles': 'Inglês', 'espanhol': 'Espanhol', 'frances': 'Francês', 'libras': 'Libras' };
+      document.getElementById('languagesSection').style.display = 'block';
+      document.getElementById('languagesList').innerHTML = langs.map(l =>
+        `<span class="tag tag-soft">${langLabels[l] || l}</span>`
+      ).join('');
+    }
+
+    // Disponibilidade
+    const items = [];
+    if (baba.has_cnh) items.push({ icon: '🚗', text: 'Tem CNH' });
+    if (baba.has_vehicle) items.push({ icon: '🚙', text: 'Tem veículo próprio' });
+    if (baba.has_passport === 'yes') items.push({ icon: '✈️', text: 'Passaporte válido' });
+    if (baba.has_passport === 'renewing') items.push({ icon: '🛂', text: 'Passaporte em renovação' });
+    if (baba.accepts_overnight) items.push({ icon: '🌙', text: 'Aceita pernoite' });
+    if (baba.accepts_travel) items.push({ icon: '🌍', text: 'Aceita viajar' });
+    if (baba.has_own_children === true) items.push({ icon: '👶', text: 'Tem filhos próprios' });
+    if (baba.is_smoker === false) items.push({ icon: '🚭', text: 'Não fumante' });
+    if (items.length > 0) {
+      document.getElementById('availabilitySection').style.display = 'block';
+      document.getElementById('availabilityList').innerHTML = items.map(i =>
+        `<div style="display: flex; align-items: center; gap: 8px;"><span>${i.icon}</span><span>${i.text}</span></div>`
       ).join('');
     }
 

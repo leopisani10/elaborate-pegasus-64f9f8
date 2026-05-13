@@ -123,18 +123,23 @@
         <label class="field-label">Bairro onde mora <span class="req">*</span></label>
         <select class="select" id="neighborhood" required>
           <option value="">Selecione...</option>
-          <option value="Copacabana">Copacabana</option>
-          <option value="Ipanema">Ipanema</option>
-          <option value="Leblon">Leblon</option>
-          <option value="Botafogo">Botafogo</option>
-          <option value="Flamengo">Flamengo</option>
-          <option value="Tijuca">Tijuca</option>
-          <option value="Barra da Tijuca">Barra da Tijuca</option>
-          <option value="Recreio">Recreio</option>
-          <option value="Jardim Botânico">Jardim Botânico</option>
-          <option value="Lagoa">Lagoa</option>
-          <option value="Outro">Outro</option>
         </select>
+        <div style="font-size: 12px; color: var(--ink-3); margin-top: 6px;">É onde a babá vai vir trabalhar.</div>
+      </div>
+
+      <!-- BLOCO DE ENDEREÇO -->
+      <div class="field" style="background: var(--bg-soft); padding: 18px; border-radius: 14px; margin-top: 20px;">
+        <label class="field-label" style="font-weight: 700;">Endereço completo <span style="color: var(--ink-3); font-weight: 400; font-size: 12px;">(opcional, privado)</span></label>
+        <div style="font-size: 12px; color: var(--ink-3); margin-bottom: 14px;">Só admin vê. Babá só sabe seu bairro até você compartilhar.</div>
+
+        <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 12px; margin-bottom: 12px;">
+          <input type="text" id="cep" placeholder="CEP" maxlength="9" style="width: 100%; padding: 11px 14px; border: 1.5px solid var(--line-strong); border-radius: 12px; font-family: inherit; font-size: 14px;">
+          <input type="text" id="addrStreet" placeholder="Rua" style="width: 100%; padding: 11px 14px; border: 1.5px solid var(--line-strong); border-radius: 12px; font-family: inherit; font-size: 14px;">
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <input type="text" id="addrNumber" placeholder="Número" style="width: 100%; padding: 11px 14px; border: 1.5px solid var(--line-strong); border-radius: 12px; font-family: inherit; font-size: 14px;">
+          <input type="text" id="addrComplement" placeholder="Complemento (opcional)" style="width: 100%; padding: 11px 14px; border: 1.5px solid var(--line-strong); border-radius: 12px; font-family: inherit; font-size: 14px;">
+        </div>
       </div>
 
       <div class="field">
@@ -184,6 +189,21 @@
       return;
     }
 
+    // Popular dropdown de bairros com lista completa
+    const neighborhoodSelect = document.getElementById('neighborhood');
+    const groups = window.dbHelpers.RIO_NEIGHBORHOODS;
+    Object.entries(groups).forEach(([groupName, hoods]) => {
+      const optgroup = document.createElement('optgroup');
+      optgroup.label = groupName;
+      hoods.forEach(h => {
+        const opt = document.createElement('option');
+        opt.value = h;
+        opt.textContent = h;
+        optgroup.appendChild(opt);
+      });
+      neighborhoodSelect.appendChild(optgroup);
+    });
+
     // Preenche com dados existentes (se houver)
     const parent = await window.dbHelpers.getParentProfile(currentUser.id);
     if (parent) {
@@ -198,7 +218,27 @@
         checkBoxes('schedule', prefs);
       }
       if (parent.notes) document.getElementById('notes').value = parent.notes;
+      // Endereço
+      if (parent.address_cep) document.getElementById('cep').value = parent.address_cep;
+      if (parent.address_street) document.getElementById('addrStreet').value = parent.address_street;
+      if (parent.address_number) document.getElementById('addrNumber').value = parent.address_number;
+      if (parent.address_complement) document.getElementById('addrComplement').value = parent.address_complement;
     }
+
+    // CEP auto-lookup
+    document.getElementById('cep').addEventListener('input', async (e) => {
+      e.target.value = window.dbHelpers.formatCEP(e.target.value);
+      const cleaned = e.target.value.replace(/\D/g, '');
+      if (cleaned.length === 8) {
+        const result = await window.dbHelpers.lookupCEP(cleaned);
+        if (result) {
+          if (result.street) document.getElementById('addrStreet').value = result.street;
+          if (result.neighborhood && neighborhoodSelect.querySelector(`option[value="${result.neighborhood}"]`)) {
+            neighborhoodSelect.value = result.neighborhood;
+          }
+        }
+      }
+    });
 
     // Carrega avatar atual
     if (profile.avatar_url) {
@@ -255,6 +295,10 @@
     const neighborhood = document.getElementById('neighborhood').value;
     const schedule = getChecked('schedule');
     const notes = document.getElementById('notes').value.trim();
+    const cep = document.getElementById('cep').value.trim();
+    const street = document.getElementById('addrStreet').value.trim();
+    const number = document.getElementById('addrNumber').value.trim();
+    const complement = document.getElementById('addrComplement').value.trim();
 
     if (!qtde) { helpers.showError('Diz quantas crianças.'); return; }
     if (ages.length === 0) { helpers.showError('Marca pelo menos uma idade.'); return; }
@@ -269,10 +313,18 @@
         neighborhood,
         schedule_preference: schedule.join(','),
         notes: notes || null,
+        address_cep: cep || null,
+        address_street: street || null,
+        address_number: number || null,
+        address_complement: complement || null,
+        address_neighborhood: neighborhood,
       });
-      // NOVO FLUXO: vai pra pricing
+      // Modo edição: volta pro account
+      const isEdit = new URLSearchParams(window.location.search).get('edit') === '1';
       const sub = await helpers.getMySubscription();
-      if (helpers.isSubActive(sub)) {
+      if (isEdit && helpers.isSubActive(sub)) {
+        window.location.href = '/account.html?saved=1';
+      } else if (helpers.isSubActive(sub)) {
         window.location.href = '/dashboard.html';
       } else {
         window.location.href = '/pricing.html';

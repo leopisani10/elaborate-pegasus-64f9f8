@@ -341,44 +341,91 @@
   <section class="search-hero">
     <div class="container">
       <h1>Encontre a babá certa pra sua família.</h1>
-      <p class="sub">120 babás verificadas no Rio · Cadastro grátis, conversa direta.</p>
+      <p class="sub">Babás verificadas no Rio · Conversa direta com quem mais combina.</p>
 
       <div class="search-bar">
         <div class="search-bar-field">
           <div class="lbl">Bairro</div>
-          <select>
-            <option>Zona Sul · todos</option>
-            <option>Copacabana</option>
-            <option>Ipanema</option>
-            <option>Leblon</option>
-            <option>Botafogo</option>
-            <option>Barra da Tijuca</option>
-            <option>Tijuca</option>
+          <select id="filterNeighborhood">
+            <option value="">Todos os bairros</option>
           </select>
         </div>
         <div class="search-bar-field">
           <div class="lbl">Idade da criança</div>
-          <select>
-            <option>Qualquer idade</option>
-            <option>Recém-nascido (0-6m)</option>
-            <option>Bebê (6m-2a)</option>
-            <option>Criança (2-6a)</option>
-            <option>Escolar (6a+)</option>
+          <select id="filterAgeRange">
+            <option value="">Qualquer idade</option>
+            <option value="newborn">Recém-nascido (0-3m)</option>
+            <option value="baby">Bebê (3-12m)</option>
+            <option value="toddler">Pré-escolar (1-3a)</option>
+            <option value="kid">Criança (4-7a)</option>
+            <option value="older">Maior (8a+)</option>
           </select>
         </div>
         <div class="search-bar-field">
-          <div class="lbl">Quando</div>
-          <select>
-            <option>Qualquer horário</option>
-            <option>Período integral</option>
-            <option>Meio período</option>
-            <option>Folguista (fim de semana)</option>
-            <option>Noturno</option>
+          <div class="lbl">Tipo</div>
+          <select id="filterSpecialty">
+            <option value="">Qualquer</option>
+            <option value="pedagoga">Pedagoga</option>
+            <option value="enfermeira">Enfermeira</option>
+            <option value="folguista">Folguista</option>
+            <option value="noturna">Noturna</option>
+            <option value="pos-parto">Pós-parto</option>
+            <option value="autismo">Cuidados Especiais</option>
+            <option value="gemeos">Gêmeos</option>
           </select>
         </div>
-        <button class="search-bar-btn" aria-label="Buscar">
+        <button class="search-bar-btn" id="searchBtn" aria-label="Buscar">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
         </button>
+      </div>
+
+      <!-- Mais filtros (collapse) -->
+      <button id="toggleMoreFilters" type="button" style="background: none; border: none; color: var(--cta); font-family: inherit; font-size: 13px; font-weight: 600; cursor: pointer; margin-top: 14px; display: inline-flex; align-items: center; gap: 6px;">
+        Mais filtros
+        <svg id="moreFiltersArrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition: transform 0.2s;"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+
+      <div id="moreFiltersPanel" style="display: none; background: white; border: 1px solid var(--line); border-radius: 16px; padding: 20px; margin-top: 12px;">
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px;">
+          <div>
+            <label style="font-size: 12px; font-weight: 600; color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.05em; display: block; margin-bottom: 8px;">Disponibilidade</label>
+            <label style="display: flex; align-items: center; gap: 8px; padding: 6px 0; font-size: 14px;"><input type="checkbox" id="fOvernight"> Aceita pernoite</label>
+            <label style="display: flex; align-items: center; gap: 8px; padding: 6px 0; font-size: 14px;"><input type="checkbox" id="fTravel"> Aceita viajar</label>
+          </div>
+          <div>
+            <label style="font-size: 12px; font-weight: 600; color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.05em; display: block; margin-bottom: 8px;">Mobilidade</label>
+            <label style="display: flex; align-items: center; gap: 8px; padding: 6px 0; font-size: 14px;"><input type="checkbox" id="fCnh"> Tem CNH</label>
+            <label style="display: flex; align-items: center; gap: 8px; padding: 6px 0; font-size: 14px;"><input type="checkbox" id="fVehicle"> Tem veículo</label>
+            <label style="display: flex; align-items: center; gap: 8px; padding: 6px 0; font-size: 14px;"><input type="checkbox" id="fPassport"> Passaporte válido</label>
+          </div>
+          <div>
+            <label style="font-size: 12px; font-weight: 600; color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.05em; display: block; margin-bottom: 8px;">Estilo de vida</label>
+            <label style="display: flex; align-items: center; gap: 8px; padding: 6px 0; font-size: 14px;"><input type="checkbox" id="fNonSmoker"> Não fumante</label>
+            <label style="display: flex; align-items: center; gap: 8px; padding: 6px 0; font-size: 14px;"><input type="checkbox" id="fHasKids"> Tem filhos próprios</label>
+          </div>
+          <div>
+            <label style="font-size: 12px; font-weight: 600; color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.05em; display: block; margin-bottom: 8px;">Idiomas</label>
+            <label style="display: flex; align-items: center; gap: 8px; padding: 6px 0; font-size: 14px;"><input type="checkbox" id="fLangIngles" value="ingles"> Inglês</label>
+            <label style="display: flex; align-items: center; gap: 8px; padding: 6px 0; font-size: 14px;"><input type="checkbox" id="fLangEspanhol" value="espanhol"> Espanhol</label>
+            <label style="display: flex; align-items: center; gap: 8px; padding: 6px 0; font-size: 14px;"><input type="checkbox" id="fLangLibras" value="libras"> Libras</label>
+          </div>
+          <div>
+            <label style="font-size: 12px; font-weight: 600; color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.05em; display: block; margin-bottom: 8px;">Valor por hora</label>
+            <div style="display: flex; gap: 8px;">
+              <input type="number" id="fMinPrice" placeholder="Min R$" min="0" style="width: 100%; padding: 8px 12px; border: 1px solid var(--line-strong); border-radius: 10px; font-family: inherit; font-size: 13px;">
+              <input type="number" id="fMaxPrice" placeholder="Max R$" min="0" style="width: 100%; padding: 8px 12px; border: 1px solid var(--line-strong); border-radius: 10px; font-family: inherit; font-size: 13px;">
+            </div>
+          </div>
+          <div>
+            <label style="font-size: 12px; font-weight: 600; color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.05em; display: block; margin-bottom: 8px;">Certificações</label>
+            <label style="display: flex; align-items: center; gap: 8px; padding: 6px 0; font-size: 14px;"><input type="checkbox" id="fCertSocorros" value="primeiros-socorros"> Primeiros Socorros</label>
+            <label style="display: flex; align-items: center; gap: 8px; padding: 6px 0; font-size: 14px;"><input type="checkbox" id="fCertRN" value="cuidador-rn"> Recém-nascido</label>
+          </div>
+        </div>
+        <div style="display: flex; justify-content: space-between; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--line);">
+          <button type="button" id="clearFilters" style="background: none; border: none; color: var(--ink-3); font-family: inherit; font-size: 13px; font-weight: 600; cursor: pointer;">Limpar filtros</button>
+          <button type="button" id="applyMoreFilters" style="background: var(--ink); color: white; border: none; padding: 10px 22px; border-radius: 999px; font-family: inherit; font-size: 13px; font-weight: 700; cursor: pointer;">Aplicar</button>
+        </div>
       </div>
     </div>
   </section>
@@ -411,15 +458,8 @@
         </div>
       </div>
 
-      <div class="filter-chips">
+      <div class="filter-chips" style="display: none;">
         <button class="chip active">Todas</button>
-        <button class="chip">Antecedente limpo</button>
-        <button class="chip">Recém-nascido</button>
-        <button class="chip">Pedagoga</button>
-        <button class="chip">Folguista</button>
-        <button class="chip">Habilitada</button>
-        <button class="chip">Viaja</button>
-        <button class="chip">Inglês</button>
       </div>
 
       <div class="results-grid" id="resultsGrid">
@@ -475,6 +515,7 @@
     }
 
     // Busca babás aprovadas
+    setupFiltersUI();
     await loadBabas();
 
     // Mostra banner se NÃO tem subscription ativa
@@ -548,7 +589,8 @@
     const countEl = document.querySelector('.results-count');
 
     try {
-      const babas = await window.dbHelpers.getApprovedBabas();
+      const filters = collectFilters();
+      const babas = await window.dbHelpers.getApprovedBabas(filters);
 
       if (babas.length === 0) {
         grid.style.display = 'none';
@@ -557,6 +599,8 @@
         return;
       }
 
+      grid.style.display = '';
+      empty.style.display = 'none';
       if (countEl) {
         countEl.innerHTML = `<strong>${babas.length} ${babas.length === 1 ? 'babá' : 'babás'}</strong> ${babas.length === 1 ? 'encontrada' : 'encontradas'}`;
       }
@@ -566,6 +610,96 @@
       console.error('Erro carregando babás:', err);
       grid.innerHTML = `<div style="grid-column: 1 / -1; padding: 40px; text-align: center; color: var(--cta);">Erro carregando babás. Tenta recarregar a página.</div>`;
     }
+  }
+
+  function collectFilters() {
+    const f = {};
+    const n = document.getElementById('filterNeighborhood')?.value;
+    if (n) f.neighborhoods = [n];
+
+    const ageRange = document.getElementById('filterAgeRange')?.value;
+    // ageRange filtra as babás que atendem essa idade
+    if (ageRange) f.ageRange = ageRange; // não enviado pro getApprovedBabas, filtra cliente
+
+    const spec = document.getElementById('filterSpecialty')?.value;
+    if (spec) f.specialties = [spec];
+
+    if (document.getElementById('fOvernight')?.checked) f.acceptsOvernight = true;
+    if (document.getElementById('fTravel')?.checked) f.acceptsTravel = true;
+    if (document.getElementById('fCnh')?.checked) f.hasCnh = true;
+    if (document.getElementById('fVehicle')?.checked) f.hasVehicle = true;
+    if (document.getElementById('fPassport')?.checked) f.hasPassport = true;
+    if (document.getElementById('fNonSmoker')?.checked) f.nonSmoker = true;
+    if (document.getElementById('fHasKids')?.checked) f.hasOwnChildren = true;
+
+    const langs = [];
+    if (document.getElementById('fLangIngles')?.checked) langs.push('ingles');
+    if (document.getElementById('fLangEspanhol')?.checked) langs.push('espanhol');
+    if (document.getElementById('fLangLibras')?.checked) langs.push('libras');
+    if (langs.length) f.languages = langs;
+
+    const certs = [];
+    if (document.getElementById('fCertSocorros')?.checked) certs.push('primeiros-socorros');
+    if (document.getElementById('fCertRN')?.checked) certs.push('cuidador-rn');
+    if (certs.length) f.certifications = certs;
+
+    const minP = parseFloat(document.getElementById('fMinPrice')?.value);
+    const maxP = parseFloat(document.getElementById('fMaxPrice')?.value);
+    if (!isNaN(minP)) f.minPrice = minP;
+    if (!isNaN(maxP)) f.maxPrice = maxP;
+
+    return f;
+  }
+
+  function populateNeighborhoodSelect() {
+    const select = document.getElementById('filterNeighborhood');
+    if (!select || !window.dbHelpers?.RIO_NEIGHBORHOODS) return;
+    const groups = window.dbHelpers.RIO_NEIGHBORHOODS;
+    Object.entries(groups).forEach(([groupName, hoods]) => {
+      const optgroup = document.createElement('optgroup');
+      optgroup.label = groupName;
+      hoods.forEach(h => {
+        const opt = document.createElement('option');
+        opt.value = h;
+        opt.textContent = h;
+        optgroup.appendChild(opt);
+      });
+      select.appendChild(optgroup);
+    });
+  }
+
+  function setupFiltersUI() {
+    populateNeighborhoodSelect();
+
+    document.getElementById('searchBtn')?.addEventListener('click', loadBabas);
+    document.getElementById('filterNeighborhood')?.addEventListener('change', loadBabas);
+    document.getElementById('filterAgeRange')?.addEventListener('change', loadBabas);
+    document.getElementById('filterSpecialty')?.addEventListener('change', loadBabas);
+
+    const toggleBtn = document.getElementById('toggleMoreFilters');
+    const panel = document.getElementById('moreFiltersPanel');
+    const arrow = document.getElementById('moreFiltersArrow');
+    if (toggleBtn && panel) {
+      toggleBtn.addEventListener('click', () => {
+        const open = panel.style.display !== 'none';
+        panel.style.display = open ? 'none' : 'block';
+        if (arrow) arrow.style.transform = open ? '' : 'rotate(180deg)';
+      });
+    }
+    document.getElementById('applyMoreFilters')?.addEventListener('click', () => {
+      loadBabas();
+      panel.style.display = 'none';
+      if (arrow) arrow.style.transform = '';
+    });
+    document.getElementById('clearFilters')?.addEventListener('click', () => {
+      document.querySelectorAll('#moreFiltersPanel input[type="checkbox"]').forEach(cb => cb.checked = false);
+      document.getElementById('fMinPrice').value = '';
+      document.getElementById('fMaxPrice').value = '';
+      document.getElementById('filterNeighborhood').value = '';
+      document.getElementById('filterAgeRange').value = '';
+      document.getElementById('filterSpecialty').value = '';
+      loadBabas();
+    });
   }
 </script>
 

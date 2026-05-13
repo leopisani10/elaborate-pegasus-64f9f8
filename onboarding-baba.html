@@ -14,260 +14,483 @@
   <script defer src="js/mobile-menu.js"></script>
   <style>
     body { background: #FAFBFC; }
-    .ob-header { padding: 18px 0; border-bottom: 1px solid var(--line); background: white; }
-    .ob-header-inner { max-width: 900px; margin: 0 auto; padding: 0 24px; display: flex; justify-content: space-between; align-items: center; }
+
+    .ob-header { background: white; border-bottom: 1px solid var(--line); padding: 16px 0; }
+    .ob-header-inner { max-width: 1100px; margin: 0 auto; padding: 0 24px; display: flex; justify-content: space-between; align-items: center; }
     .ob-header img { height: 32px; }
-    .ob-exit { font-size: 13px; color: var(--ink-3); font-weight: 500; cursor: pointer; background: none; border: none; }
-    .ob-exit:hover { color: var(--ink); }
+    .ob-header a.back-link { color: var(--ink-3); text-decoration: none; font-size: 13px; font-weight: 500; }
+    .ob-header a.back-link:hover { color: var(--ink); }
 
-    .ob-container { max-width: 720px; margin: 0 auto; padding: 32px 24px 80px; }
+    .ob-container { max-width: 760px; margin: 0 auto; padding: 40px 24px 80px; }
 
-    .ob-panel { background: white; border: 1px solid var(--line); border-radius: 24px; padding: 40px; }
-    .ob-panel h1 { font-size: 28px; font-weight: 800; letter-spacing: -0.035em; margin-bottom: 8px; }
-    .ob-panel .panel-sub { color: var(--ink-3); font-size: 15px; margin-bottom: 32px; line-height: 1.5; }
+    .ob-head { margin-bottom: 32px; }
+    .ob-head h1 { font-size: clamp(28px, 4vw, 38px); font-weight: 800; letter-spacing: -0.03em; margin-bottom: 8px; line-height: 1.15; }
+    .ob-head p { color: var(--ink-3); font-size: 15px; }
+    .ob-head .progress-info { color: var(--baba); font-size: 13px; font-weight: 600; margin-top: 12px; }
 
-    .form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    /* Step badges */
+    .ob-steps { display: flex; gap: 6px; margin-bottom: 32px; flex-wrap: wrap; }
+    .ob-step {
+      flex: 1; min-width: 60px; padding: 8px 10px; border-radius: 999px;
+      background: white; border: 1px solid var(--line); font-size: 11px;
+      font-weight: 600; color: var(--ink-3); text-align: center;
+      transition: all 0.2s;
+    }
+    .ob-step.active { background: var(--baba); border-color: var(--baba); color: white; }
+    .ob-step.done { background: var(--baba-soft); border-color: var(--baba-soft); color: var(--baba-deep); }
 
-    /* Pending state */
-    .pending-state {
-      text-align: center;
-      padding: 40px 20px;
+    /* Cards de seção */
+    .ob-card {
+      background: white; border: 1px solid var(--line); border-radius: 20px;
+      padding: 28px 28px 24px; margin-bottom: 20px;
     }
-    .pending-icon {
-      width: 80px;
-      height: 80px;
-      border-radius: 50%;
-      background: var(--cta-soft);
-      color: var(--cta);
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0 auto 24px;
+    .ob-card h2 {
+      font-size: 18px; font-weight: 800; letter-spacing: -0.02em;
+      margin-bottom: 4px;
     }
-    .pending-state h2 {
-      font-size: 24px;
-      font-weight: 800;
-      letter-spacing: -0.025em;
-      margin-bottom: 12px;
-    }
-    .pending-state p {
-      color: var(--ink-3);
-      font-size: 15px;
-      line-height: 1.6;
-      max-width: 480px;
-      margin: 0 auto 24px;
-    }
-    .pending-state .actions {
-      display: flex;
-      gap: 10px;
-      justify-content: center;
+    .ob-card .card-sub {
+      font-size: 13px; color: var(--ink-3); margin-bottom: 22px;
     }
 
-    .tag-pick { display: flex; flex-wrap: wrap; gap: 8px; }
-    .tag-pick label {
-      cursor: pointer;
-      padding: 8px 14px;
-      border: 1.5px solid var(--line-strong);
-      border-radius: 999px;
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--ink-2);
-      background: white;
-      transition: all 0.15s;
-      user-select: none;
+    .field { margin-bottom: 18px; }
+    .field-label {
+      display: block; font-size: 13px; font-weight: 600;
+      color: var(--ink); margin-bottom: 8px;
     }
-    .tag-pick input { display: none; }
-    .tag-pick label:has(input:checked) {
-      background: var(--baba-soft);
-      border-color: var(--baba);
-      color: var(--baba-deep);
-    }
+    .field-label .opt { color: var(--ink-3); font-weight: 400; font-size: 12px; margin-left: 4px; }
+    .field-label .req { color: var(--cta); }
+    .field-help { font-size: 12px; color: var(--ink-3); margin-top: 6px; line-height: 1.4; }
 
-    .price-display {
-      display: flex;
-      align-items: baseline;
-      gap: 10px;
-      padding: 16px 20px;
-      background: var(--baba-soft);
-      border-radius: 12px;
-      margin-top: 12px;
+    input[type="text"], input[type="number"], input[type="date"], input[type="email"], textarea, select {
+      width: 100%; padding: 11px 14px;
+      border: 1.5px solid var(--line-strong); border-radius: 12px;
+      font-family: inherit; font-size: 14px; background: white;
+      transition: border 0.15s;
     }
-    .price-display .val {
-      font-size: 28px;
-      font-weight: 800;
-      color: var(--baba-deep);
-      letter-spacing: -0.03em;
-    }
-    .price-display .lbl { font-size: 13px; color: var(--baba-deep); opacity: 0.7; }
+    input:focus, textarea:focus, select:focus { outline: none; border-color: var(--baba); }
+    textarea { resize: vertical; min-height: 100px; }
 
-    .ob-actions {
-      display: flex;
-      justify-content: flex-end;
-      align-items: center;
-      padding-top: 24px;
-      margin-top: 24px;
-      border-top: 1px solid var(--line);
-    }
-
+    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .field-row-3 { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 14px; }
     @media (max-width: 600px) {
-      .ob-panel { padding: 28px 20px; }
-      .form-row-2 { grid-template-columns: 1fr; }
+      .field-row, .field-row-3 { grid-template-columns: 1fr; }
     }
+
+    .chk-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    @media (max-width: 600px) { .chk-grid { grid-template-columns: 1fr; } }
+
+    .chk-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 11px 14px; border: 1.5px solid var(--line);
+      border-radius: 12px; cursor: pointer; transition: all 0.15s;
+      font-size: 14px; color: var(--ink-2);
+    }
+    .chk-item:hover { border-color: var(--line-strong); }
+    .chk-item input { accent-color: var(--baba); flex-shrink: 0; }
+    .chk-item input:checked + span { font-weight: 600; color: var(--ink); }
+    .chk-item:has(input:checked) { border-color: var(--baba); background: var(--baba-soft); }
+
+    /* Radio cards */
+    .radio-cards { display: flex; gap: 10px; flex-wrap: wrap; }
+    .radio-card {
+      flex: 1; min-width: 100px; padding: 14px;
+      border: 1.5px solid var(--line); border-radius: 14px;
+      text-align: center; cursor: pointer; transition: all 0.15s;
+    }
+    .radio-card:hover { border-color: var(--line-strong); }
+    .radio-card input { display: none; }
+    .radio-card span { font-size: 13px; font-weight: 600; color: var(--ink-2); }
+    .radio-card:has(input:checked) { border-color: var(--baba); background: var(--baba-soft); }
+    .radio-card:has(input:checked) span { color: var(--baba-deep); }
+
+    /* Bairros: accordion */
+    .neighborhood-group { margin-bottom: 12px; border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+    .neighborhood-group-head {
+      padding: 12px 16px; background: var(--bg-soft); display: flex;
+      justify-content: space-between; align-items: center; cursor: pointer;
+      font-size: 13px; font-weight: 700; color: var(--ink-2);
+    }
+    .neighborhood-group-head:hover { background: #EEF0F3; }
+    .neighborhood-group-head .count { color: var(--ink-3); font-weight: 500; }
+    .neighborhood-group-body { padding: 12px 16px; display: none; background: white; }
+    .neighborhood-group.open .neighborhood-group-body { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    @media (max-width: 600px) {
+      .neighborhood-group.open .neighborhood-group-body { grid-template-columns: 1fr; }
+    }
+    .neighborhood-group .toggle-arrow { transition: transform 0.2s; }
+    .neighborhood-group.open .toggle-arrow { transform: rotate(180deg); }
+
+    /* Foto */
+    .avatar-block {
+      display: flex; align-items: center; gap: 18px;
+      padding: 14px; background: var(--bg-soft); border-radius: 14px;
+    }
+    .avatar-preview {
+      width: 76px; height: 76px; border-radius: 50%;
+      background: var(--baba-soft); color: var(--baba-deep);
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 28px; overflow: hidden; flex-shrink: 0;
+    }
+    .avatar-preview img { width: 100%; height: 100%; object-fit: cover; }
+
+    .btn-upload {
+      background: white; border: 1.5px solid var(--line-strong);
+      border-radius: 999px; padding: 9px 18px;
+      font-family: inherit; font-size: 13px; font-weight: 600; cursor: pointer;
+    }
+    .btn-upload:hover { background: var(--bg-soft); }
+
+    /* Doc upload */
+    .doc-uploaded {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 10px 14px; background: var(--baba-soft); color: var(--baba-deep);
+      border-radius: 12px; margin-top: 8px; font-size: 13px; font-weight: 600;
+    }
+    .doc-uploaded .btn-remove {
+      background: none; border: none; color: var(--baba-deep);
+      cursor: pointer; opacity: 0.6;
+    }
+    .doc-uploaded .btn-remove:hover { opacity: 1; }
+
+    /* Submit */
+    .form-actions {
+      position: sticky; bottom: 16px; z-index: 10;
+      display: flex; gap: 10px; justify-content: flex-end;
+      background: white; padding: 16px 20px; border-radius: 20px;
+      border: 1px solid var(--line); margin-top: 24px;
+      box-shadow: 0 10px 30px -10px rgba(0,0,0,0.08);
+    }
+    .btn-submit {
+      background: var(--cta); color: white; border: none;
+      padding: 14px 28px; border-radius: 999px;
+      font-family: inherit; font-size: 14px; font-weight: 700;
+      cursor: pointer; transition: all 0.15s;
+    }
+    .btn-submit:hover { background: var(--cta-hover); }
+    .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-cancel {
+      background: white; color: var(--ink); border: 1.5px solid var(--line-strong);
+      padding: 14px 22px; border-radius: 999px;
+      font-family: inherit; font-size: 14px; font-weight: 600;
+      cursor: pointer; text-decoration: none; display: inline-flex; align-items: center;
+    }
+
+    .pending-panel, .rejected-panel {
+      background: white; border-radius: 24px; padding: 56px 32px;
+      text-align: center; border: 1px solid var(--line);
+    }
+    .pending-icon, .rejected-icon { font-size: 48px; margin-bottom: 16px; }
+    .pending-panel h2, .rejected-panel h2 { font-size: 24px; font-weight: 800; margin-bottom: 12px; letter-spacing: -0.02em; }
+    .pending-panel p, .rejected-panel p { color: var(--ink-3); font-size: 14px; max-width: 480px; margin: 0 auto 8px; line-height: 1.6; }
+    .pending-panel .btn-cta-account, .rejected-panel .btn-cta-account {
+      background: var(--cta); color: white; padding: 12px 24px; border-radius: 999px;
+      font-weight: 700; text-decoration: none; font-size: 14px; display: inline-block; margin-top: 24px;
+    }
+
+    .err-banner {
+      background: #FCE7E7; color: #5C1F22; padding: 12px 16px;
+      border-radius: 12px; margin-bottom: 16px; font-size: 13px;
+      border: 1px solid #F5BCBC; display: none;
+    }
+    .err-banner.show { display: block; }
   </style>
 </head>
 <body>
 
 <header class="ob-header">
   <div class="ob-header-inner">
-    <a href="/"><img src="logo.png" alt="Dona Baby+"></a>
-    <button class="ob-exit" onclick="window.dbHelpers && window.dbHelpers.signOut()">Sair →</button>
+    <a href="/"><img src="/logo.png" alt="Dona Baby+"></a>
+    <a href="/account.html" class="back-link" id="backLink">← Voltar</a>
   </div>
 </header>
 
-<div class="ob-container">
-  <main class="ob-panel" id="formPanel">
-    <h1>Conta sobre você</h1>
-    <p class="panel-sub">
-      Preencha esses dados pra famílias te conhecerem. Depois nosso time revisa em até 48h e libera seu perfil.
-    </p>
+<main class="ob-container">
+
+  <!-- Estados especiais -->
+  <div id="pendingPanel" class="pending-panel" style="display:none;">
+    <div class="pending-icon">⏳</div>
+    <h2>Seu cadastro está em análise</h2>
+    <p>Em até 24 horas a equipe Dona Baby+ vai conferir seus dados e liberar o acesso.</p>
+    <p><strong style="color: var(--baba-deep);">Você não será cobrada até estar aprovada.</strong></p>
+    <p>Dúvidas? <a href="mailto:contato@donababy.com" style="color: var(--cta);">contato@donababy.com</a></p>
+    <a href="/account.html" class="btn-cta-account">Ver meu perfil</a>
+  </div>
+
+  <div id="rejectedPanel" class="rejected-panel" style="display:none;">
+    <div class="rejected-icon">😔</div>
+    <h2>Não pudemos aprovar seu cadastro</h2>
+    <p id="rejectedReason">Entre em contato pra saber mais.</p>
+    <p style="margin-top: 16px;"><strong>Sua cobrança foi cancelada — você não foi cobrada.</strong></p>
+    <a href="mailto:contato@donababy.com" class="btn-cta-account">Falar com a equipe</a>
+  </div>
+
+  <!-- Form -->
+  <div id="formPanel">
+    <div class="ob-head">
+      <h1 id="formTitle">Seu cadastro de babá</h1>
+      <p id="formSub">Quanto mais completo, mais rápido a aprovação e mais famílias te encontram.</p>
+    </div>
+
+    <div class="err-banner" id="errBanner"></div>
 
     <form id="babaForm">
-      <div class="field">
-        <label class="field-label">Foto de perfil <span style="color: var(--ink-3); font-weight: 400; font-size: 12px;">(opcional, recomendado)</span></label>
-        <div style="display: flex; align-items: center; gap: 16px; padding: 12px 0;">
-          <div id="avatarPreview" style="width: 72px; height: 72px; border-radius: 50%; background: var(--baba-soft); color: var(--baba-deep); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 28px; overflow: hidden; flex-shrink: 0;">?</div>
-          <div style="flex: 1;">
-            <button type="button" id="uploadBtn" style="background: white; border: 1.5px solid var(--line-strong); border-radius: 999px; padding: 9px 18px; font-family: inherit; font-size: 13px; font-weight: 600; cursor: pointer;">Escolher foto</button>
-            <input type="file" id="avatarFile" accept="image/*" style="display: none;">
-            <p style="font-size: 12px; color: var(--ink-3); margin-top: 6px; line-height: 1.4;">JPG ou PNG até 5MB. Foto profissional ajuda você a ser contratada mais rápido.</p>
+
+      <!-- SEÇÃO 1: Foto + Bio -->
+      <div class="ob-card">
+        <h2>Apresentação</h2>
+        <p class="card-sub">A primeira impressão pras famílias.</p>
+
+        <div class="field">
+          <label class="field-label">Foto de perfil <span class="opt">(opcional, mas recomendamos)</span></label>
+          <div class="avatar-block">
+            <div class="avatar-preview" id="avatarPreview">?</div>
+            <div style="flex: 1;">
+              <button type="button" class="btn-upload" id="uploadBtn">Escolher foto</button>
+              <input type="file" id="avatarFile" accept="image/*" style="display: none;">
+              <p class="field-help">JPG ou PNG até 5MB. Foto profissional, sorrindo, fundo neutro.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="field-label" for="bio">Bio <span class="req">*</span></label>
+          <textarea id="bio" required minlength="50" placeholder="Conta um pouco da sua experiência, especialidades e o que te diferencia. Quanto mais específico, melhor."></textarea>
+          <div class="field-help">Mínimo 50 caracteres. Famílias leem isso antes de te chamar.</div>
+        </div>
+      </div>
+
+      <!-- SEÇÃO 2: Dados pessoais -->
+      <div class="ob-card">
+        <h2>Dados pessoais</h2>
+        <p class="card-sub">Privado. Só o time Dona Baby+ vê isso, pra verificação.</p>
+
+        <div class="field-row">
+          <div class="field">
+            <label class="field-label" for="cpf">CPF <span class="req">*</span></label>
+            <input type="text" id="cpf" required placeholder="000.000.000-00" maxlength="14">
+          </div>
+          <div class="field">
+            <label class="field-label" for="birthDate">Data de nascimento <span class="req">*</span></label>
+            <input type="date" id="birthDate" required>
           </div>
         </div>
       </div>
 
-      <div class="field">
-        <label class="field-label" for="bio">Bio · fala um pouco da sua experiência <span class="req">*</span></label>
-        <textarea class="textarea" id="bio" name="bio" rows="5" required minlength="50" placeholder="Ex: Sou babá há 7 anos, especializada em recém-nascidos. Trabalhei em famílias de Ipanema e Leblon..."></textarea>
-        <div class="field-help">Mínimo 50 caracteres. Conte sua experiência, especialidades, abordagem.</div>
-      </div>
+      <!-- SEÇÃO 3: Endereço -->
+      <div class="ob-card">
+        <h2>Endereço residencial</h2>
+        <p class="card-sub">Privado. Não é compartilhado com famílias.</p>
 
-      <div class="form-row-2">
+        <div class="field-row">
+          <div class="field">
+            <label class="field-label" for="cep">CEP <span class="req">*</span></label>
+            <input type="text" id="cep" required placeholder="00000-000" maxlength="9">
+            <div class="field-help">Preencha o CEP que a gente completa o resto.</div>
+          </div>
+          <div class="field">
+            <label class="field-label" for="addrCity">Cidade</label>
+            <input type="text" id="addrCity" value="Rio de Janeiro" readonly style="background: var(--bg-soft);">
+          </div>
+        </div>
+
+        <div class="field-row-3">
+          <div class="field">
+            <label class="field-label" for="addrStreet">Rua <span class="req">*</span></label>
+            <input type="text" id="addrStreet" required>
+          </div>
+          <div class="field">
+            <label class="field-label" for="addrNumber">Número <span class="req">*</span></label>
+            <input type="text" id="addrNumber" required>
+          </div>
+          <div class="field">
+            <label class="field-label" for="addrComplement">Complemento <span class="opt">(opcional)</span></label>
+            <input type="text" id="addrComplement" placeholder="Apto 302">
+          </div>
+        </div>
+
         <div class="field">
-          <label class="field-label" for="years">Anos de experiência <span class="req">*</span></label>
-          <input class="input" id="years" name="years" type="number" min="0" max="50" placeholder="Ex: 5" required>
+          <label class="field-label" for="addrNeighborhood">Bairro <span class="req">*</span></label>
+          <input type="text" id="addrNeighborhood" required>
         </div>
+      </div>
+
+      <!-- SEÇÃO 4: Profissional -->
+      <div class="ob-card">
+        <h2>Experiência profissional</h2>
+        <p class="card-sub">O que famílias vão considerar.</p>
+
+        <div class="field-row">
+          <div class="field">
+            <label class="field-label" for="years">Anos de experiência <span class="req">*</span></label>
+            <input type="number" id="years" required min="0" max="60">
+          </div>
+          <div class="field">
+            <label class="field-label" for="rate">Valor por hora (R$) <span class="req">*</span></label>
+            <input type="number" id="rate" required min="20" max="200" step="1">
+          </div>
+        </div>
+
         <div class="field">
-          <label class="field-label" for="rate">Valor por hora (R$) <span class="req">*</span></label>
-          <input class="input" id="rate" name="rate" type="number" min="15" max="200" step="5" placeholder="Ex: 35" required>
+          <label class="field-label">Idades com que tem experiência <span class="req">*</span></label>
+          <div class="chk-grid" id="ageRanges">
+            <label class="chk-item"><input type="checkbox" value="newborn"><span>Recém-nascido (0-3 meses)</span></label>
+            <label class="chk-item"><input type="checkbox" value="baby"><span>Bebê (3-12 meses)</span></label>
+            <label class="chk-item"><input type="checkbox" value="toddler"><span>Pré-escolar (1-3 anos)</span></label>
+            <label class="chk-item"><input type="checkbox" value="kid"><span>Criança (4-7 anos)</span></label>
+            <label class="chk-item"><input type="checkbox" value="older"><span>Maior (8+ anos)</span></label>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="field-label">Especialidades <span class="opt">(marque o que se aplica)</span></label>
+          <div class="chk-grid" id="specialties">
+            <label class="chk-item"><input type="checkbox" value="pedagoga"><span>Formação em Pedagogia</span></label>
+            <label class="chk-item"><input type="checkbox" value="enfermeira"><span>Enfermeira ou téc. enfermagem</span></label>
+            <label class="chk-item"><input type="checkbox" value="folguista"><span>Folguista (cobre folgas)</span></label>
+            <label class="chk-item"><input type="checkbox" value="noturna"><span>Noturna (madruga)</span></label>
+            <label class="chk-item"><input type="checkbox" value="pos-parto"><span>Pós-parto / doula</span></label>
+            <label class="chk-item"><input type="checkbox" value="autismo"><span>Crianças com TEA/TDAH</span></label>
+            <label class="chk-item"><input type="checkbox" value="gemeos"><span>Gêmeos</span></label>
+            <label class="chk-item"><input type="checkbox" value="amamentacao"><span>Apoio à amamentação</span></label>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="field-label">Cursos e certificações <span class="opt">(marque o que tem)</span></label>
+          <div class="chk-grid" id="certifications"></div>
+        </div>
+
+        <div class="field">
+          <label class="field-label">Idiomas <span class="opt">(além do português)</span></label>
+          <div class="chk-grid" id="languages"></div>
         </div>
       </div>
 
-      <div class="field">
-        <label class="field-label">Bairros que atende <span class="req">*</span></label>
-        <div class="tag-pick" id="neighborhoods">
-          <label><input type="checkbox" value="Copacabana">Copacabana</label>
-          <label><input type="checkbox" value="Ipanema">Ipanema</label>
-          <label><input type="checkbox" value="Leblon">Leblon</label>
-          <label><input type="checkbox" value="Botafogo">Botafogo</label>
-          <label><input type="checkbox" value="Flamengo">Flamengo</label>
-          <label><input type="checkbox" value="Tijuca">Tijuca</label>
-          <label><input type="checkbox" value="Barra da Tijuca">Barra da Tijuca</label>
-          <label><input type="checkbox" value="Recreio">Recreio</label>
-          <label><input type="checkbox" value="Jardim Botânico">Jardim Botânico</label>
-          <label><input type="checkbox" value="Lagoa">Lagoa</label>
-        </div>
-        <div class="field-help">Marca todos os bairros onde você consegue trabalhar.</div>
+      <!-- SEÇÃO 5: Bairros que atende -->
+      <div class="ob-card">
+        <h2>Bairros que atende</h2>
+        <p class="card-sub">Onde você topa ir trabalhar. Marca pelo menos 1.</p>
+        <div id="neighborhoodGroups"></div>
+        <div class="field-help" id="neighborhoodCount">0 bairros selecionados</div>
       </div>
 
-      <div class="field">
-        <label class="field-label">Idades com que tem experiência <span class="req">*</span></label>
-        <div class="tag-pick" id="ageRanges">
-          <label><input type="checkbox" value="newborn">Recém-nascido (0-6m)</label>
-          <label><input type="checkbox" value="baby">Bebê (6m-2a)</label>
-          <label><input type="checkbox" value="toddler">Pré-escolar (2-4a)</label>
-          <label><input type="checkbox" value="kid">Criança (4-8a)</label>
-          <label><input type="checkbox" value="older">Maior (8a+)</label>
+      <!-- SEÇÃO 6: Documentação -->
+      <div class="ob-card">
+        <h2>Documentação</h2>
+        <p class="card-sub">Antecedentes criminais: obrigatórios pra aprovação. Pode subir depois.</p>
+
+        <div class="field">
+          <label class="field-label">Antecedentes criminais <span class="opt">(PDF ou imagem, até 10MB)</span></label>
+          <input type="file" id="docFile" accept=".pdf,image/jpeg,image/png,image/jpg" style="display: none;">
+          <button type="button" class="btn-upload" id="uploadDocBtn">Escolher arquivo</button>
+          <div class="field-help">Onde tirar: <a href="https://www.gov.br/pt-br/servicos/emitir-certidao-de-antecedentes-criminais" target="_blank" style="color: var(--cta);">site da PF</a> (gratuito).</div>
+          <div id="docsList"></div>
         </div>
       </div>
 
-      <div class="field">
-        <label class="field-label">Especialidades (opcional)</label>
-        <div class="tag-pick" id="specialties">
-          <label><input type="checkbox" value="pedagoga">Pedagoga</label>
-          <label><input type="checkbox" value="enfermeira">Enfermeira</label>
-          <label><input type="checkbox" value="folguista">Folguista</label>
-          <label><input type="checkbox" value="noturna">Noturna</label>
-          <label><input type="checkbox" value="pos-parto">Pós-parto</label>
-          <label><input type="checkbox" value="ingles">Inglês</label>
-          <label><input type="checkbox" value="habilitada">Habilitada</label>
-          <label><input type="checkbox" value="viaja">Viaja</label>
+      <!-- SEÇÃO 7: Disponibilidade e particularidades -->
+      <div class="ob-card">
+        <h2>Disponibilidade e particularidades</h2>
+        <p class="card-sub">Famílias filtram por isso. Quanto mais você marcar (sem mentir), mais aparece.</p>
+
+        <div class="field">
+          <label class="field-label">Tem passaporte válido?</label>
+          <div class="radio-cards" id="passport">
+            <label class="radio-card"><input type="radio" name="passport" value="yes"><span>Sim, válido</span></label>
+            <label class="radio-card"><input type="radio" name="passport" value="renewing"><span>Em renovação</span></label>
+            <label class="radio-card"><input type="radio" name="passport" value="no"><span>Não tenho</span></label>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="field-label">Tem CNH (carteira de motorista)?</label>
+          <div class="radio-cards" id="cnh">
+            <label class="radio-card"><input type="radio" name="cnh" value="yes"><span>Sim</span></label>
+            <label class="radio-card"><input type="radio" name="cnh" value="no"><span>Não</span></label>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="field-label">Tem veículo próprio?</label>
+          <div class="radio-cards" id="vehicle">
+            <label class="radio-card"><input type="radio" name="vehicle" value="yes"><span>Sim</span></label>
+            <label class="radio-card"><input type="radio" name="vehicle" value="no"><span>Não</span></label>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="field-label">Aceita dormir/pernoitar quando necessário?</label>
+          <div class="radio-cards" id="overnight">
+            <label class="radio-card"><input type="radio" name="overnight" value="yes"><span>Sim</span></label>
+            <label class="radio-card"><input type="radio" name="overnight" value="no"><span>Não</span></label>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="field-label">Aceita viajar com a família?</label>
+          <div class="radio-cards" id="travel">
+            <label class="radio-card"><input type="radio" name="travel" value="yes"><span>Sim</span></label>
+            <label class="radio-card"><input type="radio" name="travel" value="no"><span>Não</span></label>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="field-label">Tem filhos próprios?</label>
+          <div class="radio-cards" id="ownChildren">
+            <label class="radio-card"><input type="radio" name="ownChildren" value="yes"><span>Sim</span></label>
+            <label class="radio-card"><input type="radio" name="ownChildren" value="no"><span>Não</span></label>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="field-label">Fumante?</label>
+          <div class="radio-cards" id="smoker">
+            <label class="radio-card"><input type="radio" name="smoker" value="no"><span>Não fumo</span></label>
+            <label class="radio-card"><input type="radio" name="smoker" value="yes"><span>Sim</span></label>
+          </div>
         </div>
       </div>
 
-      <div class="ob-actions">
-        <button class="btn btn-cta btn-lg" type="submit" id="submitBtn">
-          Enviar pra aprovação
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-        </button>
+      <div class="form-actions">
+        <a href="/account.html" class="btn-cancel" id="cancelBtn">Cancelar</a>
+        <button type="submit" class="btn-submit" id="submitBtn">Salvar e enviar</button>
       </div>
     </form>
-  </main>
-
-  <!-- Estado "aguardando aprovação" — escondido por default -->
-  <main class="ob-panel pending-state" id="pendingPanel" style="display:none;">
-    <div class="pending-icon">
-      <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="12" cy="12" r="10"/>
-        <polyline points="12 6 12 12 16 14"/>
-      </svg>
-    </div>
-    <h2>Cadastro enviado!</h2>
-    <p>
-      Nosso time vai revisar seu perfil em até <strong>48 horas</strong>. Você recebe um email
-      quando for aprovada e seu perfil ficar visível pras famílias.
-    </p>
-    <p style="font-size: 13px; color: var(--ink-4);">
-      Enquanto isso, dá pra editar os dados clicando em "Editar perfil" depois.
-    </p>
-    <div class="actions">
-      <button class="btn btn-secondary" onclick="window.dbHelpers.signOut()">Sair</button>
-    </div>
-  </main>
-</div>
+  </div>
+</main>
 
 <script>
   let currentUser = null;
+  let isEditMode = false;
 
   window.addEventListener('DOMContentLoaded', async () => {
-    // Espera o supabase carregar
-    if (!window.dbClient) {
-      setTimeout(() => location.reload(), 800);
-      return;
-    }
+    if (!window.dbClient) { setTimeout(() => location.reload(), 800); return; }
 
-    // Exige login
     currentUser = await window.dbHelpers.requireAuth();
     if (!currentUser) return;
 
-    // Confere se já é babá; se for família, redireciona
     const profile = await window.dbHelpers.getCurrentProfile();
     if (!profile) { window.location.href = '/login.html'; return; }
     if (profile.user_type !== 'baba') {
-      alert('Essa página é só pra babás. Redirecionando...');
+      alert('Essa página é só pra babás.');
       window.location.href = '/dashboard.html';
       return;
     }
 
-    // Se já tem perfil salvo
+    // Modo: edit ou novo
+    const urlParams = new URLSearchParams(window.location.search);
+    const explicitEdit = urlParams.get('edit') === '1';
+    const statusParam = urlParams.get('status');
+
     const baba = await window.dbHelpers.getBabaProfile(currentUser.id);
 
-    if (baba && baba.bio) {
-      // Preencheu perfil. Confere se tem sub.
+    if (baba && baba.bio && !explicitEdit) {
+      // Já preencheu — confere sub e status
       const sub = await window.dbHelpers.getMySubscription();
       const hasSub = window.dbHelpers.isSubActive(sub);
 
       if (baba.approval_status === 'approved') {
-        window.location.href = '/families.html';
-        return;
+        if (statusParam !== 'edit') { window.location.href = '/families.html'; return; }
       }
       if (baba.approval_status === 'pending' && hasSub) {
         showPending();
@@ -277,52 +500,126 @@
         showRejected(baba.rejection_reason);
         return;
       }
-      // Preencheu mas não tem sub → vai pricing
-      if (!hasSub) {
+      if (!hasSub && baba.bio) {
         window.location.href = '/pricing.html';
         return;
       }
     }
 
-    // Preenche form com dados existentes (se houver de tentativa anterior)
-    if (baba) {
-      if (baba.bio) document.getElementById('bio').value = baba.bio;
-      if (baba.years_experience) document.getElementById('years').value = baba.years_experience;
-      if (baba.hourly_rate) document.getElementById('rate').value = baba.hourly_rate;
-      if (baba.neighborhoods) checkBoxes('neighborhoods', baba.neighborhoods);
-      if (baba.age_ranges) checkBoxes('ageRanges', baba.age_ranges);
-      if (baba.specialties) checkBoxes('specialties', baba.specialties);
+    // Está editando perfil já existente
+    isEditMode = explicitEdit || (baba && baba.bio);
+    if (isEditMode) {
+      document.getElementById('formTitle').textContent = 'Editar seu perfil';
+      document.getElementById('formSub').textContent = 'Atualize seus dados. Mudanças sensíveis (documentos, endereço) podem precisar de nova análise.';
+      document.getElementById('submitBtn').textContent = 'Salvar alterações';
     }
 
-    // Carrega avatar atual (se existe)
+    // Render dinâmicos
+    renderCertifications();
+    renderLanguages();
+    renderNeighborhoods();
+
+    // Preenche se tem
+    if (baba) fillFormFromBaba(baba);
+
+    // Carrega avatar
     if (profile.avatar_url) {
-      document.getElementById('avatarPreview').innerHTML = `<img src="${profile.avatar_url}" alt="" style="width:100%;height:100%;object-fit:cover;">`;
+      document.getElementById('avatarPreview').innerHTML = `<img src="${profile.avatar_url}" alt="">`;
     } else {
       document.getElementById('avatarPreview').textContent = (profile.full_name || '?').charAt(0).toUpperCase();
     }
 
-    // Setup upload avatar
-    document.getElementById('uploadBtn').addEventListener('click', () => {
-      document.getElementById('avatarFile').click();
-    });
-    document.getElementById('avatarFile').addEventListener('change', async (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
-      const preview = document.getElementById('avatarPreview');
-      const reader = new FileReader();
-      reader.onload = (ev) => {
-        preview.innerHTML = `<img src="${ev.target.result}" alt="" style="width:100%;height:100%;object-fit:cover;opacity:0.6;">`;
-      };
-      reader.readAsDataURL(file);
-      try {
-        const url = await window.dbHelpers.uploadAvatar(file, currentUser.id);
-        preview.innerHTML = `<img src="${url}" alt="" style="width:100%;height:100%;object-fit:cover;">`;
-      } catch (err) {
-        alert('Erro no upload: ' + (err.message || 'tente outra imagem'));
-        preview.textContent = (profile.full_name || '?').charAt(0).toUpperCase();
-      }
-    });
+    setupAvatarUpload(currentUser.id, profile.full_name);
+    setupCPFInput();
+    setupCEPInput();
+    setupDocUpload(currentUser.id);
+    await loadExistingDocs();
   });
+
+  function renderCertifications() {
+    const container = document.getElementById('certifications');
+    container.innerHTML = window.dbHelpers.CERTIFICATIONS.map(c => `
+      <label class="chk-item"><input type="checkbox" value="${c.value}"><span>${c.label}</span></label>
+    `).join('');
+  }
+
+  function renderLanguages() {
+    const container = document.getElementById('languages');
+    container.innerHTML = window.dbHelpers.LANGUAGES.filter(l => l.value !== 'portugues').map(l => `
+      <label class="chk-item"><input type="checkbox" value="${l.value}"><span>${l.label}</span></label>
+    `).join('');
+  }
+
+  function renderNeighborhoods() {
+    const container = document.getElementById('neighborhoodGroups');
+    const groups = window.dbHelpers.RIO_NEIGHBORHOODS;
+    container.innerHTML = Object.entries(groups).map(([groupName, hoods]) => `
+      <div class="neighborhood-group" data-group="${groupName}">
+        <div class="neighborhood-group-head">
+          <span>${groupName} <span class="count" data-count-for="${groupName}">(0 de ${hoods.length})</span></span>
+          <svg class="toggle-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="neighborhood-group-body">
+          ${hoods.map(h => `
+            <label class="chk-item"><input type="checkbox" class="hood-cb" value="${h}"><span>${h}</span></label>
+          `).join('')}
+        </div>
+      </div>
+    `).join('');
+
+    // Listeners
+    container.querySelectorAll('.neighborhood-group-head').forEach(head => {
+      head.addEventListener('click', () => head.parentElement.classList.toggle('open'));
+    });
+    container.querySelectorAll('.hood-cb').forEach(cb => {
+      cb.addEventListener('change', updateNeighborhoodCounts);
+    });
+    // Abre primeira por padrão
+    container.querySelector('.neighborhood-group')?.classList.add('open');
+  }
+
+  function updateNeighborhoodCounts() {
+    const groups = window.dbHelpers.RIO_NEIGHBORHOODS;
+    let total = 0;
+    Object.entries(groups).forEach(([gName, hoods]) => {
+      const group = document.querySelector(`[data-group="${gName}"]`);
+      if (!group) return;
+      const checked = group.querySelectorAll('.hood-cb:checked').length;
+      const counter = document.querySelector(`[data-count-for="${gName}"]`);
+      if (counter) counter.textContent = `(${checked} de ${hoods.length})`;
+      total += checked;
+    });
+    document.getElementById('neighborhoodCount').textContent = `${total} bairro${total === 1 ? '' : 's'} selecionado${total === 1 ? '' : 's'}`;
+  }
+
+  function fillFormFromBaba(baba) {
+    if (baba.bio) document.getElementById('bio').value = baba.bio;
+    if (baba.years_experience != null) document.getElementById('years').value = baba.years_experience;
+    if (baba.hourly_rate != null) document.getElementById('rate').value = baba.hourly_rate;
+    if (baba.cpf) document.getElementById('cpf').value = baba.cpf;
+    if (baba.birth_date) document.getElementById('birthDate').value = baba.birth_date;
+    if (baba.address_cep) document.getElementById('cep').value = baba.address_cep;
+    if (baba.address_street) document.getElementById('addrStreet').value = baba.address_street;
+    if (baba.address_number) document.getElementById('addrNumber').value = baba.address_number;
+    if (baba.address_complement) document.getElementById('addrComplement').value = baba.address_complement;
+    if (baba.address_neighborhood) document.getElementById('addrNeighborhood').value = baba.address_neighborhood;
+    if (baba.address_city) document.getElementById('addrCity').value = baba.address_city;
+
+    checkBoxes('ageRanges', baba.age_ranges);
+    checkBoxes('specialties', baba.specialties);
+    checkBoxes('certifications', baba.certifications);
+    checkBoxes('languages', baba.languages);
+    checkBoxesNeighborhoods(baba.neighborhoods);
+
+    setRadio('passport', baba.has_passport);
+    setRadio('cnh', baba.has_cnh === true ? 'yes' : (baba.has_cnh === false ? 'no' : null));
+    setRadio('vehicle', baba.has_vehicle === true ? 'yes' : (baba.has_vehicle === false ? 'no' : null));
+    setRadio('overnight', baba.accepts_overnight === true ? 'yes' : (baba.accepts_overnight === false ? 'no' : null));
+    setRadio('travel', baba.accepts_travel === true ? 'yes' : (baba.accepts_travel === false ? 'no' : null));
+    setRadio('ownChildren', baba.has_own_children === true ? 'yes' : (baba.has_own_children === false ? 'no' : null));
+    setRadio('smoker', baba.is_smoker === true ? 'yes' : 'no');
+    updateNeighborhoodCounts();
+  }
 
   function checkBoxes(containerId, values) {
     if (!Array.isArray(values)) return;
@@ -334,9 +631,37 @@
     });
   }
 
+  function checkBoxesNeighborhoods(values) {
+    if (!Array.isArray(values)) return;
+    values.forEach(v => {
+      const cb = document.querySelector(`.hood-cb[value="${v}"]`);
+      if (cb) {
+        cb.checked = true;
+        // Abre o grupo se tem item marcado
+        cb.closest('.neighborhood-group')?.classList.add('open');
+      }
+    });
+  }
+
+  function setRadio(name, value) {
+    if (!value) return;
+    const radio = document.querySelector(`input[name="${name}"][value="${value}"]`);
+    if (radio) radio.checked = true;
+  }
+
   function getChecked(containerId) {
     const container = document.getElementById(containerId);
+    if (!container) return [];
     return Array.from(container.querySelectorAll('input:checked')).map(cb => cb.value);
+  }
+
+  function getCheckedNeighborhoods() {
+    return Array.from(document.querySelectorAll('.hood-cb:checked')).map(cb => cb.value);
+  }
+
+  function getRadio(name) {
+    const r = document.querySelector(`input[name="${name}"]:checked`);
+    return r ? r.value : null;
   }
 
   function showPending() {
@@ -346,69 +671,215 @@
 
   function showRejected(reason) {
     document.getElementById('formPanel').style.display = 'none';
-    const pending = document.getElementById('pendingPanel');
-    pending.innerHTML = `
-      <div style="text-align: center; padding: 40px 20px;">
-        <div style="font-size: 48px; margin-bottom: 16px;">😔</div>
-        <h2 style="font-size: 24px; font-weight: 800; margin-bottom: 12px;">Não pudemos aprovar seu cadastro</h2>
-        <p style="color: var(--ink-3); font-size: 15px; max-width: 480px; margin: 0 auto 20px; line-height: 1.6;">
-          ${reason ? `<strong>Motivo:</strong> ${reason.replace(/[<>"']/g,'')}` : 'Entre em contato pra saber mais.'}
-        </p>
-        <p style="color: var(--ink-3); font-size: 13px; max-width: 480px; margin: 0 auto 24px; line-height: 1.6;">
-          Sua cobrança foi cancelada — você não foi e não vai ser cobrado por isso.
-        </p>
-        <a href="mailto:contato@donababy.com" style="background: var(--cta); color: white; padding: 12px 24px; border-radius: 999px; font-weight: 700; text-decoration: none; font-size: 14px;">Falar com a equipe</a>
-      </div>
-    `;
-    pending.style.display = 'block';
+    const panel = document.getElementById('rejectedPanel');
+    panel.style.display = 'block';
+    if (reason) {
+      document.getElementById('rejectedReason').innerHTML = `<strong>Motivo:</strong> ${reason.replace(/[<>"']/g,'')}`;
+    }
+  }
+
+  function setupAvatarUpload(userId, fullName) {
+    document.getElementById('uploadBtn').addEventListener('click', () => document.getElementById('avatarFile').click());
+    document.getElementById('avatarFile').addEventListener('change', async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const preview = document.getElementById('avatarPreview');
+      const reader = new FileReader();
+      reader.onload = (ev) => preview.innerHTML = `<img src="${ev.target.result}" alt="" style="opacity:0.6;">`;
+      reader.readAsDataURL(file);
+      try {
+        const url = await window.dbHelpers.uploadAvatar(file, userId);
+        preview.innerHTML = `<img src="${url}" alt="">`;
+      } catch (err) {
+        alert('Erro no upload: ' + (err.message || 'tente outra imagem'));
+        preview.textContent = (fullName || '?').charAt(0).toUpperCase();
+      }
+    });
+  }
+
+  function setupCPFInput() {
+    const input = document.getElementById('cpf');
+    input.addEventListener('input', (e) => {
+      e.target.value = window.dbHelpers.formatCPF(e.target.value);
+    });
+  }
+
+  function setupCEPInput() {
+    const input = document.getElementById('cep');
+    input.addEventListener('input', async (e) => {
+      e.target.value = window.dbHelpers.formatCEP(e.target.value);
+      const cleaned = e.target.value.replace(/\D/g, '');
+      if (cleaned.length === 8) {
+        const result = await window.dbHelpers.lookupCEP(cleaned);
+        if (result) {
+          if (result.street) document.getElementById('addrStreet').value = result.street;
+          if (result.neighborhood) document.getElementById('addrNeighborhood').value = result.neighborhood;
+          if (result.city) document.getElementById('addrCity').value = result.city;
+        }
+      }
+    });
+  }
+
+  function setupDocUpload(userId) {
+    const btn = document.getElementById('uploadDocBtn');
+    const input = document.getElementById('docFile');
+    btn.addEventListener('click', () => input.click());
+    input.addEventListener('change', async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      btn.disabled = true;
+      btn.textContent = 'Enviando...';
+      try {
+        await window.dbHelpers.uploadDocument(file, userId, 'criminal_record');
+        await loadExistingDocs();
+      } catch (err) {
+        alert('Erro: ' + (err.message || 'tente novamente'));
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Escolher arquivo';
+        input.value = '';
+      }
+    });
+  }
+
+  async function loadExistingDocs() {
+    const list = document.getElementById('docsList');
+    const docs = await window.dbHelpers.getMyDocuments();
+    if (!docs.length) {
+      list.innerHTML = '';
+      return;
+    }
+    list.innerHTML = docs.map(d => {
+      const statusLabel = {
+        pending: '⏳ Em análise',
+        approved: '✅ Aprovado',
+        rejected: '❌ Rejeitado',
+      }[d.status] || d.status;
+      return `
+        <div class="doc-uploaded">
+          <div>
+            <strong>${escapeHtml(d.file_name || 'Documento')}</strong>
+            <div style="font-size: 11px; opacity: 0.8;">${statusLabel} · enviado em ${new Date(d.created_at).toLocaleDateString('pt-BR')}</div>
+            ${d.admin_note ? `<div style="font-size: 11px; margin-top: 4px; font-style: italic;">Nota: ${escapeHtml(d.admin_note)}</div>` : ''}
+          </div>
+          ${d.status === 'pending' ? `<button type="button" class="btn-remove" onclick="removeDoc('${d.id}', '${escapeHtml(d.file_path)}')">Remover</button>` : ''}
+        </div>
+      `;
+    }).join('');
+  }
+
+  async function removeDoc(docId, filePath) {
+    if (!confirm('Remover este documento?')) return;
+    try {
+      await window.dbHelpers.deleteMyDocument(docId, filePath);
+      await loadExistingDocs();
+    } catch (err) {
+      alert('Erro: ' + err.message);
+    }
+  }
+
+  function escapeHtml(s) {
+    if (s == null) return '';
+    return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[m]);
+  }
+
+  function showError(msg) {
+    const banner = document.getElementById('errBanner');
+    banner.textContent = msg;
+    banner.classList.add('show');
+    banner.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  function hideError() {
+    document.getElementById('errBanner').classList.remove('show');
   }
 
   document.getElementById('babaForm').addEventListener('submit', async (e) => {
     e.preventDefault();
-    const submitBtn = document.getElementById('submitBtn');
+    hideError();
     const helpers = window.dbHelpers;
+    const submitBtn = document.getElementById('submitBtn');
 
+    // Coleta
     const bio = document.getElementById('bio').value.trim();
+    const cpf = document.getElementById('cpf').value.trim();
+    const birthDate = document.getElementById('birthDate').value;
     const years = parseInt(document.getElementById('years').value, 10);
     const rate = parseFloat(document.getElementById('rate').value);
-    const neighborhoods = getChecked('neighborhoods');
+    const cep = document.getElementById('cep').value.trim();
+    const street = document.getElementById('addrStreet').value.trim();
+    const number = document.getElementById('addrNumber').value.trim();
+    const complement = document.getElementById('addrComplement').value.trim();
+    const addrHood = document.getElementById('addrNeighborhood').value.trim();
+    const city = document.getElementById('addrCity').value.trim();
     const ageRanges = getChecked('ageRanges');
     const specialties = getChecked('specialties');
+    const certifications = getChecked('certifications');
+    const languages = getChecked('languages');
+    const neighborhoods = getCheckedNeighborhoods();
+    const hasPassport = getRadio('passport');
+    const cnh = getRadio('cnh');
+    const vehicle = getRadio('vehicle');
+    const overnight = getRadio('overnight');
+    const travel = getRadio('travel');
+    const ownChildren = getRadio('ownChildren');
+    const smoker = getRadio('smoker');
 
-    if (bio.length < 50) {
-      helpers.showError('A bio precisa ter pelo menos 50 caracteres.');
-      return;
-    }
-    if (neighborhoods.length === 0) {
-      helpers.showError('Marca pelo menos 1 bairro que você atende.');
-      return;
-    }
-    if (ageRanges.length === 0) {
-      helpers.showError('Marca pelo menos 1 faixa etária com que você tem experiência.');
-      return;
-    }
+    // Validações
+    if (bio.length < 50) return showError('Sua bio precisa ter pelo menos 50 caracteres.');
+    if (!helpers.isValidCPF(cpf)) return showError('CPF inválido. Confere os dígitos.');
+    if (!birthDate) return showError('Coloca sua data de nascimento.');
+    if (!cep || cep.replace(/\D/g, '').length !== 8) return showError('Coloca um CEP válido.');
+    if (!street || !number || !addrHood) return showError('Endereço incompleto.');
+    if (neighborhoods.length === 0) return showError('Marca pelo menos 1 bairro que você atende.');
+    if (ageRanges.length === 0) return showError('Marca pelo menos 1 faixa etária com que tem experiência.');
 
-    helpers.setLoading(submitBtn, true);
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Salvando...';
+
     try {
       await helpers.upsertBabaProfile(currentUser.id, {
         bio,
+        cpf,
+        birth_date: birthDate,
         years_experience: years,
         hourly_rate: rate,
+        address_cep: cep,
+        address_street: street,
+        address_number: number,
+        address_complement: complement || null,
+        address_neighborhood: addrHood,
+        address_city: city,
+        address_state: 'RJ',
         neighborhoods,
         age_ranges: ageRanges,
         specialties,
+        certifications,
+        languages,
+        has_passport: hasPassport,
+        has_cnh: cnh === 'yes',
+        has_vehicle: vehicle === 'yes',
+        accepts_overnight: overnight === 'yes',
+        accepts_travel: travel === 'yes',
+        has_own_children: ownChildren === 'yes' ? true : (ownChildren === 'no' ? false : null),
+        is_smoker: smoker === 'yes',
       });
-      // NOVO FLUXO: salva → vai pra pricing (cobra o trial) → depois mostra "Aguardando aprovação"
-      // Verifica se já tem sub ativa (caso ela já tenha passado pelo pricing antes)
+
+      // Próximo passo: sub ativa? aproveite. Senão, pricing.
       const sub = await helpers.getMySubscription();
       if (helpers.isSubActive(sub)) {
-        showPending();
+        if (isEditMode) {
+          window.location.href = '/account.html?saved=1';
+        } else {
+          showPending();
+        }
       } else {
         window.location.href = '/pricing.html';
       }
     } catch (err) {
-      helpers.showError('Não conseguiu salvar: ' + (err.message || 'erro desconhecido'));
-      helpers.setLoading(submitBtn, false);
+      showError('Não conseguiu salvar: ' + (err.message || 'erro desconhecido'));
+      submitBtn.disabled = false;
+      submitBtn.textContent = isEditMode ? 'Salvar alterações' : 'Salvar e enviar';
     }
   });
 </script>
