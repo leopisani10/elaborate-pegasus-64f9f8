@@ -1,23 +1,42 @@
-// header-auth.js — Sincroniza estado de login no header das páginas públicas
-// Em páginas com .pub-nav (institucionais/landing), se o usuário tá logado,
-// substitui "Entrar" + "Criar conta" por um chip com nome/foto.
+// header-auth.js v2 — Sincroniza estado de login no header das páginas públicas
+//
+// Quando o usuário tá logado:
+// - Esconde os links institucionais ("Dicas", "Sobre", "Planos", "Entrar", "Criar conta")
+// - Mostra os links do app conforme o user_type (Buscar babás/famílias, Dicas, Mensagens, Meu perfil)
+// - Substitui o botão "Criar conta" pelo chip com nome+foto
 //
 // Inclui via: <script defer src="js/header-auth.js"></script>
-//
-// Depende: auth.js (window.dbClient e window.dbHelpers)
 
 (function() {
   if (window.__dbHeaderAuthInited) return;
   window.__dbHeaderAuthInited = true;
 
-  // CSS pro chip + estado de loading (evita "flash" de "Entrar/Criar conta")
   const style = document.createElement('style');
   style.textContent = `
-    .pub-nav.db-hidden-buttons a[href="/login.html"],
-    .pub-nav.db-hidden-buttons a[href="/signup.html"],
-    .nav-right.db-hidden-buttons > a {
+    /* Esconde os botões/links originais quando logado */
+    .pub-nav.db-hidden-original > a,
+    .nav-right.db-hidden-original > a {
       display: none !important;
     }
+
+    /* Estilos pros links do app injetados */
+    .pub-nav .db-applink,
+    .nav-right .db-applink {
+      color: var(--ink-2, #3C4452);
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 14px;
+      transition: color 0.15s;
+    }
+    .pub-nav .db-applink:hover,
+    .nav-right .db-applink:hover { color: var(--cta, #EB5F2D); }
+    .pub-nav .db-applink.active,
+    .nav-right .db-applink.active {
+      color: var(--cta, #EB5F2D);
+      font-weight: 700;
+    }
+
+    /* Chip do usuário */
     .db-user-chip {
       display: flex; align-items: center; gap: 10px;
       padding: 6px 14px 6px 6px; border-radius: 999px;
@@ -25,6 +44,7 @@
       text-decoration: none; color: var(--ink, #0E1620);
       font-weight: 600; font-size: 13px;
       transition: all 0.15s;
+      margin-left: 8px;
     }
     .db-user-chip:hover { border-color: var(--ink, #0E1620); }
     .db-user-chip-avatar {
@@ -35,6 +55,11 @@
       overflow: hidden; flex-shrink: 0;
     }
     .db-user-chip-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+    /* Mobile: esconde links injetados, só mostra chip (mobile-menu cuida do resto) */
+    @media (max-width: 960px) {
+      .db-applink { display: none !important; }
+    }
   `;
   document.head.appendChild(style);
 
@@ -53,11 +78,28 @@
 
     try {
       const profile = await window.dbHelpers.getCurrentProfile();
-      if (!profile) return; // não logado — deixa "Entrar/Criar conta"
+      if (!profile) return; // não logado — deixa o header padrão
 
-      // Logado! Esconde botões e mostra chip
-      container.classList.add('db-hidden-buttons');
+      // Esconde os links originais
+      container.classList.add('db-hidden-original');
 
+      // Define links do app conforme user_type
+      const links = appLinksFor(profile.user_type);
+
+      // Insere os links do app
+      const currentPath = (window.location.pathname || '').replace(/\.html$/, '').replace(/\/$/, '');
+      links.forEach(l => {
+        const a = document.createElement('a');
+        a.className = 'db-applink';
+        a.href = l.href;
+        a.textContent = l.label;
+        // Marca ativo se o path bate
+        const linkPath = l.href.replace(/\.html$/, '').replace(/\/$/, '');
+        if (linkPath && currentPath.endsWith(linkPath)) a.classList.add('active');
+        container.appendChild(a);
+      });
+
+      // Chip do usuário
       const firstName = (profile.full_name || '?').split(' ')[0];
       const initial = (profile.full_name || '?').charAt(0).toUpperCase();
       const avatarInner = profile.avatar_url
@@ -75,6 +117,29 @@
     } catch (err) {
       console.warn('header-auth: erro buscando perfil', err);
     }
+  }
+
+  function appLinksFor(userType) {
+    if (userType === 'admin') {
+      return [
+        { href: '/admin.html', label: 'Aprovações' },
+        { href: '/dicas.html', label: 'Dicas' },
+        { href: '/chat.html', label: 'Mensagens' },
+      ];
+    }
+    if (userType === 'baba') {
+      return [
+        { href: '/families.html', label: 'Buscar famílias' },
+        { href: '/dicas.html', label: 'Dicas' },
+        { href: '/chat.html', label: 'Mensagens' },
+      ];
+    }
+    // parent (default)
+    return [
+      { href: '/dashboard.html', label: 'Buscar babás' },
+      { href: '/dicas.html', label: 'Dicas' },
+      { href: '/chat.html', label: 'Mensagens' },
+    ];
   }
 
   function escape(s) {
