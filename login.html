@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Entrar · Dona Baby+</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="shared.css">
+  <style>
+    body { background: #FAFBFC; }
+
+    .login-wrap {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .login-header {
+      padding: 24px 0;
+      border-bottom: 1px solid var(--line);
+      background: white;
+    }
+    .login-header-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+    .login-header img { height: 36px; }
+    .login-header .help-link {
+      font-size: 14px;
+      color: var(--ink-2);
+      font-weight: 500;
+    }
+    .login-header .help-link a { color: var(--cta); font-weight: 600; }
+
+    .login-main {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 48px 24px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .login-card {
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      padding: 48px;
+      max-width: 460px;
+      width: 100%;
+      box-shadow: 0 24px 48px -24px rgba(14,22,32,0.08);
+      position: relative;
+      z-index: 2;
+    }
+    .login-card h1 {
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: -0.035em;
+      margin-bottom: 8px;
+    }
+    .login-card .sub {
+      color: var(--ink-3);
+      font-size: 15px;
+      margin-bottom: 32px;
+    }
+
+    .forgot {
+      text-align: right;
+      margin-top: -10px;
+      margin-bottom: 18px;
+    }
+    .forgot a {
+      font-size: 13px;
+      color: var(--cta);
+      font-weight: 600;
+    }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 24px 0;
+      color: var(--ink-3);
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .divider::before, .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--line);
+    }
+
+    .signup-link {
+      text-align: center;
+      font-size: 14px;
+      color: var(--ink-3);
+      margin-top: 20px;
+    }
+    .signup-link a { color: var(--cta); font-weight: 600; }
+
+    .bg-blob {
+      position: absolute;
+      width: 500px;
+      height: 500px;
+      border-radius: 50%;
+      filter: blur(100px);
+      opacity: 0.4;
+      pointer-events: none;
+    }
+    .bg-blob-1 { top: -180px; left: -180px; background: radial-gradient(circle, var(--baba-soft), transparent 70%); }
+    .bg-blob-2 { bottom: -180px; right: -180px; background: radial-gradient(circle, var(--familia-soft), transparent 70%); }
+
+    @media (max-width: 720px) {
+      .login-card { padding: 32px 24px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="login-wrap">
+  <header class="login-header">
+    <div class="login-header-inner">
+      <a href="landing.html"><img src="logo.png" alt="Dona Baby+"></a>
+      <div class="help-link">Ainda não tem conta? <a href="signup.html">Cadastre-se</a></div>
+    </div>
+  </header>
+
+  <main class="login-main">
+    <div class="bg-blob bg-blob-1"></div>
+    <div class="bg-blob bg-blob-2"></div>
+
+    <div class="login-card">
+      <h1>Bem-vindo de volta.</h1>
+      <p class="sub">Entre com seu email pra acessar sua conta.</p>
+
+      <form onsubmit="event.preventDefault(); window.location.href='dashboard.html';">
+        <div class="field">
+          <label class="field-label" for="email">Email</label>
+          <input class="input" id="email" type="email" placeholder="voce@email.com" required>
+        </div>
+        <div class="field">
+          <label class="field-label" for="senha">Senha</label>
+          <input class="input" id="senha" type="password" placeholder="••••••••" required>
+        </div>
+        <div class="forgot"><a href="#">Esqueci minha senha</a></div>
+
+        <button class="btn btn-cta btn-lg btn-block" type="submit">
+          Entrar
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </button>
+
+        <div class="signup-link">
+          Primeira vez aqui? <a href="signup.html">Criar conta grátis</a>
+        </div>
+      </form>
+    </div>
+  </main>
+</div>
+
+<div class="demo-menu">
+  <div class="demo-menu-title">Demo · todas as telas</div>
+  <nav>
+    <a href="landing.html">Landing</a>
+    <a href="signup.html">Cadastro</a>
+    <a href="login.html" class="active">Login</a>
+    <a href="dashboard.html">Buscar babás</a>
+    <a href="profile.html">Perfil babá</a>
+    <a href="chat.html">Conversa</a>
+    <a href="account.html">Minha conta</a>
+  </nav>
+</div>
+
+</body>
+</html>

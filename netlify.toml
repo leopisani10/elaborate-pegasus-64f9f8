@@ -1,0 +1,88 @@
+# Netlify config — Dona Baby+
+
+[build]
+  # Mockups estáticos: nada pra buildar, só servir
+  publish = "."
+  command = ""
+
+# Garante a página inicial
+[[redirects]]
+  from = "/"
+  to = "/index.html"
+  status = 200
+
+# URLs limpas: /landing → /landing.html (e por aí)
+[[redirects]]
+  from = "/landing"
+  to = "/landing.html"
+  status = 200
+
+[[redirects]]
+  from = "/signup"
+  to = "/signup.html"
+  status = 200
+
+[[redirects]]
+  from = "/login"
+  to = "/login.html"
+  status = 200
+
+[[redirects]]
+  from = "/onboarding-baba"
+  to = "/onboarding-baba.html"
+  status = 200
+
+[[redirects]]
+  from = "/onboarding-familia"
+  to = "/onboarding-familia.html"
+  status = 200
+
+[[redirects]]
+  from = "/dashboard"
+  to = "/dashboard.html"
+  status = 200
+
+[[redirects]]
+  from = "/profile"
+  to = "/profile.html"
+  status = 200
+
+[[redirects]]
+  from = "/chat"
+  to = "/chat.html"
+  status = 200
+
+[[redirects]]
+  from = "/pricing"
+  to = "/pricing.html"
+  status = 200
+
+[[redirects]]
+  from = "/admin"
+  to = "/admin.html"
+  status = 200
+
+[[redirects]]
+  from = "/account"
+  to = "/account.html"
+  status = 200
+
+# Cache agressivo pra assets estáticos
+[[headers]]
+  for = "/logo.png"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/shared.css"
+  [headers.values]
+    Cache-Control = "public, max-age=86400"
+
+# Headers de segurança básicos pra todas as páginas
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "SAMEORIGIN"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=()"

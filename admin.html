@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aprovação de babás · Admin · Dona Baby+</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="shared.css">
+  <style>
+    body { background: #FAFBFC; }
+
+    .admin-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--ink);
+      color: white;
+      padding: 4px 12px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+
+    .admin-layout {
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      gap: 32px;
+      padding: 32px 0 80px;
+    }
+
+    /* LEFT — filters */
+    .admin-side {
+      position: sticky;
+      top: 80px;
+      align-self: start;
+    }
+    .admin-side h3 {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+      margin-bottom: 12px;
+      padding: 0 12px;
+    }
+    .admin-side ul { list-style: none; margin-bottom: 24px; }
+    .admin-side li { margin-bottom: 2px; }
+    .admin-side a {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 9px 12px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--ink-2);
+    }
+    .admin-side a:hover { background: var(--bg-soft); color: var(--ink); }
+    .admin-side a.active { background: var(--ink); color: white; }
+    .admin-side a .count {
+      font-size: 11px;
+      font-weight: 700;
+      background: var(--cta);
+      color: white;
+      padding: 2px 8px;
+      border-radius: 999px;
+    }
+    .admin-side a.active .count { background: white; color: var(--ink); }
+
+    /* RIGHT */
+    .admin-main h1 {
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: -0.035em;
+      margin-bottom: 4px;
+    }
+    .admin-main .sub {
+      color: var(--ink-3);
+      font-size: 14px;
+      margin-bottom: 28px;
+    }
+
+    /* Application row */
+    .application {
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      margin-bottom: 14px;
+      padding: 24px;
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 20px;
+      align-items: flex-start;
+    }
+    .app-avatar {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      color: white;
+      font-weight: 700;
+      font-size: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .av-1 { background: var(--baba); }
+    .av-3 { background: var(--orange); }
+    .av-4 { background: var(--blue); }
+    .av-5 { background: var(--yellow); color: var(--ink); }
+    .av-6 { background: var(--pink); }
+    .av-7 { background: var(--red); }
+
+    .app-body {
+      min-width: 0;
+    }
+    .app-head {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 4px;
+      flex-wrap: wrap;
+    }
+    .app-name { font-size: 17px; font-weight: 700; }
+    .app-time {
+      font-size: 11px;
+      color: var(--ink-3);
+      background: var(--bg-soft);
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-weight: 600;
+    }
+    .app-time.urgent { background: var(--cta-soft); color: var(--cta); }
+
+    .app-meta {
+      display: flex;
+      gap: 16px;
+      font-size: 13px;
+      color: var(--ink-3);
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+    .app-meta span {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .app-bio {
+      font-size: 14px;
+      color: var(--ink-2);
+      line-height: 1.55;
+      margin-bottom: 12px;
+    }
+
+    .app-docs {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .doc-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 10px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--ink-2);
+      background: white;
+      cursor: pointer;
+    }
+    .doc-chip:hover { border-color: var(--ink); }
+    .doc-chip.ok { background: var(--baba-soft); color: var(--baba-deep); border-color: var(--baba-soft); }
+    .doc-chip.missing { background: var(--cta-soft); color: var(--cta); border-color: var(--cta-soft); }
+
+    .app-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      min-width: 140px;
+    }
+
+    .btn-approve {
+      background: var(--baba);
+      color: white;
+      padding: 10px 16px;
+      border-radius: 999px;
+      border: none;
+      font-family: inherit;
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    .btn-approve:hover { background: var(--baba-deep); }
+
+    .btn-reject {
+      background: white;
+      color: var(--cta);
+      padding: 10px 16px;
+      border-radius: 999px;
+      border: 1px solid var(--line-strong);
+      font-family: inherit;
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    .btn-reject:hover { border-color: var(--cta); }
+
+    .btn-detail {
+      background: transparent;
+      color: var(--ink-2);
+      padding: 10px 16px;
+      border: none;
+      font-family: inherit;
+      font-weight: 600;
+      font-size: 12px;
+      cursor: pointer;
+    }
+    .btn-detail:hover { color: var(--ink); }
+
+    /* Stats top */
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+    .stat {
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 18px 20px;
+    }
+    .stat .label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--ink-3);
+      margin-bottom: 4px;
+    }
+    .stat .value {
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+    }
+    .stat.t-baba .value { color: var(--baba); }
+    .stat.t-cta .value { color: var(--cta); }
+    .stat.t-fam .value { color: var(--familia); }
+
+    @media (max-width: 960px) {
+      .admin-layout { grid-template-columns: 1fr; }
+      .admin-side { position: static; }
+      .admin-side ul { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; }
+      .application { grid-template-columns: 60px 1fr; }
+      .app-actions { grid-column: 1 / -1; flex-direction: row; }
+      .app-actions .btn-detail { flex: 1; }
+      .stats { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+
+<header class="app-nav">
+  <div class="app-nav-inner">
+    <a class="app-logo" href="landing.html"><img src="logo.png" alt="Dona Baby+"></a>
+    <span class="admin-badge">
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+      Admin
+    </span>
+    <ul class="app-nav-links">
+      <li><a href="admin.html" class="active">Aprovações</a></li>
+      <li><a href="#">Usuários</a></li>
+      <li><a href="#">Mensagens</a></li>
+      <li><a href="#">Financeiro</a></li>
+    </ul>
+    <div class="app-nav-right">
+      <a class="user-chip">
+        <div class="user-chip-avatar" style="background:var(--ink);">L</div>
+        <div class="user-chip-name">Leonardo</div>
+      </a>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="container">
+
+    <div class="admin-layout">
+
+      <!-- Sidebar -->
+      <aside class="admin-side">
+        <h3>Aprovações</h3>
+        <ul>
+          <li><a class="active">Pendentes <span class="count">12</span></a></li>
+          <li><a>Em análise</a></li>
+          <li><a>Aprovadas hoje</a></li>
+          <li><a>Rejeitadas</a></li>
+        </ul>
+        <h3>Filtros</h3>
+        <ul>
+          <li><a>Todas as regiões</a></li>
+          <li><a>Zona Sul</a></li>
+          <li><a>Tijuca</a></li>
+          <li><a>Barra</a></li>
+        </ul>
+      </aside>
+
+      <!-- Main -->
+      <div class="admin-main">
+        <h1>Babás aguardando aprovação</h1>
+        <p class="sub">Cada babá precisa ser verificada manualmente antes de aparecer pras famílias.</p>
+
+        <!-- Stats -->
+        <div class="stats">
+          <div class="stat">
+            <div class="label">Pendentes</div>
+            <div class="value">12</div>
+          </div>
+          <div class="stat t-cta">
+            <div class="label">Urgentes (&gt;48h)</div>
+            <div class="value">3</div>
+          </div>
+          <div class="stat t-baba">
+            <div class="label">Aprovadas (semana)</div>
+            <div class="value">23</div>
+          </div>
+          <div class="stat t-fam">
+            <div class="label">Tempo médio</div>
+            <div class="value">14h</div>
+          </div>
+        </div>
+
+        <!-- Applications -->
+        <div class="application">
+          <div class="app-avatar av-1">M</div>
+          <div class="app-body">
+            <div class="app-head">
+              <div class="app-name">Maria Aparecida da Silva</div>
+              <span class="app-time">há 6h</span>
+            </div>
+            <div class="app-meta">
+              <span><svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg> Copacabana</span>
+              <span>7 anos de experiência</span>
+              <span>R$ 35/hora</span>
+            </div>
+            <p class="app-bio">Babá há 7 anos, especializada em recém-nascidos e primeira infância. Trabalhei em famílias de Ipanema e Leblon. Tenho disponibilidade integral e flexibilidade para folgas.</p>
+            <div class="app-docs">
+              <span class="doc-chip ok"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> RG</span>
+              <span class="doc-chip ok"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> Antecedente</span>
+              <span class="doc-chip ok"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> Comprovante</span>
+              <span class="doc-chip ok"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> Selfie</span>
+            </div>
+          </div>
+          <div class="app-actions">
+            <button class="btn-approve">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              Aprovar
+            </button>
+            <button class="btn-reject">Rejeitar</button>
+            <button class="btn-detail">Ver detalhes →</button>
+          </div>
+        </div>
+
+        <div class="application">
+          <div class="app-avatar av-3">A</div>
+          <div class="app-body">
+            <div class="app-head">
+              <div class="app-name">Ana Paula Costa</div>
+              <span class="app-time">há 18h</span>
+            </div>
+            <div class="app-meta">
+              <span><svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg> Ipanema</span>
+              <span>Pedagoga, 3 anos</span>
+              <span>R$ 30/hora</span>
+            </div>
+            <p class="app-bio">Pedagoga formada pela UFRJ. Cuido de crianças entre 1 e 5 anos. Trabalho com rotina, leitura e atividades sensoriais.</p>
+            <div class="app-docs">
+              <span class="doc-chip ok"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> RG</span>
+              <span class="doc-chip ok"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> Antecedente</span>
+              <span class="doc-chip missing"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg> Comprovante (falta)</span>
+              <span class="doc-chip ok"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> Selfie</span>
+            </div>
+          </div>
+          <div class="app-actions">
+            <button class="btn-approve">Aprovar</button>
+            <button class="btn-reject">Solicitar doc</button>
+            <button class="btn-detail">Ver detalhes →</button>
+          </div>
+        </div>
+
+        <div class="application">
+          <div class="app-avatar av-7">J</div>
+          <div class="app-body">
+            <div class="app-head">
+              <div class="app-name">Joana Maria Ribeiro</div>
+              <span class="app-time urgent">há 52h · urgente</span>
+            </div>
+            <div class="app-meta">
+              <span><svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg> Botafogo</span>
+              <span>5 anos, gêmeos</span>
+              <span>R$ 40/hora</span>
+            </div>
+            <p class="app-bio">Cuido de gêmeos há 5 anos. Tenho habilitação, passaporte e disponibilidade pra viagens com a família.</p>
+            <div class="app-docs">
+              <span class="doc-chip ok"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> RG</span>
+              <span class="doc-chip ok"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> Antecedente</span>
+              <span class="doc-chip ok"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> Comprovante</span>
+              <span class="doc-chip ok"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> CNH</span>
+            </div>
+          </div>
+          <div class="app-actions">
+            <button class="btn-approve">Aprovar</button>
+            <button class="btn-reject">Rejeitar</button>
+            <button class="btn-detail">Ver detalhes →</button>
+          </div>
+        </div>
+
+        <div class="application">
+          <div class="app-avatar av-5">B</div>
+          <div class="app-body">
+            <div class="app-head">
+              <div class="app-name">Beatriz Almeida</div>
+              <span class="app-time">há 28h</span>
+            </div>
+            <div class="app-meta">
+              <span><svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg> Barra da Tijuca</span>
+              <span>Pós-parto, neonatologia</span>
+              <span>R$ 50/hora</span>
+            </div>
+            <p class="app-bio">Profissional especializada em pós-parto. Vivência em pediatria neonatal por 8 anos no Hospital Perinatal.</p>
+            <div class="app-docs">
+              <span class="doc-chip ok"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> RG</span>
+              <span class="doc-chip ok"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> Antecedente</span>
+              <span class="doc-chip ok"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> Diploma</span>
+              <span class="doc-chip ok"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> COREN</span>
+            </div>
+          </div>
+          <div class="app-actions">
+            <button class="btn-approve">Aprovar</button>
+            <button class="btn-reject">Rejeitar</button>
+            <button class="btn-detail">Ver detalhes →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<div class="demo-menu">
+  <div class="demo-menu-title">Demo · todas as telas</div>
+  <nav>
+    <a href="landing.html">Landing</a>
+    <a href="signup.html">Cadastro</a>
+    <a href="onboarding-baba.html">Onboarding babá</a>
+    <a href="login.html">Login</a>
+    <a href="dashboard.html">Buscar babás</a>
+    <a href="profile.html">Perfil babá</a>
+    <a href="chat.html">Conversa</a>
+    <a href="pricing.html">Assinar plano</a>
+    <a href="admin.html" class="active">Admin (aprovação)</a>
+    <a href="account.html">Minha conta</a>
+  </nav>
+</div>
+
+</body>
+</html>

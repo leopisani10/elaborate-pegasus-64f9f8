@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Maria Silva · Babá em Copacabana · Dona Baby+</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="shared.css">
+  <style>
+    body { background: #FAFBFC; }
+
+    .breadcrumb {
+      padding: 18px 0;
+      font-size: 13px;
+      color: var(--ink-3);
+    }
+    .breadcrumb a { color: var(--ink-3); }
+    .breadcrumb a:hover { color: var(--cta); }
+
+    .profile-layout {
+      display: grid;
+      grid-template-columns: 380px 1fr;
+      gap: 40px;
+      padding-bottom: 80px;
+    }
+
+    /* LEFT — sticky sidebar */
+    .profile-side {
+      position: sticky;
+      top: 80px;
+      align-self: start;
+    }
+    .profile-photo-card {
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      padding: 28px;
+      box-shadow: 0 16px 40px -20px rgba(14,22,32,0.08);
+    }
+    .profile-big-avatar {
+      width: 100%;
+      aspect-ratio: 1;
+      border-radius: 20px;
+      background: var(--baba);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 100px;
+      font-weight: 700;
+      margin-bottom: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+    .profile-big-avatar .verified-stamp {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      background: white;
+      color: var(--baba-deep);
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .profile-name-big {
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+      margin-bottom: 4px;
+    }
+    .profile-loc-big {
+      font-size: 14px;
+      color: var(--ink-3);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      margin-bottom: 18px;
+    }
+    .profile-price-big {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+      margin-bottom: 20px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--line);
+    }
+    .profile-price-big .val {
+      font-size: 36px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      color: var(--baba);
+    }
+    .profile-price-big .per { font-size: 14px; color: var(--ink-3); }
+
+    .profile-key-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 20px;
+    }
+
+    .conversar-cta {
+      background: var(--cta);
+      color: white;
+      padding: 16px;
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: 15px;
+      border: none;
+      cursor: pointer;
+      width: 100%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 8px 20px -4px rgba(235,95,45,0.4);
+      transition: all 0.2s;
+    }
+    .conversar-cta:hover {
+      background: var(--cta-hover);
+      transform: translateY(-1px);
+    }
+    .save-btn {
+      background: white;
+      color: var(--ink);
+      padding: 14px;
+      border-radius: 999px;
+      border: 1px solid var(--line-strong);
+      font-family: inherit;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 10px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .save-btn:hover { border-color: var(--ink); }
+
+    .gated-notice {
+      margin-top: 14px;
+      padding: 12px 14px;
+      background: var(--bg-warm);
+      border-radius: 12px;
+      font-size: 12px;
+      color: var(--ink-2);
+      line-height: 1.5;
+      display: flex;
+      gap: 10px;
+    }
+    .gated-notice svg { color: var(--cta); flex-shrink: 0; margin-top: 1px; }
+    .gated-notice a { color: var(--cta); font-weight: 700; }
+
+    /* RIGHT — content */
+    .profile-content > .section {
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      padding: 32px;
+      margin-bottom: 16px;
+    }
+    .profile-content h2 {
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      letter-spacing: -0.02em;
+    }
+    .profile-content p { color: var(--ink-2); line-height: 1.7; font-size: 15px; }
+
+    /* Verification grid */
+    .verification-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .ver-item {
+      background: var(--baba-soft);
+      border-radius: 14px;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .ver-item-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--baba);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .ver-item-text { font-size: 13px; }
+    .ver-item-text strong { display: block; font-weight: 700; color: var(--baba-deep); margin-bottom: 1px; }
+    .ver-item-text span { color: var(--baba-deep); opacity: 0.75; }
+
+    /* Experience timeline */
+    .exp-timeline { list-style: none; }
+    .exp-timeline li {
+      display: grid;
+      grid-template-columns: 80px 1fr;
+      gap: 20px;
+      padding: 16px 0;
+      border-top: 1px solid var(--line);
+    }
+    .exp-timeline li:first-child { border-top: none; padding-top: 0; }
+    .exp-period {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--ink-3);
+      letter-spacing: -0.01em;
+    }
+    .exp-detail strong { display: block; font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+    .exp-detail p { font-size: 13px; color: var(--ink-2); line-height: 1.55; }
+
+    /* Schedule */
+    .schedule {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 6px;
+    }
+    .day {
+      text-align: center;
+      padding: 12px 6px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: white;
+    }
+    .day.available { background: var(--baba-soft); border-color: var(--baba); }
+    .day-name { font-size: 11px; font-weight: 600; color: var(--ink-3); text-transform: uppercase; }
+    .day.available .day-name { color: var(--baba-deep); }
+    .day-time { font-size: 11px; color: var(--ink); margin-top: 4px; font-weight: 600; }
+    .day.available .day-time { color: var(--baba-deep); }
+
+    /* Reviews */
+    .review {
+      padding: 18px 0;
+      border-top: 1px solid var(--line);
+    }
+    .review:first-of-type { border-top: none; padding-top: 0; }
+    .review-head {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+    .review-av {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--familia);
+      color: white;
+      font-weight: 700;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .review-name { font-size: 14px; font-weight: 700; }
+    .review-date { font-size: 12px; color: var(--ink-3); }
+    .stars { color: var(--yellow); margin-left: auto; }
+    .review-text { font-size: 14px; color: var(--ink-2); line-height: 1.6; }
+
+    @media (max-width: 960px) {
+      .profile-layout { grid-template-columns: 1fr; }
+      .profile-side { position: static; }
+      .verification-grid { grid-template-columns: 1fr; }
+      .schedule { grid-template-columns: repeat(4, 1fr); }
+    }
+  </style>
+</head>
+<body>
+
+<header class="app-nav">
+  <div class="app-nav-inner">
+    <a class="app-logo" href="landing.html"><img src="logo.png" alt="Dona Baby+"></a>
+    <ul class="app-nav-links">
+      <li><a href="dashboard.html">Buscar babás</a></li>
+      <li><a href="chat.html">Mensagens</a></li>
+      <li><a href="#">Salvas</a></li>
+    </ul>
+    <div class="app-nav-right">
+      <button class="icon-btn" aria-label="Notificações">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/></svg>
+        <span class="badge"></span>
+      </button>
+      <a class="user-chip" href="account.html">
+        <div class="user-chip-avatar">F</div>
+        <div class="user-chip-name">Fernanda</div>
+      </a>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="container">
+    <div class="breadcrumb">
+      <a href="dashboard.html">← Buscar babás</a>  ·  <span>Maria Silva</span>
+    </div>
+
+    <div class="profile-layout">
+
+      <!-- LEFT -->
+      <aside class="profile-side">
+        <div class="profile-photo-card">
+          <div class="profile-big-avatar">
+            M
+            <span class="verified-stamp">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              Verificada
+            </span>
+          </div>
+          <h1 class="profile-name-big">Maria Silva</h1>
+          <div class="profile-loc-big">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg>
+            Copacabana · Rio de Janeiro
+          </div>
+
+          <div class="profile-price-big">
+            <span class="val">R$ 35</span>
+            <span class="per">/hora · negociável</span>
+          </div>
+
+          <div class="profile-key-tags">
+            <span class="tag tag-baba">7 anos exp.</span>
+            <span class="tag tag-warm">Recém-nascido</span>
+            <span class="tag tag-baba">Folguista</span>
+            <span class="tag tag-warm">Antecedente limpo</span>
+          </div>
+
+          <button class="conversar-cta">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+            Conversar com Maria
+          </button>
+          <button class="save-btn">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg>
+            Salvar perfil
+          </button>
+
+          <div class="gated-notice">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+            <div>Conversa direta com Maria precisa do <a href="account.html">Plano Família</a> (R$ 29/mês). Sem fidelidade.</div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- RIGHT -->
+      <div class="profile-content">
+
+        <div class="section">
+          <h2>Sobre Maria</h2>
+          <p>Sou babá há 7 anos, especializada em cuidados com recém-nascidos e primeira infância. Trabalho com rotinas de sono, amamentação assistida (apoio à mãe) e atividades de estimulação sensorial. Minhas últimas três famílias me indicam — refiero referências de Ipanema e Leblon. Tenho disponibilidade integral e flexibilidade para folgas e finais de semana quando necessário.</p>
+        </div>
+
+        <div class="section">
+          <h2>Verificações</h2>
+          <div class="verification-grid">
+            <div class="ver-item">
+              <div class="ver-item-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+              <div class="ver-item-text"><strong>Antecedente criminal</strong><span>Limpo · verificado em 2026</span></div>
+            </div>
+            <div class="ver-item">
+              <div class="ver-item-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+              <div class="ver-item-text"><strong>Identidade (RG/CPF)</strong><span>Documentos conferidos</span></div>
+            </div>
+            <div class="ver-item">
+              <div class="ver-item-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+              <div class="ver-item-text"><strong>Comprovante de residência</strong><span>Bairro confirmado</span></div>
+            </div>
+            <div class="ver-item">
+              <div class="ver-item-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+              <div class="ver-item-text"><strong>Entrevista presencial</strong><span>Aprovada pelo time</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <h2>Experiência</h2>
+          <ul class="exp-timeline">
+            <li>
+              <div class="exp-period">2023–2026</div>
+              <div class="exp-detail">
+                <strong>Família Souza · Ipanema</strong>
+                <p>Babá exclusiva de gêmeas de 1 a 4 anos. Rotina integral, atividades educativas e acompanhamento escolar.</p>
+              </div>
+            </li>
+            <li>
+              <div class="exp-period">2020–2023</div>
+              <div class="exp-detail">
+                <strong>Família Almeida · Leblon</strong>
+                <p>Cuidado de bebê recém-nascido, apoio em amamentação e rotina de sono nos primeiros 18 meses.</p>
+              </div>
+            </li>
+            <li>
+              <div class="exp-period">2018–2020</div>
+              <div class="exp-detail">
+                <strong>Família Carvalho · Botafogo</strong>
+                <p>Folguista de fim de semana, com viagens da família.</p>
+              </div>
+            </li>
+          </ul>
+        </div>
+
+        <div class="section">
+          <h2>Disponibilidade</h2>
+          <div class="schedule">
+            <div class="day available">
+              <div class="day-name">Seg</div>
+              <div class="day-time">8h–18h</div>
+            </div>
+            <div class="day available">
+              <div class="day-name">Ter</div>
+              <div class="day-time">8h–18h</div>
+            </div>
+            <div class="day available">
+              <div class="day-name">Qua</div>
+              <div class="day-time">8h–18h</div>
+            </div>
+            <div class="day available">
+              <div class="day-name">Qui</div>
+              <div class="day-time">8h–18h</div>
+            </div>
+            <div class="day available">
+              <div class="day-name">Sex</div>
+              <div class="day-time">8h–22h</div>
+            </div>
+            <div class="day">
+              <div class="day-name">Sáb</div>
+              <div class="day-time">Folga</div>
+            </div>
+            <div class="day available">
+              <div class="day-name">Dom</div>
+              <div class="day-time">Folguista</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <h2>Avaliações <span class="text-muted text-sm" style="font-weight:400;">· 12 famílias</span></h2>
+          <div class="review">
+            <div class="review-head">
+              <div class="review-av">L</div>
+              <div>
+                <div class="review-name">Luiza Almeida</div>
+                <div class="review-date">jan 2026 · Leblon</div>
+              </div>
+              <div class="stars">★★★★★</div>
+            </div>
+            <p class="review-text">"Maria foi nossa babá por quase 3 anos. Cuidou do nosso filho desde os 2 meses. Não tenho palavras pra descrever o carinho e a competência dela. Indico de olhos fechados."</p>
+          </div>
+          <div class="review">
+            <div class="review-head">
+              <div class="review-av">P</div>
+              <div>
+                <div class="review-name">Patrícia Souza</div>
+                <div class="review-date">nov 2025 · Ipanema</div>
+              </div>
+              <div class="stars">★★★★★</div>
+            </div>
+            <p class="review-text">"Maria cuidou das minhas gêmeas com paciência e rotina. Voltou da minha viagem com elas comendo e dormindo melhor do que antes. Recomendo demais."</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<div class="demo-menu">
+  <div class="demo-menu-title">Demo · todas as telas</div>
+  <nav>
+    <a href="landing.html">Landing</a>
+    <a href="signup.html">Cadastro</a>
+    <a href="login.html">Login</a>
+    <a href="dashboard.html">Buscar babás</a>
+    <a href="profile.html" class="active">Perfil babá</a>
+    <a href="chat.html">Conversa</a>
+    <a href="account.html">Minha conta</a>
+  </nav>
+</div>
+
+</body>
+</html>
