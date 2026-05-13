@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mensagens · Dona Baby+</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="shared.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script defer src="js/auth.js"></script>
+  <style>
+    body { background: #FAFBFC; }
+
+    .chat-layout {
+      display: grid;
+      grid-template-columns: 360px 1fr;
+      gap: 16px;
+      height: calc(100vh - 65px - 32px);
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 16px 24px;
+    }
+
+    /* LEFT — conversations list */
+    .conv-list {
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .conv-list-head {
+      padding: 20px;
+      border-bottom: 1px solid var(--line);
+    }
+    .conv-list-head h2 {
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: -0.025em;
+      margin-bottom: 12px;
+    }
+    .conv-search {
+      position: relative;
+    }
+    .conv-search input {
+      width: 100%;
+      padding: 10px 14px 10px 38px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      font-family: inherit;
+      font-size: 13px;
+      background: var(--bg-soft);
+    }
+    .conv-search svg {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--ink-3);
+    }
+
+    .conv-items { flex: 1; overflow-y: auto; }
+    .conv-item {
+      display: grid;
+      grid-template-columns: 44px 1fr auto;
+      gap: 12px;
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--line);
+      cursor: pointer;
+      align-items: center;
+      transition: background 0.15s;
+    }
+    .conv-item:hover { background: var(--bg-soft); }
+    .conv-item.active { background: var(--bg-tint-teal); }
+    .conv-item.active .conv-name { color: var(--baba-deep); }
+    .conv-item .conv-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      color: white;
+      font-weight: 700;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      flex-shrink: 0;
+    }
+    .conv-online::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #22C55E;
+      border: 2px solid white;
+    }
+    .conv-info { min-width: 0; }
+    .conv-name {
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .conv-preview {
+      font-size: 12px;
+      color: var(--ink-3);
+      line-height: 1.4;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .conv-meta { text-align: right; }
+    .conv-time { font-size: 11px; color: var(--ink-3); margin-bottom: 4px; }
+    .conv-unread {
+      display: inline-block;
+      background: var(--cta);
+      color: white;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 1px 7px;
+      border-radius: 999px;
+      min-width: 18px;
+      text-align: center;
+    }
+
+    /* Avatar colors */
+    .av-1 { background: var(--baba); }
+    .av-3 { background: var(--orange); }
+    .av-4 { background: var(--blue); }
+    .av-5 { background: var(--yellow); color: var(--ink); }
+    .av-6 { background: var(--pink); }
+    .av-7 { background: var(--red); }
+
+    /* RIGHT — active conversation */
+    .conv-active {
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .conv-active-head {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--line);
+    }
+    .conv-active-head .av {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      color: white;
+      font-weight: 700;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      background: var(--baba);
+      position: relative;
+    }
+    .conv-active-head .av::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #22C55E;
+      border: 2px solid white;
+    }
+    .conv-active-info { flex: 1; }
+    .conv-active-name { font-size: 15px; font-weight: 700; line-height: 1.2; }
+    .conv-active-status { font-size: 12px; color: var(--ink-3); }
+    .conv-active-status .dot {
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #22C55E;
+      margin-right: 4px;
+      vertical-align: middle;
+    }
+    .conv-actions { display: flex; gap: 8px; }
+
+    .conv-active-head .icon-btn { width: 34px; height: 34px; }
+
+    /* Messages */
+    .conv-messages {
+      flex: 1;
+      padding: 24px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      background: var(--bg-soft);
+    }
+    .day-divider {
+      text-align: center;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--ink-3);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 12px 0 6px;
+    }
+    .msg {
+      max-width: 70%;
+      padding: 11px 16px;
+      border-radius: 18px;
+      font-size: 14px;
+      line-height: 1.45;
+      position: relative;
+    }
+    .msg.them {
+      background: white;
+      border: 1px solid var(--line);
+      align-self: flex-start;
+      border-bottom-left-radius: 4px;
+    }
+    .msg.me {
+      background: var(--baba);
+      color: white;
+      align-self: flex-end;
+      border-bottom-right-radius: 4px;
+    }
+    .msg-time {
+      font-size: 10px;
+      color: var(--ink-3);
+      margin-top: 4px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .msg.me + .msg-time { align-self: flex-end; }
+    .msg.them + .msg-time { align-self: flex-start; padding-left: 4px; }
+    .msg.me + .msg-time { padding-right: 4px; color: var(--ink-3); }
+
+    /* System message */
+    .sys-msg {
+      align-self: center;
+      max-width: 80%;
+      text-align: center;
+      padding: 12px 18px;
+      background: var(--bg-warm);
+      border: 1px solid #FCE4B5;
+      border-radius: 16px;
+      font-size: 12px;
+      color: var(--ink-2);
+      line-height: 1.5;
+    }
+    .sys-msg strong { color: var(--ink); }
+
+    /* Composer */
+    .composer {
+      padding: 16px 20px;
+      border-top: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: white;
+    }
+    .composer input {
+      flex: 1;
+      padding: 14px 18px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      font-family: inherit;
+      font-size: 14px;
+      background: var(--bg-soft);
+    }
+    .composer input:focus {
+      outline: none;
+      border-color: var(--cta);
+      background: white;
+    }
+    .composer-send {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: var(--cta);
+      color: white;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 14px -4px rgba(235,95,45,0.4);
+    }
+    .composer-send:hover { background: var(--cta-hover); }
+
+    @media (max-width: 960px) {
+      .chat-layout { grid-template-columns: 1fr; height: calc(100vh - 65px); padding: 0; gap: 0; }
+      .conv-list { display: none; border-radius: 0; border: none; }
+      .conv-active { border-radius: 0; border: none; }
+    }
+  </style>
+</head>
+<body>
+
+<header class="app-nav">
+  <div class="app-nav-inner">
+    <a class="app-logo" href="/"><img src="logo.png" alt="Dona Baby+"></a>
+    <ul class="app-nav-links">
+      <li><a href="dashboard.html">Buscar babás</a></li>
+      <li><a href="chat.html" class="active">Mensagens</a></li>
+      <li><a href="#">Salvas</a></li>
+    </ul>
+    <div class="app-nav-right">
+      <button class="icon-btn" aria-label="Notificações">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/></svg>
+      </button>
+      <a class="user-chip" href="account.html">
+        <div class="user-chip-avatar">F</div>
+        <div class="user-chip-name">Fernanda</div>
+      </a>
+    </div>
+  </div>
+</header>
+
+<div class="chat-layout">
+
+  <!-- Conversations list -->
+  <aside class="conv-list">
+    <div class="conv-list-head">
+      <h2>Mensagens</h2>
+      <div class="conv-search">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+        <input type="text" placeholder="Buscar conversa">
+      </div>
+    </div>
+
+    <div class="conv-items" id="convItems">
+      <div style="padding: 40px 20px; text-align: center; color: var(--ink-3); font-size: 13px;">
+        Carregando...
+      </div>
+    </div>
+  </aside>
+
+  <!-- Active conversation -->
+  <section class="conv-active" id="convActive">
+    <!-- Estado vazio inicial -->
+    <div id="emptyChat" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; text-align: center; padding: 40px; color: var(--ink-3);">
+      <div style="font-size: 56px; margin-bottom: 16px;">💬</div>
+      <h3 style="font-size: 18px; font-weight: 700; color: var(--ink); margin-bottom: 6px;">Nenhuma conversa aberta</h3>
+      <p style="font-size: 14px; max-width: 320px;">Escolhe uma conversa na lista ao lado, ou começa uma nova clicando em "Conversar" no perfil de uma babá.</p>
+    </div>
+
+    <!-- Conversa ativa (escondida até abrir uma) -->
+    <div id="convPanel" style="display: none; height: 100%; flex-direction: column; width: 100%;">
+      <div class="conv-active-head">
+        <div class="av" id="activeAvatar">?</div>
+        <div class="conv-active-info">
+          <div class="conv-active-name" id="activeName">...</div>
+          <div class="conv-active-status"><span class="dot"></span><span id="activeStatus">Online</span></div>
+        </div>
+        <div class="conv-actions">
+          <a href="#" id="viewProfileLink" class="icon-btn" title="Ver perfil">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </a>
+        </div>
+      </div>
+
+      <div class="conv-messages" id="convMessages"></div>
+
+      <form class="composer" id="composerForm">
+        <input type="text" id="msgInput" placeholder="Escreva sua mensagem..." autocomplete="off">
+        <button class="composer-send" type="submit" aria-label="Enviar">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+        </button>
+      </form>
+    </div>
+  </section>
+
+</div>
+
+  
+<script>
+  let me = null;
+  let myProfile = null;
+  let activeConv = null;
+  let activeChannel = null;
+  let allConvs = [];
+
+  const AVATAR_COLORS = ['av-1', 'av-3', 'av-4', 'av-5', 'av-6', 'av-7'];
+  function avatarColorFor(idx) { return AVATAR_COLORS[idx % AVATAR_COLORS.length]; }
+
+  function escapeHtml(str) {
+    if (!str) return '';
+    return String(str).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[m]);
+  }
+
+  function timeShort(dateStr) {
+    if (!dateStr) return '';
+    const d = new Date(dateStr);
+    const diff = Date.now() - d.getTime();
+    if (diff < 60000) return 'agora';
+    if (diff < 3600000) return Math.floor(diff / 60000) + 'min';
+    if (diff < 86400000) return Math.floor(diff / 3600000) + 'h';
+    const days = Math.floor(diff / 86400000);
+    if (days === 1) return 'ontem';
+    if (days < 7) return days + 'd';
+    if (days < 30) return Math.floor(days / 7) + 'sem';
+    return d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+  }
+
+  function timeHHMM(dateStr) {
+    if (!dateStr) return '';
+    return new Date(dateStr).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+  }
+
+  window.addEventListener('DOMContentLoaded', async () => {
+    if (!window.dbClient) {
+      setTimeout(() => location.reload(), 800);
+      return;
+    }
+
+    me = await window.dbHelpers.requireAuth();
+    if (!me) return;
+
+    myProfile = await window.dbHelpers.getCurrentProfile();
+    if (!myProfile) {
+      window.location.href = '/login.html';
+      return;
+    }
+
+    // Atualizar user chip
+    if (myProfile.full_name) {
+      const chipAvatar = document.querySelector('.user-chip-avatar');
+      const chipName = document.querySelector('.user-chip-name');
+      if (chipAvatar) chipAvatar.textContent = myProfile.full_name.charAt(0).toUpperCase();
+      if (chipName) chipName.textContent = myProfile.full_name.split(' ')[0];
+    }
+
+    // ?baba=xxx: abre/cria conversa com essa babá
+    const params = new URLSearchParams(window.location.search);
+    const babaParam = params.get('baba');
+
+    if (babaParam) {
+      try {
+        const conv = await window.dbHelpers.getOrCreateConversation(babaParam);
+        await loadConversations();
+        await openConversation(conv);
+      } catch (err) {
+        alert('Não conseguiu abrir conversa: ' + (err.message || 'erro'));
+        console.error(err);
+        await loadConversations();
+      }
+    } else {
+      await loadConversations();
+    }
+
+    // Composer submit
+    document.getElementById('composerForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const input = document.getElementById('msgInput');
+      const content = input.value.trim();
+      if (!content || !activeConv) return;
+      input.value = '';
+      try {
+        appendMessage({
+          conversation_id: activeConv.id,
+          sender_id: me.id,
+          content: content,
+          created_at: new Date().toISOString(),
+          _optimistic: true,
+        });
+        await window.dbHelpers.sendMessage(activeConv.id, content);
+      } catch (err) {
+        alert('Erro enviando mensagem: ' + (err.message || 'erro'));
+        input.value = content;
+      }
+    });
+  });
+
+  async function loadConversations() {
+    const list = document.getElementById('convItems');
+    try {
+      allConvs = await window.dbHelpers.getMyConversations();
+      if (allConvs.length === 0) {
+        list.innerHTML = `
+          <div style="padding: 40px 20px; text-align: center; color: var(--ink-3); font-size: 13px;">
+            Você ainda não tem conversas.<br><br>
+            ${myProfile.user_type === 'parent'
+              ? 'Acesse <a href="/dashboard.html" style="color: var(--cta); font-weight: 600;">buscar babás</a> pra começar.'
+              : 'Aguarde uma família entrar em contato.'}
+          </div>`;
+        return;
+      }
+
+      const enriched = await Promise.all(allConvs.map(async (conv, idx) => {
+        const other = await window.dbHelpers.getOtherParticipant(conv);
+        return { conv, other, idx };
+      }));
+
+      list.innerHTML = enriched.map(({ conv, other, idx }) => {
+        const name = other?.full_name || 'Usuário';
+        const firstName = name.split(' ')[0];
+        const initial = name.charAt(0).toUpperCase();
+        return `
+          <div class="conv-item" data-conv-id="${conv.id}" onclick="openConvById('${conv.id}')">
+            <div class="conv-avatar ${avatarColorFor(idx)}">${initial}</div>
+            <div class="conv-info">
+              <div class="conv-name">${escapeHtml(firstName)}</div>
+              <div class="conv-preview" id="preview-${conv.id}">Toque pra abrir</div>
+            </div>
+            <div class="conv-meta">
+              <div class="conv-time">${timeShort(conv.last_message_at || conv.created_at)}</div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    } catch (err) {
+      console.error('Erro carregando convs:', err);
+      list.innerHTML = `<div style="padding: 20px; color: var(--cta);">Erro: ${escapeHtml(err.message)}</div>`;
+    }
+  }
+
+  async function openConvById(convId) {
+    const conv = allConvs.find(c => c.id === convId);
+    if (!conv) return;
+    await openConversation(conv);
+  }
+
+  async function openConversation(conv) {
+    activeConv = conv;
+
+    document.querySelectorAll('.conv-item').forEach(i => i.classList.remove('active'));
+    const item = document.querySelector(`[data-conv-id="${conv.id}"]`);
+    if (item) item.classList.add('active');
+
+    document.getElementById('emptyChat').style.display = 'none';
+    document.getElementById('convPanel').style.display = 'flex';
+
+    const other = await window.dbHelpers.getOtherParticipant(conv);
+    const name = other?.full_name || 'Usuário';
+    const initial = name.charAt(0).toUpperCase();
+    document.getElementById('activeAvatar').textContent = initial;
+    document.getElementById('activeName').textContent = name;
+    document.getElementById('activeStatus').textContent = other?.user_type === 'baba' ? 'Babá' : 'Família';
+
+    const viewLink = document.getElementById('viewProfileLink');
+    if (other?.user_type === 'baba') {
+      viewLink.href = `profile.html?id=${other.id}`;
+      viewLink.style.display = '';
+    } else {
+      viewLink.style.display = 'none';
+    }
+
+    const msgsContainer = document.getElementById('convMessages');
+    msgsContainer.innerHTML = '<div style="text-align: center; color: var(--ink-3); font-size: 12px; padding: 20px;">Carregando...</div>';
+
+    const messages = await window.dbHelpers.getMessages(conv.id);
+    msgsContainer.innerHTML = '';
+
+    if (messages.length === 0) {
+      msgsContainer.innerHTML = `
+        <div class="sys-msg">
+          Conversa iniciada. <strong>Combine sempre antes de fechar contrato</strong>. Nunca pague por fora da plataforma.
+        </div>`;
+    } else {
+      messages.forEach(m => appendMessage(m));
+    }
+
+    scrollToBottom();
+
+    if (activeChannel) window.dbHelpers.unsubscribe(activeChannel);
+
+    activeChannel = window.dbHelpers.subscribeToMessages(conv.id, (newMsg) => {
+      // Se for minha mensagem (otimista), remover marca pra confirmar
+      if (newMsg.sender_id === me.id) {
+        const opts = document.querySelectorAll('.msg[data-optimistic="true"]');
+        for (const opt of opts) {
+          if (opt.textContent === newMsg.content) {
+            opt.removeAttribute('data-optimistic');
+            return;
+          }
+        }
+      }
+      appendMessage(newMsg);
+    });
+
+    // Atualiza preview da sidebar
+    const preview = document.getElementById(`preview-${conv.id}`);
+    if (preview && messages.length > 0) {
+      const last = messages[messages.length - 1];
+      preview.textContent = (last.sender_id === me.id ? 'Você: ' : '') + last.content.substring(0, 40);
+    }
+  }
+
+  function appendMessage(msg) {
+    const container = document.getElementById('convMessages');
+    if (!container) return;
+    const isMine = msg.sender_id === me.id;
+
+    const div = document.createElement('div');
+    div.className = isMine ? 'msg me' : 'msg them';
+    if (msg._optimistic) div.setAttribute('data-optimistic', 'true');
+    div.textContent = msg.content;
+    container.appendChild(div);
+
+    const time = document.createElement('div');
+    time.className = 'msg-time';
+    time.style.alignSelf = isMine ? 'flex-end' : 'flex-start';
+    time.style.padding = isMine ? '0 4px 0 0' : '0 0 0 4px';
+    time.textContent = timeHHMM(msg.created_at);
+    container.appendChild(time);
+
+    scrollToBottom();
+  }
+
+  function scrollToBottom() {
+    const container = document.getElementById('convMessages');
+    if (container) container.scrollTop = container.scrollHeight;
+  }
+</script>
+</body>
+</html>
