@@ -141,13 +141,15 @@ async function getBabaProfile(userId) {
   return data;
 }
 
-async function upsertBabaProfile(userId, fields) {
+async function upsertBabaProfile(userId, fields, opts = {}) {
+  // Por padrão volta pra pending (cadastro inicial). Em edição passa { forcePending: false }.
+  const updates = { ...fields, updated_at: new Date().toISOString() };
+  if (opts.forcePending !== false) {
+    updates.approval_status = 'pending';
+  }
   const { data, error } = await db
     .from('baba_profiles')
-    .update({
-      ...fields,
-      approval_status: 'pending',
-    })
+    .update(updates)
     .eq('id', userId)
     .select()
     .single();
@@ -167,11 +169,30 @@ async function getApprovedBabas(filters = {}) {
     `)
     .eq('approval_status', 'approved');
 
-  if (filters.neighborhood) {
+  if (filters.neighborhoods && filters.neighborhoods.length > 0) {
+    query = query.overlaps('neighborhoods', filters.neighborhoods);
+  } else if (filters.neighborhood) {
     query = query.contains('neighborhoods', [filters.neighborhood]);
   }
   if (filters.minPrice) query = query.gte('hourly_rate', filters.minPrice);
   if (filters.maxPrice) query = query.lte('hourly_rate', filters.maxPrice);
+
+  if (filters.specialties && filters.specialties.length > 0) {
+    query = query.overlaps('specialties', filters.specialties);
+  }
+  if (filters.languages && filters.languages.length > 0) {
+    query = query.overlaps('languages', filters.languages);
+  }
+  if (filters.certifications && filters.certifications.length > 0) {
+    query = query.overlaps('certifications', filters.certifications);
+  }
+  if (filters.hasCnh) query = query.eq('has_cnh', true);
+  if (filters.hasVehicle) query = query.eq('has_vehicle', true);
+  if (filters.acceptsOvernight) query = query.eq('accepts_overnight', true);
+  if (filters.acceptsTravel) query = query.eq('accepts_travel', true);
+  if (filters.nonSmoker) query = query.eq('is_smoker', false);
+  if (filters.hasPassport) query = query.eq('has_passport', 'yes');
+  if (filters.hasOwnChildren === true) query = query.eq('has_own_children', true);
 
   const { data, error } = await query.order('created_at', { ascending: false });
   if (error) { console.error('getApprovedBabas error:', error); return []; }
@@ -676,6 +697,178 @@ function avatarHTML(profile, size = 40, classes = '') {
 }
 
 // =============================================
+// DOCUMENTS (uploads privados)
+// =============================================
+
+async function uploadDocument(file, userId, docType = 'criminal_record') {
+  if (!file) throw new Error('Sem arquivo');
+  if (!userId) throw new Error('Sem userId');
+  if (file.size > 10 * 1024 * 1024) throw new Error('Documento muito grande. Máximo 10MB.');
+
+  const allowed = ['application/pdf', 'image/jpeg', 'image/png', 'image/jpg'];
+  if (!allowed.includes(file.type)) {
+    throw new Error('Formato inválido. Aceita PDF, JPG ou PNG.');
+  }
+
+  const ext = file.name.split('.').pop().toLowerCase();
+  const path = `${userId}/${docType}-${Date.now()}.${ext}`;
+
+  const { error: upErr } = await db.storage
+    .from('documents')
+    .upload(path, file, { upsert: false, cacheControl: '3600' });
+  if (upErr) throw upErr;
+
+  // Cria registro na tabela documents
+  const { data, error } = await db
+    .from('documents')
+    .insert({
+      user_id: userId,
+      doc_type: docType,
+      file_path: path,
+      file_name: file.name,
+      file_size: file.size,
+      mime_type: file.type,
+      status: 'pending',
+    })
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data;
+}
+
+async function getMyDocuments() {
+  const me = await getCurrentUser();
+  if (!me) return [];
+  const { data, error } = await db
+    .from('documents')
+    .select('*')
+    .eq('user_id', me.id)
+    .order('created_at', { ascending: false });
+  if (error) { console.error('getMyDocuments:', error); return []; }
+  return data || [];
+}
+
+async function getSignedDocUrl(filePath) {
+  if (!filePath) return null;
+  const { data, error } = await db.storage
+    .from('documents')
+    .createSignedUrl(filePath, 60 * 60); // válido por 1h
+  if (error) { console.error('getSignedDocUrl:', error); return null; }
+  return data?.signedUrl || null;
+}
+
+async function deleteMyDocument(docId, filePath) {
+  // Apaga storage
+  if (filePath) {
+    await db.storage.from('documents').remove([filePath]);
+  }
+  // Apaga registro
+  const { error } = await db.from('documents').delete().eq('id', docId);
+  if (error) throw error;
+}
+
+// CPF: validação de dígito verificador
+function isValidCPF(cpf) {
+  if (!cpf) return false;
+  const cleaned = String(cpf).replace(/\D/g, '');
+  if (cleaned.length !== 11) return false;
+  if (/^(\d)\1{10}$/.test(cleaned)) return false; // todos iguais
+
+  let sum = 0;
+  for (let i = 0; i < 9; i++) sum += parseInt(cleaned[i]) * (10 - i);
+  let rest = (sum * 10) % 11;
+  if (rest === 10 || rest === 11) rest = 0;
+  if (rest !== parseInt(cleaned[9])) return false;
+
+  sum = 0;
+  for (let i = 0; i < 10; i++) sum += parseInt(cleaned[i]) * (11 - i);
+  rest = (sum * 10) % 11;
+  if (rest === 10 || rest === 11) rest = 0;
+  if (rest !== parseInt(cleaned[10])) return false;
+
+  return true;
+}
+
+function formatCPF(cpf) {
+  const cleaned = String(cpf || '').replace(/\D/g, '').slice(0, 11);
+  if (cleaned.length <= 3) return cleaned;
+  if (cleaned.length <= 6) return `${cleaned.slice(0,3)}.${cleaned.slice(3)}`;
+  if (cleaned.length <= 9) return `${cleaned.slice(0,3)}.${cleaned.slice(3,6)}.${cleaned.slice(6)}`;
+  return `${cleaned.slice(0,3)}.${cleaned.slice(3,6)}.${cleaned.slice(6,9)}-${cleaned.slice(9)}`;
+}
+
+function formatCEP(cep) {
+  const cleaned = String(cep || '').replace(/\D/g, '').slice(0, 8);
+  if (cleaned.length <= 5) return cleaned;
+  return `${cleaned.slice(0,5)}-${cleaned.slice(5)}`;
+}
+
+// Busca CEP via API ViaCEP (gratuita, sem auth)
+async function lookupCEP(cep) {
+  const cleaned = String(cep || '').replace(/\D/g, '');
+  if (cleaned.length !== 8) return null;
+  try {
+    const res = await fetch(`https://viacep.com.br/ws/${cleaned}/json/`);
+    const data = await res.json();
+    if (data.erro) return null;
+    return {
+      cep: data.cep,
+      street: data.logradouro,
+      neighborhood: data.bairro,
+      city: data.localidade,
+      state: data.uf,
+      complement: data.complemento,
+    };
+  } catch (err) {
+    console.error('lookupCEP error:', err);
+    return null;
+  }
+}
+
+// =============================================
+// CONSTANTES — bairros, idiomas, certificações
+// =============================================
+
+const RIO_NEIGHBORHOODS = {
+  'Zona Sul': [
+    'Leblon', 'Ipanema', 'Copacabana', 'Lagoa', 'Botafogo', 'Flamengo',
+    'Laranjeiras', 'Gávea', 'Jardim Botânico', 'Humaitá', 'Urca',
+    'Glória', 'Catete', 'Cosme Velho', 'São Conrado', 'Vidigal',
+  ],
+  'Zona Norte/Central': [
+    'Tijuca', 'Vila Isabel', 'Grajaú', 'Méier', 'Engenho Novo', 'Maracanã',
+    'Praça da Bandeira', 'Andaraí', 'Cachambi', 'Centro', 'Santa Teresa',
+  ],
+  'Barra e Oeste': [
+    'Barra da Tijuca', 'Recreio', 'Jacarepaguá', 'Itanhangá',
+    'Joá', 'Camorim', 'Vargem Grande', 'Freguesia',
+  ],
+  'Niterói': [
+    'Icaraí', 'Santa Rosa', 'Ingá', 'Boa Viagem', 'São Francisco', 'Charitas',
+  ],
+};
+
+const LANGUAGES = [
+  { value: 'portugues', label: 'Português' },
+  { value: 'ingles', label: 'Inglês' },
+  { value: 'espanhol', label: 'Espanhol' },
+  { value: 'frances', label: 'Francês' },
+  { value: 'libras', label: 'Libras' },
+];
+
+const CERTIFICATIONS = [
+  { value: 'primeiros-socorros', label: 'Primeiros Socorros' },
+  { value: 'cuidador-rn', label: 'Cuidados com Recém-Nascido' },
+  { value: 'pedagogia', label: 'Pedagogia' },
+  { value: 'enfermagem', label: 'Enfermagem' },
+  { value: 'tec-enfermagem', label: 'Técnico em Enfermagem' },
+  { value: 'cuidador-especial', label: 'Cuidados Especiais (autismo, TDAH)' },
+  { value: 'manobra-heimlich', label: 'Manobra de Heimlich' },
+  { value: 'amamentacao', label: 'Apoio à Amamentação' },
+];
+
+// =============================================
 // EXPORT
 // =============================================
 
@@ -688,5 +881,8 @@ window.dbHelpers = {
   getMessages, sendMessage, subscribeToMessages, unsubscribe,
   getMySubscription, isSubActive, requireActiveSubscription, syncSubscription,
   uploadAvatar, avatarHTML, showDbModal,
+  uploadDocument, getMyDocuments, getSignedDocUrl, deleteMyDocument,
+  isValidCPF, formatCPF, formatCEP, lookupCEP,
+  RIO_NEIGHBORHOODS, LANGUAGES, CERTIFICATIONS,
   showError, showSuccess, setLoading,
 };
