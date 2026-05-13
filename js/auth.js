@@ -430,7 +430,8 @@ function unsubscribe(channel) {
 // SUBSCRIPTION
 // =============================================
 
-// Pega minha subscription (null se não tem)
+// Pega minha subscription mais recente (null se não tem nenhuma)
+// IMPORTANTE: não usa maybeSingle pra evitar bug quando user tem >1 row (ex: incomplete antiga + trialing nova)
 async function getMySubscription() {
   const me = await getCurrentUser();
   if (!me) return null;
@@ -438,16 +439,25 @@ async function getMySubscription() {
     .from('subscriptions')
     .select('*')
     .eq('user_id', me.id)
-    .maybeSingle();
+    .order('created_at', { ascending: false })
+    .limit(1);
   if (error) { console.error('getMySubscription:', error); return null; }
-  return data;
+  return (data && data[0]) || null;
 }
 
 // Retorna true se a sub é trial OU active e não venceu
 function isSubActive(sub) {
   if (!sub) return false;
   if (!['active', 'trialing'].includes(sub.status)) return false;
-  if (sub.current_period_end && new Date(sub.current_period_end) < new Date()) return false;
+  const now = new Date();
+  // Pra trial: confere trial_end
+  if (sub.status === 'trialing' && sub.trial_end) {
+    if (new Date(sub.trial_end) < now) return false;
+  }
+  // Pra active: confere current_period_end
+  if (sub.status === 'active' && sub.current_period_end) {
+    if (new Date(sub.current_period_end) < now) return false;
+  }
   return true;
 }
 
@@ -460,6 +470,114 @@ async function requireActiveSubscription() {
     return false;
   }
   return true;
+}
+
+// =============================================
+// MODAL DE PAYWALL/AVISO (cores Dona Baby+)
+// =============================================
+
+// Mostra modal customizado em vez de alert() feio.
+// type: 'pending' | 'paywall' | 'info'
+// Retorna promise — resolve quando fecha
+function showDbModal({ type = 'info', title, message, primaryLabel, primaryHref, secondaryLabel, secondaryHref } = {}) {
+  return new Promise((resolve) => {
+    // Remove modal anterior se houver
+    const existing = document.getElementById('dbModalOverlay');
+    if (existing) existing.remove();
+
+    const colors = {
+      pending: { bg: '#FFF7E6', icon: '#B5530F', accent: 'var(--cta)' },
+      paywall: { bg: 'var(--cta-soft)', icon: 'var(--cta)', accent: 'var(--cta)' },
+      info: { bg: 'var(--baba-soft)', icon: 'var(--baba-deep)', accent: 'var(--baba)' },
+    };
+    const c = colors[type] || colors.info;
+
+    const icons = {
+      pending: '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>',
+      paywall: '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>',
+      info: '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>',
+    };
+
+    const overlay = document.createElement('div');
+    overlay.id = 'dbModalOverlay';
+    overlay.innerHTML = `
+      <style>
+        #dbModalOverlay {
+          position: fixed; inset: 0; background: rgba(14, 22, 32, 0.55);
+          z-index: 9999; display: flex; align-items: center; justify-content: center;
+          padding: 20px; opacity: 0; transition: opacity 0.2s ease;
+          font-family: 'Poppins', sans-serif;
+        }
+        #dbModalOverlay.show { opacity: 1; }
+        .db-modal-card {
+          background: white; border-radius: 24px;
+          max-width: 440px; width: 100%;
+          padding: 32px 28px 24px;
+          transform: scale(0.95); transition: transform 0.2s ease;
+          box-shadow: 0 20px 60px -10px rgba(0,0,0,0.25);
+        }
+        #dbModalOverlay.show .db-modal-card { transform: scale(1); }
+        .db-modal-icon {
+          width: 64px; height: 64px; border-radius: 50%;
+          background: ${c.bg}; color: ${c.icon};
+          display: flex; align-items: center; justify-content: center;
+          margin: 0 auto 20px;
+        }
+        .db-modal-title {
+          font-size: 22px; font-weight: 800;
+          letter-spacing: -0.025em; text-align: center;
+          margin-bottom: 12px; color: var(--ink, #0E1620);
+          line-height: 1.2;
+        }
+        .db-modal-msg {
+          color: var(--ink-2, #3C4452); font-size: 15px;
+          line-height: 1.6; text-align: center;
+          margin-bottom: 24px;
+        }
+        .db-modal-msg strong { color: var(--ink, #0E1620); font-weight: 700; }
+        .db-modal-actions {
+          display: flex; flex-direction: column; gap: 8px;
+        }
+        .db-modal-btn {
+          padding: 13px 22px; border-radius: 999px;
+          font-family: inherit; font-size: 14px; font-weight: 700;
+          text-align: center; text-decoration: none; cursor: pointer;
+          border: none; transition: all 0.15s;
+        }
+        .db-modal-btn-pri {
+          background: ${c.accent}; color: white;
+        }
+        .db-modal-btn-pri:hover { filter: brightness(0.92); }
+        .db-modal-btn-sec {
+          background: white; color: var(--ink, #0E1620);
+          border: 1.5px solid var(--line-strong, #DDDFE3);
+        }
+        .db-modal-btn-sec:hover { background: var(--bg-soft, #F6F7F9); }
+      </style>
+      <div class="db-modal-card">
+        <div class="db-modal-icon">${icons[type] || icons.info}</div>
+        <div class="db-modal-title">${title || ''}</div>
+        <div class="db-modal-msg">${message || ''}</div>
+        <div class="db-modal-actions">
+          ${primaryLabel ? `<a class="db-modal-btn db-modal-btn-pri" href="${primaryHref || '#'}">${primaryLabel}</a>` : ''}
+          ${secondaryLabel ? `<button class="db-modal-btn db-modal-btn-sec" id="dbModalClose">${secondaryLabel}</button>` : ''}
+        </div>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+    requestAnimationFrame(() => overlay.classList.add('show'));
+
+    function close() {
+      overlay.classList.remove('show');
+      setTimeout(() => { overlay.remove(); resolve(); }, 200);
+    }
+    overlay.addEventListener('click', (e) => { if (e.target === overlay) close(); });
+    const closeBtn = overlay.querySelector('#dbModalClose');
+    if (closeBtn) closeBtn.addEventListener('click', close);
+    document.addEventListener('keydown', function onEsc(e) {
+      if (e.key === 'Escape') { close(); document.removeEventListener('keydown', onEsc); }
+    });
+  });
 }
 
 // =============================================
@@ -532,6 +650,6 @@ window.dbHelpers = {
   getOrCreateConversation, getMyConversations, getOtherParticipant,
   getMessages, sendMessage, subscribeToMessages, unsubscribe,
   getMySubscription, isSubActive, requireActiveSubscription,
-  uploadAvatar, avatarHTML,
+  uploadAvatar, avatarHTML, showDbModal,
   showError, showSuccess, setLoading,
 };
