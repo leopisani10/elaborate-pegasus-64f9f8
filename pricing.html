@@ -8,304 +8,166 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="shared.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script defer src="js/auth.js"></script>
   <style>
     body { background: #FAFBFC; }
 
-    .checkout-header {
-      padding: 18px 0;
-      border-bottom: 1px solid var(--line);
-      background: white;
-    }
-    .checkout-header-inner {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 0 24px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
+    .checkout-header { padding: 18px 0; border-bottom: 1px solid var(--line); background: white; }
+    .checkout-header-inner { max-width: 1000px; margin: 0 auto; padding: 0 24px; display: flex; justify-content: space-between; align-items: center; }
     .checkout-header img { height: 32px; }
-    .checkout-back {
-      font-size: 13px;
-      color: var(--ink-3);
-      font-weight: 500;
-    }
+    .checkout-back { font-size: 13px; color: var(--ink-3); font-weight: 500; }
+    .checkout-back:hover { color: var(--ink); }
 
-    .checkout-layout {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 32px 24px 80px;
-      display: grid;
-      grid-template-columns: 1fr 380px;
-      gap: 40px;
-    }
+    .pricing-container { max-width: 720px; margin: 0 auto; padding: 48px 24px 80px; }
 
-    /* LEFT — form */
-    .checkout-main h1 {
-      font-size: 28px;
-      font-weight: 800;
-      letter-spacing: -0.035em;
-      margin-bottom: 8px;
-    }
-    .checkout-main .sub {
-      color: var(--ink-3);
-      font-size: 15px;
-      margin-bottom: 32px;
-    }
+    .pricing-head { text-align: center; margin-bottom: 40px; }
+    .pricing-head h1 { font-size: clamp(28px, 4vw, 40px); font-weight: 800; letter-spacing: -0.035em; margin-bottom: 10px; }
+    .pricing-head p { color: var(--ink-3); font-size: 16px; }
 
-    .step-card {
-      background: white;
-      border: 1px solid var(--line);
-      border-radius: 20px;
-      padding: 28px;
-      margin-bottom: 16px;
-    }
-    .step-card h2 {
-      font-size: 17px;
-      font-weight: 700;
-      margin-bottom: 16px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .step-num {
-      display: inline-flex;
-      width: 24px;
-      height: 24px;
-      border-radius: 50%;
-      background: var(--ink);
-      color: white;
-      font-size: 12px;
-      font-weight: 700;
-      align-items: center;
-      justify-content: center;
-    }
-
-    /* Plan selector */
-    .plan-pick {
+    .plan-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 12px;
+      gap: 16px;
+      margin-bottom: 28px;
     }
-    .plan-opt {
-      cursor: pointer;
-      padding: 18px 18px 18px 50px;
-      border: 2px solid var(--line);
-      border-radius: 16px;
-      position: relative;
-      transition: all 0.15s;
-    }
-    .plan-opt:hover { border-color: var(--line-strong); }
-    .plan-opt input { position: absolute; opacity: 0; pointer-events: none; }
-    .plan-opt::before {
-      content: '';
-      position: absolute;
-      left: 18px;
-      top: 22px;
-      width: 18px;
-      height: 18px;
-      border-radius: 50%;
-      border: 2px solid var(--line-strong);
+    .plan-card {
       background: white;
-      transition: all 0.15s;
+      border: 2px solid var(--line);
+      border-radius: 24px;
+      padding: 32px 28px;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+      text-align: left;
     }
-    .plan-opt::after {
+    .plan-card:hover {
+      transform: translateY(-2px);
+      border-color: var(--line-strong);
+    }
+    .plan-card.selected {
+      border-color: var(--cta);
+      box-shadow: 0 12px 32px -8px rgba(235,95,45,0.25);
+    }
+    .plan-card.selected::after {
       content: '';
       position: absolute;
-      left: 24px;
-      top: 28px;
-      width: 6px;
-      height: 6px;
+      top: 16px;
+      right: 16px;
+      width: 26px;
+      height: 26px;
       border-radius: 50%;
       background: var(--cta);
-      opacity: 0;
-      transition: opacity 0.15s;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'/%3E%3C/svg%3E");
+      background-position: center;
+      background-repeat: no-repeat;
     }
-    .plan-opt:has(input:checked) {
-      border-color: var(--cta);
-      background: var(--cta-soft);
-    }
-    .plan-opt:has(input:checked)::before { border-color: var(--cta); }
-    .plan-opt:has(input:checked)::after { opacity: 1; }
-    .plan-opt-label {
+
+    .plan-card .plan-label {
       font-size: 11px;
       font-weight: 700;
-      letter-spacing: 0.06em;
       text-transform: uppercase;
+      letter-spacing: 0.08em;
       color: var(--ink-3);
-      margin-bottom: 2px;
+      margin-bottom: 6px;
     }
-    .plan-opt-name {
-      font-size: 16px;
-      font-weight: 700;
+    .plan-card h2 {
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -0.025em;
+      margin-bottom: 16px;
+    }
+    .plan-price {
+      font-size: 44px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1;
       margin-bottom: 4px;
     }
-    .plan-opt-price {
+    .plan-price small {
+      font-size: 16px;
+      color: var(--ink-3);
+      font-weight: 500;
+    }
+    .plan-card .plan-meta {
+      font-size: 13px;
+      color: var(--ink-3);
+      margin-bottom: 20px;
+    }
+    .plan-card.familia .plan-price { color: var(--familia); }
+    .plan-card.baba .plan-price { color: var(--baba); }
+
+    .plan-features {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .plan-features li {
       font-size: 13px;
       color: var(--ink-2);
-    }
-    .plan-opt-price strong { font-weight: 700; color: var(--ink); }
-
-    /* Stripe Card form mockup */
-    .card-input {
-      padding: 14px 16px;
-      border: 1px solid var(--line-strong);
-      border-radius: 12px;
-      font-family: inherit;
-      font-size: 15px;
-      background: white;
+      padding: 6px 0;
       display: flex;
-      align-items: center;
-      gap: 10px;
-      transition: border 0.15s, box-shadow 0.15s;
+      align-items: flex-start;
+      gap: 8px;
+      line-height: 1.5;
     }
-    .card-input:focus-within {
-      border-color: var(--cta);
-      box-shadow: 0 0 0 3px rgba(235,95,45,0.12);
-    }
-    .card-input input {
-      border: none;
-      outline: none;
-      font-family: inherit;
-      font-size: 15px;
-      flex: 1;
-      background: transparent;
-    }
-    .card-brand-mini {
-      width: 32px;
-      height: 22px;
-      background: var(--ink);
-      color: white;
-      border-radius: 4px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 8px;
-      font-weight: 800;
-      letter-spacing: 0.04em;
+    .plan-features li::before {
+      content: '✓';
+      color: var(--baba);
+      font-weight: 700;
       flex-shrink: 0;
     }
-    .stripe-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-    }
 
-    .secure-note {
-      display: flex;
-      gap: 10px;
-      align-items: flex-start;
-      padding: 12px 14px;
-      background: var(--bg-soft);
-      border-radius: 12px;
-      font-size: 12px;
-      color: var(--ink-2);
-      line-height: 1.5;
-      margin-top: 14px;
-    }
-    .secure-note svg { color: var(--baba); flex-shrink: 0; margin-top: 1px; }
-    .secure-note strong { color: var(--ink); font-weight: 700; }
-
-    /* RIGHT — summary */
-    .summary {
-      position: sticky;
-      top: 24px;
-      align-self: start;
-    }
-    .summary-card {
+    .checkout-action {
       background: white;
       border: 1px solid var(--line);
       border-radius: 20px;
       padding: 28px;
+      text-align: center;
     }
-    .summary-card h3 {
-      font-size: 16px;
+    .checkout-action h3 {
+      font-size: 18px;
       font-weight: 700;
-      margin-bottom: 20px;
-      padding-bottom: 16px;
-      border-bottom: 1px solid var(--line);
+      margin-bottom: 6px;
     }
-    .summary-row {
-      display: flex;
-      justify-content: space-between;
-      font-size: 14px;
-      padding: 8px 0;
-    }
-    .summary-row .label { color: var(--ink-2); }
-    .summary-row .value { font-weight: 600; }
-    .summary-total {
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      padding-top: 16px;
-      margin-top: 12px;
-      border-top: 1px solid var(--line);
-    }
-    .summary-total .label { font-size: 15px; font-weight: 700; }
-    .summary-total .value {
-      font-size: 28px;
-      font-weight: 800;
-      letter-spacing: -0.03em;
-      color: var(--familia);
-    }
-    .summary-total .value small {
+    .checkout-action .sub {
       font-size: 14px;
       color: var(--ink-3);
-      font-weight: 500;
+      margin-bottom: 20px;
     }
-
     .pay-btn {
       width: 100%;
       padding: 18px;
-      background: var(--familia);
+      background: var(--cta);
       color: white;
       border: none;
       border-radius: 14px;
       font-family: inherit;
       font-weight: 700;
-      font-size: 15px;
+      font-size: 16px;
       cursor: pointer;
-      margin-top: 20px;
-      box-shadow: 0 8px 20px -4px rgba(124,91,211,0.4);
+      box-shadow: 0 8px 20px -4px rgba(235,95,45,0.4);
       transition: all 0.2s;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
-    }
-    .pay-btn:hover {
-      background: var(--familia-deep);
-      transform: translateY(-1px);
-    }
-
-    .badges-row {
-      display: flex;
-      flex-direction: column;
       gap: 10px;
-      margin-top: 20px;
+    }
+    .pay-btn:hover { background: var(--cta-hover); transform: translateY(-1px); }
+    .pay-btn:disabled { opacity: 0.6; cursor: wait; transform: none; }
+
+    .stripe-foot {
+      margin-top: 16px;
       font-size: 12px;
       color: var(--ink-3);
-    }
-    .badges-row .item {
       display: flex;
-      gap: 8px;
-      align-items: flex-start;
-      line-height: 1.45;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
     }
-    .badges-row .item svg { color: var(--baba); flex-shrink: 0; margin-top: 2px; }
 
-    .powered-by {
-      text-align: center;
-      font-size: 11px;
-      color: var(--ink-3);
-      margin-top: 20px;
-    }
-    .powered-by strong { color: var(--ink-2); font-weight: 700; }
-
-    @media (max-width: 900px) {
-      .checkout-layout { grid-template-columns: 1fr; }
-      .summary { position: static; order: -1; }
-      .plan-pick { grid-template-columns: 1fr; }
+    @media (max-width: 700px) {
+      .plan-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -314,134 +176,168 @@
 <header class="checkout-header">
   <div class="checkout-header-inner">
     <a href="/"><img src="logo.png" alt="Dona Baby+"></a>
-    <a href="dashboard.html" class="checkout-back">← Voltar pra busca</a>
+    <a href="javascript:history.back()" class="checkout-back">← Voltar</a>
   </div>
 </header>
 
-<div class="checkout-layout">
+<div class="pricing-container">
 
-  <!-- LEFT — Form -->
-  <main class="checkout-main">
-    <h1>Comece a conversar com babás.</h1>
-    <p class="sub">Você está prestes a assinar o Plano Família. Sem fidelidade, cancele quando quiser.</p>
+  <div class="pricing-head">
+    <h1>Escolha seu plano.</h1>
+    <p>Cobrança mensal, sem fidelidade. Cancele quando quiser.</p>
+  </div>
 
-    <!-- Step 1: plan -->
-    <div class="step-card">
-      <h2><span class="step-num">1</span> Escolha seu plano</h2>
-      <div class="plan-pick">
-        <label class="plan-opt">
-          <input type="radio" name="plan" checked>
-          <div class="plan-opt-label">Mensal</div>
-          <div class="plan-opt-name">Plano Família</div>
-          <div class="plan-opt-price"><strong>R$ 29</strong>/mês · cobrança recorrente</div>
-        </label>
-        <label class="plan-opt">
-          <input type="radio" name="plan">
-          <div class="plan-opt-label">Anual · economiza 17%</div>
-          <div class="plan-opt-name">Plano Família anual</div>
-          <div class="plan-opt-price"><strong>R$ 290</strong>/ano · R$ 24/mês</div>
-        </label>
-      </div>
+  <div class="plan-grid" id="planGrid">
+    <!-- Cards preenchidos por JS conforme o user_type -->
+  </div>
+
+  <div class="checkout-action">
+    <h3 id="actionTitle">Selecione um plano acima</h3>
+    <p class="sub" id="actionSub">Pagamento seguro processado pela Stripe.</p>
+    <button class="pay-btn" id="payBtn" disabled>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+      Assinar agora
+    </button>
+    <div class="stripe-foot">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+      Pagamento processado por Stripe · cartão criptografado
     </div>
+  </div>
 
-    <!-- Step 2: payment -->
-    <div class="step-card">
-      <h2><span class="step-num">2</span> Dados de pagamento</h2>
-
-      <div class="field">
-        <label class="field-label">Número do cartão</label>
-        <div class="card-input">
-          <input type="text" placeholder="1234 1234 1234 1234" inputmode="numeric">
-          <div class="card-brand-mini">VISA</div>
-        </div>
-      </div>
-
-      <div class="stripe-row">
-        <div class="field">
-          <label class="field-label">Validade</label>
-          <div class="card-input">
-            <input type="text" placeholder="MM / AA" inputmode="numeric">
-          </div>
-        </div>
-        <div class="field">
-          <label class="field-label">CVC</label>
-          <div class="card-input">
-            <input type="text" placeholder="123" inputmode="numeric">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" color="var(--ink-3)"><rect x="2" y="5" width="20" height="14" rx="3"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
-          </div>
-        </div>
-      </div>
-
-      <div class="field">
-        <label class="field-label">Nome no cartão</label>
-        <input class="input" type="text" placeholder="Como está impresso no cartão">
-      </div>
-
-      <div class="stripe-row">
-        <div class="field">
-          <label class="field-label">CEP</label>
-          <input class="input" type="text" placeholder="00000-000">
-        </div>
-        <div class="field">
-          <label class="field-label">CPF do titular</label>
-          <input class="input" type="text" placeholder="000.000.000-00">
-        </div>
-      </div>
-
-      <div class="secure-note">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
-        <div>Pagamento processado e protegido pela <strong>Stripe</strong>. A Dona Baby+ não armazena seus dados de cartão.</div>
-      </div>
-    </div>
-  </main>
-
-  <!-- RIGHT — Summary -->
-  <aside class="summary">
-    <div class="summary-card">
-      <h3>Resumo do pedido</h3>
-
-      <div class="summary-row">
-        <span class="label">Plano Família</span>
-        <span class="value">R$ 29,00</span>
-      </div>
-      <div class="summary-row">
-        <span class="label">Cobrança</span>
-        <span class="value">Mensal</span>
-      </div>
-      <div class="summary-row">
-        <span class="label">Próxima cobrança</span>
-        <span class="value">12/jun</span>
-      </div>
-
-      <div class="summary-total">
-        <span class="label">Total hoje</span>
-        <span class="value">R$ 29<small>,00</small></span>
-      </div>
-
-      <button class="pay-btn">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
-        Assinar agora
-      </button>
-
-      <div class="badges-row">
-        <div class="item">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-          <span>Cancele a qualquer momento sem cobrança extra</span>
-        </div>
-        <div class="item">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-          <span>Conversa com quantas babás precisar</span>
-        </div>
-        <div class="item">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-          <span>Recibo enviado por email após pagamento</span>
-        </div>
-      </div>
-
-      <div class="powered-by">Pagamento processado por <strong>Stripe</strong></div>
-    </div>
-  </aside>
 </div>
 
-  </body>
+<script>
+  // IDs dos planos no Stripe (TEST mode)
+  const PRICE_FAMILIA = 'price_1TWdWNLBo1eQa505RLeaRunD';
+  const PRICE_BABA    = 'price_1TWdVzLBo1eQa505MqC88FuY';
+
+  let myProfile = null;
+  let selectedPriceId = null;
+
+  window.addEventListener('DOMContentLoaded', async () => {
+    if (!window.dbClient) { setTimeout(() => location.reload(), 800); return; }
+
+    await window.dbHelpers.requireAuth();
+    myProfile = await window.dbHelpers.getCurrentProfile();
+    if (!myProfile) { window.location.href = '/login.html'; return; }
+
+    renderPlans();
+    setupPayButton();
+  });
+
+  function renderPlans() {
+    const grid = document.getElementById('planGrid');
+
+    // Mostra o plano relevante pro tipo de usuário primeiro
+    const isParent = myProfile.user_type === 'parent';
+    const isBaba = myProfile.user_type === 'baba';
+
+    const familiaCard = `
+      <button class="plan-card familia ${isParent ? 'selected' : ''}" data-price="${PRICE_FAMILIA}" data-name="Plano Família" type="button">
+        <div class="plan-label">Pra famílias</div>
+        <h2>Plano Família</h2>
+        <div class="plan-price">R$ 29<small>/mês</small></div>
+        <div class="plan-meta">Cobrança recorrente · sem fidelidade</div>
+        <ul class="plan-features">
+          <li>Conversa direta com babás verificadas</li>
+          <li>Quantas babás precisar</li>
+          <li>Cancele a qualquer momento</li>
+          <li>Recibo automático por email</li>
+        </ul>
+      </button>
+    `;
+
+    const babaCard = `
+      <button class="plan-card baba ${isBaba ? 'selected' : ''}" data-price="${PRICE_BABA}" data-name="Plano Babá" type="button">
+        <div class="plan-label">Pra babás</div>
+        <h2>Plano Babá</h2>
+        <div class="plan-price">R$ 19<small>/mês</small></div>
+        <div class="plan-meta">Cobrança recorrente · sem fidelidade</div>
+        <ul class="plan-features">
+          <li>Apareça pras famílias buscando babá</li>
+          <li>Receba mensagens diretas</li>
+          <li>Apareça em buscas filtradas</li>
+          <li>Cancele a qualquer momento</li>
+        </ul>
+      </button>
+    `;
+
+    // Ordena: o plano relevante primeiro
+    grid.innerHTML = isBaba ? babaCard + familiaCard : familiaCard + babaCard;
+
+    // Pre-seleciona o plano que faz sentido
+    if (isParent) {
+      selectedPriceId = PRICE_FAMILIA;
+      updateActionText('Plano Família', 29);
+    } else if (isBaba) {
+      selectedPriceId = PRICE_BABA;
+      updateActionText('Plano Babá', 19);
+    }
+
+    document.getElementById('payBtn').disabled = !selectedPriceId;
+
+    // Click handler
+    grid.querySelectorAll('.plan-card').forEach(card => {
+      card.addEventListener('click', () => {
+        grid.querySelectorAll('.plan-card').forEach(c => c.classList.remove('selected'));
+        card.classList.add('selected');
+        selectedPriceId = card.dataset.price;
+        const price = card.dataset.price === PRICE_FAMILIA ? 29 : 19;
+        updateActionText(card.dataset.name, price);
+        document.getElementById('payBtn').disabled = false;
+      });
+    });
+  }
+
+  function updateActionText(planName, price) {
+    document.getElementById('actionTitle').textContent = `Assinar ${planName} — R$ ${price}/mês`;
+    document.getElementById('actionSub').textContent = 'Você vai pra página segura da Stripe pra completar o pagamento.';
+  }
+
+  function setupPayButton() {
+    document.getElementById('payBtn').addEventListener('click', async () => {
+      if (!selectedPriceId) return;
+      const btn = document.getElementById('payBtn');
+      const helpers = window.dbHelpers;
+      helpers.setLoading(btn, true);
+
+      try {
+        // Pega o JWT da sessão atual
+        const { data: { session } } = await window.dbClient.auth.getSession();
+        if (!session) {
+          alert('Sessão expirou. Faça login de novo.');
+          window.location.href = '/login.html';
+          return;
+        }
+
+        // Chama a edge function
+        const SUPABASE_URL = 'https://cvvdmgoyvozzjsrswyzg.supabase.co';
+        const res = await fetch(`${SUPABASE_URL}/functions/v1/create-checkout`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${session.access_token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ price_id: selectedPriceId })
+        });
+
+        const data = await res.json();
+
+        if (!res.ok || !data.url) {
+          throw new Error(data.error || 'Erro criando checkout');
+        }
+
+        // Redireciona pro Stripe Checkout
+        window.location.href = data.url;
+
+      } catch (err) {
+        console.error('Erro:', err);
+        alert('Não conseguiu iniciar pagamento: ' + (err.message || 'erro desconhecido'));
+        helpers.setLoading(btn, false);
+      }
+    });
+  }
+</script>
+
+</body>
 </html>
