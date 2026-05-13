@@ -85,12 +85,19 @@ async function redirectToDashboard() {
     } else if (baba.approval_status === 'pending') {
       window.location.href = '/onboarding-baba.html?status=pending';
     } else {
-      window.location.href = '/account.html';
+      // Babá aprovada vai buscar famílias
+      window.location.href = '/families.html';
     }
   } else if (profile.user_type === 'admin') {
     window.location.href = '/admin.html';
   } else {
-    window.location.href = '/dashboard.html';
+    // Família: se ainda não preencheu perfil, manda pra onboarding
+    const parent = await getParentProfile(profile.id);
+    if (!parent || !parent.children_count) {
+      window.location.href = '/onboarding-familia.html';
+    } else {
+      window.location.href = '/dashboard.html';
+    }
   }
 }
 
@@ -200,6 +207,64 @@ async function rejectBaba(babaId, reason) {
     .select()
     .single();
   if (error) { console.error('rejectBaba error:', error); throw error; }
+  return data;
+}
+
+// =============================================
+// PARENT PROFILE
+// =============================================
+
+async function getParentProfile(userId) {
+  const { data, error } = await db
+    .from('parent_profiles')
+    .select('*')
+    .eq('id', userId)
+    .maybeSingle();
+  if (error) { console.error('getParentProfile error:', error); return null; }
+  return data;
+}
+
+async function upsertParentProfile(userId, fields) {
+  const { data, error } = await db
+    .from('parent_profiles')
+    .update({
+      ...fields,
+      is_searching: fields.is_searching !== false,
+    })
+    .eq('id', userId)
+    .select()
+    .single();
+  if (error) {
+    console.error('upsertParentProfile error:', error);
+    throw error;
+  }
+  return data;
+}
+
+async function getActiveFamilies() {
+  const { data, error } = await db
+    .from('parent_profiles')
+    .select(`
+      *,
+      profiles!parent_profiles_id_fkey(full_name, avatar_url)
+    `)
+    .eq('is_searching', true)
+    .not('children_count', 'is', null)
+    .order('created_at', { ascending: false });
+  if (error) { console.error('getActiveFamilies error:', error); return []; }
+  return data || [];
+}
+
+async function getFamilyById(parentId) {
+  const { data, error } = await db
+    .from('parent_profiles')
+    .select(`
+      *,
+      profiles!parent_profiles_id_fkey(full_name, avatar_url, phone)
+    `)
+    .eq('id', parentId)
+    .single();
+  if (error) { console.error('getFamilyById error:', error); return null; }
   return data;
 }
 
@@ -342,6 +407,7 @@ function unsubscribe(channel) {
 window.dbHelpers = {
   getCurrentUser, getCurrentProfile, signOut, requireAuth, requireAdmin, redirectToDashboard,
   getBabaProfile, upsertBabaProfile, getApprovedBabas, getBabaById,
+  getParentProfile, upsertParentProfile, getActiveFamilies, getFamilyById,
   getPendingBabas, approveBaba, rejectBaba,
   getOrCreateConversation, getMyConversations, getOtherParticipant,
   getMessages, sendMessage, subscribeToMessages, unsubscribe,
