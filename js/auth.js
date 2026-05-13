@@ -437,6 +437,64 @@ async function requireActiveSubscription() {
 }
 
 // =============================================
+// AVATAR UPLOAD
+// =============================================
+
+// Faz upload de arquivo pro bucket 'avatars' e atualiza profile.avatar_url
+async function uploadAvatar(file, userId) {
+  if (!file) throw new Error('Sem arquivo');
+  if (!userId) throw new Error('Sem userId');
+
+  // Validações básicas
+  if (file.size > 5 * 1024 * 1024) {
+    throw new Error('Imagem muito grande. Máximo 5MB.');
+  }
+  if (!file.type.startsWith('image/')) {
+    throw new Error('Arquivo precisa ser uma imagem.');
+  }
+
+  // Nome do arquivo: userId/timestamp.ext (cache busting)
+  const ext = file.name.split('.').pop().toLowerCase();
+  const path = `${userId}/avatar-${Date.now()}.${ext}`;
+
+  // Upload no bucket
+  const { error: upErr } = await db.storage
+    .from('avatars')
+    .upload(path, file, { upsert: true, cacheControl: '3600' });
+  if (upErr) {
+    console.error('Upload err:', upErr);
+    throw upErr;
+  }
+
+  // Pega URL pública
+  const { data: { publicUrl } } = db.storage.from('avatars').getPublicUrl(path);
+
+  // Atualiza profile
+  const { error: updErr } = await db
+    .from('profiles')
+    .update({ avatar_url: publicUrl })
+    .eq('id', userId);
+  if (updErr) {
+    console.error('Update profile err:', updErr);
+    throw updErr;
+  }
+
+  return publicUrl;
+}
+
+// Cria componente HTML de avatar (img se url, senão inicial)
+function avatarHTML(profile, size = 40, classes = '') {
+  const sizeStyle = `width:${size}px; height:${size}px; font-size:${Math.max(11, size/3)}px;`;
+  if (profile?.avatar_url) {
+    return `<div class="db-avatar ${classes}" style="${sizeStyle} border-radius:50%; overflow:hidden; display:inline-flex; align-items:center; justify-content:center;">
+      <img src="${profile.avatar_url}" alt="" style="width:100%; height:100%; object-fit:cover;">
+    </div>`;
+  }
+  const initial = (profile?.full_name || '?').charAt(0).toUpperCase();
+  return `<div class="db-avatar ${classes}" style="${sizeStyle} border-radius:50%; background:var(--baba); color:white; font-weight:700; display:inline-flex; align-items:center; justify-content:center;">${initial}</div>`;
+}
+
+// =============================================
 // EXPORT
 // =============================================
 
@@ -448,5 +506,6 @@ window.dbHelpers = {
   getOrCreateConversation, getMyConversations, getOtherParticipant,
   getMessages, sendMessage, subscribeToMessages, unsubscribe,
   getMySubscription, isSubActive, requireActiveSubscription,
+  uploadAvatar, avatarHTML,
   showError, showSuccess, setLoading,
 };
