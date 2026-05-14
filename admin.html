@@ -241,10 +241,10 @@
     <a href="/"><img src="logo.png" alt="Dona Baby+"></a>
     <ul class="app-nav-links" id="navLinks"></ul>
     <div class="app-nav-right">
-      <a class="user-chip" href="account.html">
-        <div class="user-chip-avatar" id="chipAvatar">?</div>
-        <div id="chipName">...</div>
-      </a>
+      <button type="button" id="logoutBtn" style="background: white; color: var(--cta); border: 1.5px solid var(--cta); padding: 8px 18px; border-radius: 999px; font-family: inherit; font-size: 13px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: all 0.15s;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+        Sair
+      </button>
     </div>
   </div>
 </header>
@@ -540,8 +540,22 @@
     const profile = await window.dbHelpers.getCurrentProfile();
     if (!profile) { window.location.href = '/login.html'; return; }
 
-    document.getElementById('chipAvatar').textContent = initial(profile.full_name);
-    document.getElementById('chipName').textContent = (profile.full_name || '').split(' ')[0];
+    // Handler do botão Sair
+    const logoutBtn = document.getElementById('logoutBtn');
+    if (logoutBtn) {
+      logoutBtn.addEventListener('click', async () => {
+        if (!confirm('Sair do painel admin?')) return;
+        await window.dbHelpers.signOut();
+      });
+      logoutBtn.addEventListener('mouseenter', () => {
+        logoutBtn.style.background = 'var(--cta)';
+        logoutBtn.style.color = 'white';
+      });
+      logoutBtn.addEventListener('mouseleave', () => {
+        logoutBtn.style.background = 'white';
+        logoutBtn.style.color = 'var(--cta)';
+      });
+    }
 
     renderNav();
     setupTabs();
@@ -551,14 +565,10 @@
   });
 
   function renderNav() {
-    const items = [
-      { href: '/admin.html', label: 'Aprovações', active: true },
-      { href: '/dicas.html', label: 'Dicas' },
-      { href: '/chat.html', label: 'Mensagens' },
-    ];
-    document.getElementById('navLinks').innerHTML = items.map(i =>
-      `<li><a href="${i.href}" ${i.active ? 'class="active"' : ''}>${i.label}</a></li>`
-    ).join('');
+    // O header-auth.js cuida da nav superior pro admin (só botão Sair).
+    // Aqui não injetamos mais nada pra não duplicar.
+    const navEl = document.getElementById('navLinks');
+    if (navEl) navEl.innerHTML = '';
   }
 
   function setupTabs() {
