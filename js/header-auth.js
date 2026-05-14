@@ -1,14 +1,10 @@
-// header-auth.js v3 — Sincroniza estado de login no header das páginas públicas
+// header-auth.js v4 — Sincroniza estado de login no header
 //
 // Casos:
-// 1. Páginas institucionais (.pub-nav): nav completa
-//    - Não logado: deixa header padrão
-//    - Logado: esconde links originais, injeta applinks (Buscar famílias/Dicas/Mensagens) + chip
-//
-// 2. Landing (.nav-right): só wrapper dos botões Entrar/Cadastre-se
-//    - Não logado: deixa header padrão (mostra Entrar + Cadastre-se)
-//    - Logado: substitui os 2 botões por chip único "Meu perfil"
-//    - Os .nav-links (Como funciona / Babás / Famílias / Planos) ficam intactos
+// 1. Landing (.nav-right): logado → chip pra account
+// 2. Institucionais (.pub-nav):
+//    - Babá/Família logado: applinks (Buscar X / Dicas / Mensagens) + chip
+//    - Admin logado: SÓ botão "Sair" (sem applinks, admin não precisa nem de Dicas nem Mensagens)
 
 (function() {
   if (window.__dbHeaderAuthInited) return;
@@ -49,6 +45,19 @@
       overflow: hidden; flex-shrink: 0;
     }
     .db-user-chip-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+    /* Botão Sair (pro admin) */
+    .db-logout-btn {
+      background: white; color: var(--cta, #EB5F2D);
+      border: 1.5px solid var(--cta, #EB5F2D);
+      padding: 8px 18px; border-radius: 999px;
+      font-family: inherit; font-size: 13px; font-weight: 700;
+      cursor: pointer; text-decoration: none;
+      display: inline-flex; align-items: center; gap: 6px;
+      transition: all 0.15s;
+    }
+    .db-logout-btn:hover { background: var(--cta, #EB5F2D); color: white; }
+
     @media (max-width: 960px) {
       .pub-nav .db-applink { display: none !important; }
     }
@@ -76,12 +85,30 @@
 
       container.classList.add('db-hidden-original');
 
+      // ADMIN: só botão Sair, sem nada mais
+      if (profile.user_type === 'admin') {
+        const btn = document.createElement('a');
+        btn.className = 'db-logout-btn';
+        btn.href = '#';
+        btn.innerHTML = `
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+          Sair
+        `;
+        btn.addEventListener('click', async (e) => {
+          e.preventDefault();
+          await window.dbHelpers.signOut();
+        });
+        container.appendChild(btn);
+        return;
+      }
+
       const firstName = (profile.full_name || '?').split(' ')[0];
       const initial = (profile.full_name || '?').charAt(0).toUpperCase();
       const avatarInner = profile.avatar_url
         ? `<img src="${escapeStr(profile.avatar_url)}" alt="">`
         : initial;
 
+      // LANDING: só chip
       if (isLanding) {
         const chip = document.createElement('a');
         chip.className = 'db-user-chip';
@@ -94,6 +121,7 @@
         return;
       }
 
+      // INSTITUCIONAL (babá/família): applinks + chip
       const links = appLinksFor(profile.user_type);
       const currentPath = (window.location.pathname || '').replace(/\.html$/, '').replace(/\/$/, '');
       links.forEach(l => {
@@ -116,18 +144,11 @@
       `;
       container.appendChild(chip);
     } catch (err) {
-      console.warn('header-auth: erro buscando perfil', err);
+      console.warn('header-auth: erro', err);
     }
   }
 
   function appLinksFor(userType) {
-    if (userType === 'admin') {
-      return [
-        { href: '/admin.html', label: 'Aprovações' },
-        { href: '/dicas.html', label: 'Dicas' },
-        { href: '/chat.html', label: 'Mensagens' },
-      ];
-    }
     if (userType === 'baba') {
       return [
         { href: '/families.html', label: 'Buscar famílias' },
