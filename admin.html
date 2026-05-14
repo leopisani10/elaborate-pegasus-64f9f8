@@ -72,6 +72,122 @@
     @media (max-width: 1100px) { .stats-grid { grid-template-columns: repeat(3, 1fr); } }
     @media (max-width: 700px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
 
+    /* ALERT BANNER */
+    .alert-banner {
+      background: linear-gradient(135deg, #FFF4ED 0%, #FFE9DA 100%);
+      border: 1.5px solid #FFCDA8;
+      border-radius: 18px;
+      padding: 18px 22px;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .alert-icon { font-size: 32px; }
+    .alert-content { flex: 1; }
+    .alert-content strong { font-size: 16px; color: var(--ink); display: block; margin-bottom: 4px; }
+    .alert-sub { font-size: 13px; color: var(--ink-2); }
+    .alert-cta {
+      background: var(--cta); color: white; border: none;
+      padding: 11px 22px; border-radius: 999px;
+      font-family: inherit; font-size: 13px; font-weight: 700;
+      cursor: pointer; transition: all 0.15s;
+      white-space: nowrap;
+    }
+    .alert-cta:hover { background: var(--cta-hover); }
+
+    /* KPI GRID */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+    .kpi-card {
+      background: white; border: 1px solid var(--line);
+      border-radius: 16px; padding: 18px 20px;
+      transition: all 0.15s;
+    }
+    .kpi-card:hover { border-color: var(--line-strong); box-shadow: 0 4px 12px -4px rgba(0,0,0,0.05); }
+    .kpi-card.kpi-mrr { background: linear-gradient(135deg, #ECF8F5 0%, #DBF2EB 100%); border-color: transparent; }
+    .kpi-card.kpi-arr { background: linear-gradient(135deg, #F4F0FE 0%, #ECE5FE 100%); border-color: transparent; }
+    .kpi-label { font-size: 11px; font-weight: 700; color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; }
+    .kpi-value { font-size: 26px; font-weight: 800; letter-spacing: -0.02em; color: var(--ink); margin-bottom: 4px; }
+    .kpi-card.kpi-mrr .kpi-value { color: var(--baba-deep); }
+    .kpi-card.kpi-arr .kpi-value { color: var(--familia); }
+    .kpi-sub { font-size: 11px; color: var(--ink-3); }
+    .kpi-delta { font-size: 12px; font-weight: 600; color: var(--ink-3); }
+    .kpi-delta.up { color: #2D8B5A; }
+    .kpi-delta.down { color: #B53034; }
+
+    .kpi-split-bar {
+      display: flex; height: 6px; border-radius: 999px;
+      overflow: hidden; margin-top: 8px;
+      background: var(--line);
+    }
+    .kpi-split-baba { background: var(--baba); }
+    .kpi-split-fam { background: var(--familia); }
+    .kpi-split-legend { display: flex; justify-content: space-between; margin-top: 6px; font-size: 11px; color: var(--ink-3); }
+    .kpi-split-legend b { color: var(--ink); }
+    .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; vertical-align: middle; margin-right: 3px; }
+    .dot-baba { background: var(--baba); }
+    .dot-fam { background: var(--familia); }
+
+    @media (max-width: 1200px) { .kpi-grid { grid-template-columns: repeat(3, 1fr); } }
+    @media (max-width: 700px) { .kpi-grid { grid-template-columns: repeat(2, 1fr); } }
+
+    /* CHARTS */
+    .charts-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 18px;
+      margin-bottom: 24px;
+    }
+    .chart-card {
+      background: white; border: 1px solid var(--line);
+      border-radius: 16px; padding: 20px 22px;
+    }
+    .chart-head {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 12px; flex-wrap: wrap; gap: 8px;
+    }
+    .chart-head h3 { font-size: 14px; font-weight: 700; color: var(--ink); margin: 0; }
+    .chart-legend { display: flex; gap: 14px; font-size: 12px; color: var(--ink-2); }
+    .chart-body { width: 100%; min-height: 200px; }
+    .chart-body svg { width: 100%; height: 200px; display: block; }
+    .chart-loading { text-align: center; padding: 80px 0; color: var(--ink-3); font-size: 13px; }
+    @media (max-width: 900px) { .charts-grid { grid-template-columns: 1fr; } }
+
+    /* INSIGHTS */
+    .insights-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px;
+      margin-bottom: 32px;
+    }
+    .insight-card {
+      background: white; border: 1px solid var(--line);
+      border-radius: 16px; padding: 18px 20px;
+    }
+    .insight-label { font-size: 11px; font-weight: 700; color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 10px; }
+    .insight-value { font-size: 24px; font-weight: 800; letter-spacing: -0.02em; color: var(--ink); margin-bottom: 4px; }
+    .insight-sub { font-size: 11px; color: var(--ink-3); }
+    .insight-rank { list-style: none; padding: 0; margin: 0; }
+    .insight-rank li {
+      display: flex; justify-content: space-between;
+      padding: 5px 0; font-size: 13px; color: var(--ink-2);
+      border-bottom: 1px dashed var(--line);
+    }
+    .insight-rank li:last-child { border-bottom: none; }
+    .insight-rank li b { color: var(--ink); font-size: 13px; font-weight: 700; }
+    @media (max-width: 1000px) { .insights-grid { grid-template-columns: repeat(2, 1fr); } }
+
+    /* EXPORT BTN */
+    .btn-export {
+      background: white; border: 1.5px solid var(--line-strong);
+      border-radius: 999px; padding: 8px 14px;
+      font-family: inherit; font-size: 12px; font-weight: 700;
+      cursor: pointer; color: var(--ink-2); transition: all 0.15s;
+      white-space: nowrap;
+    }
+    .btn-export:hover { border-color: var(--ink); background: var(--bg-soft); }
+
     /* Tabs */
     .admin-tabs {
       display: flex;
@@ -264,36 +380,117 @@
     </div>
   </div>
 
-  <!-- STATS -->
-  <div class="stats-grid">
-    <div class="stat-card cta">
-      <div class="lbl">Pendentes</div>
-      <div class="val" id="statPending">—</div>
-      <div class="sub" id="statPendingSub">aguardando análise</div>
+  <!-- BANNER DE ALERTA (mostra só se tem pendentes) -->
+  <div id="alertBanner" class="alert-banner" style="display: none;">
+    <div class="alert-icon">⏰</div>
+    <div class="alert-content">
+      <strong id="alertTitle">Você tem 0 babás aguardando aprovação</strong>
+      <div class="alert-sub" id="alertSub">Revise pra liberar acesso e começar cobranças.</div>
     </div>
-    <div class="stat-card baba">
-      <div class="lbl">Babás visíveis</div>
-      <div class="val" id="statBabasVisible">—</div>
-      <div class="sub" id="statBabasVisibleSub">aprovadas + ativas</div>
+    <button class="alert-cta" onclick="document.querySelector('.admin-tab[data-tab=pending]').click(); document.getElementById('tabs-anchor').scrollIntoView({behavior:'smooth'});">Ver pendentes →</button>
+  </div>
+
+  <!-- KPIs RICOS -->
+  <div class="kpi-grid">
+    <div class="kpi-card kpi-mrr">
+      <div class="kpi-label">MRR (receita mensal)</div>
+      <div class="kpi-value" id="kpiMrr">R$ —</div>
+      <div class="kpi-delta" id="kpiMrrDelta">—</div>
     </div>
-    <div class="stat-card familia">
-      <div class="lbl">Famílias ativas</div>
-      <div class="val" id="statFamiliesActive">—</div>
-      <div class="sub" id="statFamiliesActiveSub">com assinatura</div>
+    <div class="kpi-card kpi-arr">
+      <div class="kpi-label">ARR projetada</div>
+      <div class="kpi-value" id="kpiArr">R$ —</div>
+      <div class="kpi-sub">MRR × 12</div>
     </div>
-    <div class="stat-card blue">
-      <div class="lbl">MRR mensal</div>
-      <div class="val" id="statMrr">—</div>
-      <div class="sub" id="statMrrSub">recorrente em R$</div>
+    <div class="kpi-card">
+      <div class="kpi-label">Assinaturas ativas</div>
+      <div class="kpi-value" id="kpiActiveSubs">—</div>
+      <div class="kpi-split">
+        <div class="kpi-split-bar">
+          <span class="kpi-split-baba" id="kpiSplitBaba" style="flex: 1;"></span>
+          <span class="kpi-split-fam" id="kpiSplitFam" style="flex: 1;"></span>
+        </div>
+        <div class="kpi-split-legend">
+          <span><span class="dot dot-baba"></span> <b id="kpiSplitBabaN">0</b> babás</span>
+          <span><span class="dot dot-fam"></span> <b id="kpiSplitFamN">0</b> famílias</span>
+        </div>
+      </div>
     </div>
-    <div class="stat-card">
-      <div class="lbl">Em trial</div>
-      <div class="val" id="statTrial">—</div>
-      <div class="sub" id="statTrialSub">3 dias grátis</div>
+    <div class="kpi-card">
+      <div class="kpi-label">Trial → Pago</div>
+      <div class="kpi-value" id="kpiConversion">—%</div>
+      <div class="kpi-sub" id="kpiConversionSub">— de — converteram</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Churn este mês</div>
+      <div class="kpi-value" id="kpiChurn">—</div>
+      <div class="kpi-sub" id="kpiChurnSub">cancelamentos</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Novos esta semana</div>
+      <div class="kpi-value" id="kpiNewWeek">—</div>
+      <div class="kpi-sub" id="kpiNewWeekSub">cadastros 7d</div>
     </div>
   </div>
 
-  <!-- TABS -->
+  <!-- GRÁFICOS -->
+  <div class="charts-grid">
+    <div class="chart-card">
+      <div class="chart-head">
+        <h3>Novos cadastros · últimos 30 dias</h3>
+        <div class="chart-legend">
+          <span><span class="dot dot-baba"></span> Babás</span>
+          <span><span class="dot dot-fam"></span> Famílias</span>
+        </div>
+      </div>
+      <div class="chart-body" id="chartSignups">
+        <div class="chart-loading">Carregando...</div>
+      </div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-head">
+        <h3>Receita por mês · últimos 6 meses</h3>
+      </div>
+      <div class="chart-body" id="chartRevenue">
+        <div class="chart-loading">Carregando...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- INSIGHTS OPERACIONAIS -->
+  <div class="insights-grid">
+    <div class="insight-card">
+      <div class="insight-label">⏱ Tempo médio até aprovação</div>
+      <div class="insight-value" id="insAvgApproval">—</div>
+      <div class="insight-sub">Quanto babás esperam pra serem revisadas</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">⚖️ Razão babá/família</div>
+      <div class="insight-value" id="insRatio">—</div>
+      <div class="insight-sub" id="insRatioSub">Saúde do marketplace</div>
+    </div>
+    <div class="insight-card insight-list">
+      <div class="insight-label">📍 Top 5 bairros · oferta de babás</div>
+      <ol class="insight-rank" id="insTopBabaHoods"></ol>
+    </div>
+    <div class="insight-card insight-list">
+      <div class="insight-label">🏠 Top 5 bairros · famílias buscando</div>
+      <ol class="insight-rank" id="insTopFamilyHoods"></ol>
+    </div>
+  </div>
+
+  <!-- STATS antigas (escondidas, mas mantidas por compatibilidade) -->
+  <div class="stats-grid" style="display: none;">
+    <div class="stat-card cta"><div class="lbl">Pendentes</div><div class="val" id="statPending">—</div><div class="sub" id="statPendingSub"></div></div>
+    <div class="stat-card baba"><div class="lbl">Babás visíveis</div><div class="val" id="statBabasVisible">—</div><div class="sub" id="statBabasVisibleSub"></div></div>
+    <div class="stat-card familia"><div class="lbl">Famílias ativas</div><div class="val" id="statFamiliesActive">—</div><div class="sub" id="statFamiliesActiveSub"></div></div>
+    <div class="stat-card blue"><div class="lbl">MRR mensal</div><div class="val" id="statMrr">—</div><div class="sub" id="statMrrSub"></div></div>
+    <div class="stat-card"><div class="lbl">Em trial</div><div class="val" id="statTrial">—</div><div class="sub" id="statTrialSub"></div></div>
+  </div>
+
+  <div id="tabs-anchor"></div>
+
+  <!-- TABS (Financeiro removido) -->
   <nav class="admin-tabs">
     <button class="admin-tab active" data-tab="pending">
       Pendentes <span class="count" id="tabCountPending">0</span>
@@ -310,15 +507,13 @@
     <button class="admin-tab" data-tab="subscriptions">
       Assinaturas <span class="count" id="tabCountSubs">0</span>
     </button>
-    <button class="admin-tab" data-tab="finance">
-      Financeiro
-    </button>
   </nav>
 
   <!-- PANEL: PENDING -->
   <section class="tab-panel active" id="panel-pending">
     <div class="table-toolbar">
       <input class="table-search" id="searchPending" placeholder="Buscar por nome ou email...">
+      <button class="btn-export" onclick="exportCSV('pending')">📥 CSV</button>
     </div>
     <div class="data-table-wrap">
       <table class="data-table">
@@ -343,6 +538,7 @@
   <section class="tab-panel" id="panel-approved">
     <div class="table-toolbar">
       <input class="table-search" id="searchApproved" placeholder="Buscar por nome ou email...">
+      <button class="btn-export" onclick="exportCSV('approved')">📥 CSV</button>
     </div>
     <div class="data-table-wrap">
       <table class="data-table">
@@ -385,6 +581,7 @@
   <section class="tab-panel" id="panel-families">
     <div class="table-toolbar">
       <input class="table-search" id="searchFamilies" placeholder="Buscar por nome, email ou bairro...">
+      <button class="btn-export" onclick="exportCSV('families')">📥 CSV</button>
     </div>
     <div class="data-table-wrap">
       <table class="data-table">
@@ -414,6 +611,7 @@
       <button class="filter-pill" data-sub-filter="active">Ativas</button>
       <button class="filter-pill" data-sub-filter="past_due">Atrasadas</button>
       <button class="filter-pill" data-sub-filter="canceled">Canceladas</button>
+    <button class="btn-export" onclick="exportCSV('subs')">📥 CSV</button>
     </div>
     <div class="data-table-wrap">
       <table class="data-table">
@@ -435,7 +633,7 @@
   </section>
 
   <!-- PANEL: FINANCE -->
-  <section class="tab-panel" id="panel-finance">
+  <section class="tab-panel" id="panel-finance" style="display: none;">
     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px;">
       <div class="stat-card" style="padding: 28px;">
         <div class="lbl">Receita recorrente (MRR)</div>
@@ -628,6 +826,9 @@
       loadSubs(),
     ]);
     renderFinance();
+    renderRichKPIs();
+    renderInsights();
+    renderCharts();
   }
 
   async function loadStats() {
@@ -1221,6 +1422,376 @@
       alert('Erro: ' + err.message);
     }
   }
+
+  // ====================================
+  // KPIs RICOS, GRÁFICOS, INSIGHTS, CSV
+  // ====================================
+
+  function renderRichKPIs() {
+    const babaPrice = 19;
+    const familiaPrice = 29;
+
+    // Banner alerta
+    const pending = allPending.length;
+    if (pending > 0) {
+      document.getElementById('alertBanner').style.display = 'flex';
+      document.getElementById('alertTitle').textContent =
+        pending === 1 ? 'Você tem 1 babá aguardando aprovação' : `Você tem ${pending} babás aguardando aprovação`;
+    }
+
+    // Subs ativas (active + trialing)
+    const activeSubs = allSubs.filter(s => s.status === 'active' || s.status === 'trialing');
+    const trialingSubs = allSubs.filter(s => s.status === 'trialing');
+    const canceledSubs = allSubs.filter(s => s.status === 'canceled');
+
+    // MRR atual (active + trialing por plano)
+    let mrr = 0;
+    let activeBabaCount = 0;
+    let activeFamCount = 0;
+    activeSubs.forEach(s => {
+      const isBaba = (s.plan_name || '').toLowerCase().includes('bab');
+      if (isBaba) { mrr += babaPrice; activeBabaCount++; }
+      else { mrr += familiaPrice; activeFamCount++; }
+    });
+
+    document.getElementById('kpiMrr').textContent = fmtBRL(mrr);
+    document.getElementById('kpiArr').textContent = fmtBRL(mrr * 12);
+
+    // MRR delta (mês passado) — compara com inícios dentro de 30-60 dias atrás
+    const now = new Date();
+    const thirtyDaysAgo = new Date(now); thirtyDaysAgo.setDate(now.getDate() - 30);
+    const sixtyDaysAgo = new Date(now); sixtyDaysAgo.setDate(now.getDate() - 60);
+    const lastMonthSubs = allSubs.filter(s => {
+      const c = new Date(s.created_at);
+      return c >= sixtyDaysAgo && c < thirtyDaysAgo && (s.status === 'active' || s.status === 'trialing');
+    });
+    let lastMrr = 0;
+    lastMonthSubs.forEach(s => {
+      const isBaba = (s.plan_name || '').toLowerCase().includes('bab');
+      lastMrr += isBaba ? babaPrice : familiaPrice;
+    });
+    const deltaEl = document.getElementById('kpiMrrDelta');
+    if (lastMrr > 0) {
+      const pct = ((mrr - lastMrr) / lastMrr) * 100;
+      deltaEl.textContent = (pct >= 0 ? '↑ +' : '↓ ') + pct.toFixed(0) + '% vs mês passado';
+      deltaEl.className = 'kpi-delta ' + (pct >= 0 ? 'up' : 'down');
+    } else {
+      deltaEl.textContent = mrr > 0 ? '🚀 primeiro mês com receita' : '— sem comparativo';
+    }
+
+    // Assinaturas ativas + split
+    document.getElementById('kpiActiveSubs').textContent = activeSubs.length;
+    document.getElementById('kpiSplitBabaN').textContent = activeBabaCount;
+    document.getElementById('kpiSplitFamN').textContent = activeFamCount;
+    const totalSplit = Math.max(activeBabaCount + activeFamCount, 1);
+    document.getElementById('kpiSplitBaba').style.flex = activeBabaCount;
+    document.getElementById('kpiSplitFam').style.flex = activeFamCount;
+
+    // Trial → pago: subs que saíram do trial e viraram active
+    const everPaid = allSubs.filter(s =>
+      s.status === 'active' || (s.status === 'canceled' && s.trial_end && new Date(s.trial_end) < new Date())
+    ).length;
+    const totalEverStarted = allSubs.length;
+    let conversionPct = 0;
+    if (totalEverStarted > 0) {
+      conversionPct = (everPaid / totalEverStarted) * 100;
+    }
+    document.getElementById('kpiConversion').textContent = conversionPct.toFixed(0) + '%';
+    document.getElementById('kpiConversionSub').textContent = `${everPaid} de ${totalEverStarted} viraram pagantes`;
+
+    // Churn este mês
+    const churnThisMonth = canceledSubs.filter(s => {
+      const c = new Date(s.updated_at || s.created_at);
+      return c >= thirtyDaysAgo;
+    }).length;
+    document.getElementById('kpiChurn').textContent = churnThisMonth;
+    document.getElementById('kpiChurnSub').textContent = churnThisMonth === 0 ? 'nenhum cancelamento' : (churnThisMonth === 1 ? 'cancelamento' : 'cancelamentos');
+
+    // Novos esta semana
+    const sevenDaysAgo = new Date(now); sevenDaysAgo.setDate(now.getDate() - 7);
+    const newBabasWeek = [...allPending, ...allApproved, ...allRejected].filter(b => new Date(b.created_at) >= sevenDaysAgo).length;
+    const newFamWeek = allFamilies.filter(f => new Date(f.created_at) >= sevenDaysAgo).length;
+    const totalNewWeek = newBabasWeek + newFamWeek;
+    document.getElementById('kpiNewWeek').textContent = totalNewWeek;
+    document.getElementById('kpiNewWeekSub').textContent = `${newBabasWeek} babá${newBabasWeek === 1 ? '' : 's'} + ${newFamWeek} famíli${newFamWeek === 1 ? 'a' : 'as'}`;
+  }
+
+  function renderInsights() {
+    // Tempo médio até aprovação
+    const approvedWithDates = allApproved.filter(b => b.approved_at && b.created_at);
+    if (approvedWithDates.length > 0) {
+      const totalHours = approvedWithDates.reduce((sum, b) => {
+        const created = new Date(b.created_at);
+        const approved = new Date(b.approved_at);
+        return sum + (approved - created) / (1000 * 60 * 60);
+      }, 0);
+      const avgH = totalHours / approvedWithDates.length;
+      let str;
+      if (avgH < 1) str = Math.round(avgH * 60) + ' min';
+      else if (avgH < 48) str = avgH.toFixed(1) + ' h';
+      else str = (avgH / 24).toFixed(1) + ' dias';
+      document.getElementById('insAvgApproval').textContent = str;
+    } else {
+      document.getElementById('insAvgApproval').textContent = '—';
+    }
+
+    // Razão babá/família
+    const babaCount = allApproved.length;
+    const famCount = allFamilies.length;
+    if (famCount > 0) {
+      const ratio = (babaCount / famCount).toFixed(1);
+      document.getElementById('insRatio').textContent = ratio + ' : 1';
+      const subEl = document.getElementById('insRatioSub');
+      if (babaCount > famCount * 2) subEl.textContent = '⚠️ Muita oferta de babá pra pouca demanda';
+      else if (famCount > babaCount * 2) subEl.textContent = '⚠️ Muita demanda pra pouca oferta';
+      else subEl.textContent = '✅ Marketplace equilibrado';
+    } else {
+      document.getElementById('insRatio').textContent = '—';
+      document.getElementById('insRatioSub').textContent = 'sem famílias ainda';
+    }
+
+    // Top 5 bairros — oferta (babás aprovadas)
+    const babaHoodCount = {};
+    allApproved.forEach(b => {
+      (b.neighborhoods || []).forEach(h => {
+        babaHoodCount[h] = (babaHoodCount[h] || 0) + 1;
+      });
+    });
+    const topBaba = Object.entries(babaHoodCount).sort((a,b) => b[1] - a[1]).slice(0, 5);
+    document.getElementById('insTopBabaHoods').innerHTML = topBaba.length > 0
+      ? topBaba.map(([h, n]) => `<li>${escapeHtml(h)} <b>${n}</b></li>`).join('')
+      : '<li style="color: var(--ink-3);">Sem dados ainda</li>';
+
+    // Top 5 bairros — demanda (famílias por bairro)
+    const famHoodCount = {};
+    allFamilies.forEach(f => {
+      if (f.neighborhood) famHoodCount[f.neighborhood] = (famHoodCount[f.neighborhood] || 0) + 1;
+    });
+    const topFam = Object.entries(famHoodCount).sort((a,b) => b[1] - a[1]).slice(0, 5);
+    document.getElementById('insTopFamilyHoods').innerHTML = topFam.length > 0
+      ? topFam.map(([h, n]) => `<li>${escapeHtml(h)} <b>${n}</b></li>`).join('')
+      : '<li style="color: var(--ink-3);">Sem dados ainda</li>';
+  }
+
+  function renderCharts() {
+    renderSignupsChart();
+    renderRevenueChart();
+  }
+
+  function renderSignupsChart() {
+    // Últimos 30 dias, agrupado por dia
+    const now = new Date();
+    const days = [];
+    for (let i = 29; i >= 0; i--) {
+      const d = new Date(now); d.setDate(now.getDate() - i); d.setHours(0,0,0,0);
+      days.push(d);
+    }
+    const allBabas = [...allPending, ...allApproved, ...allRejected];
+    const babaByDay = days.map(d => {
+      const end = new Date(d); end.setDate(d.getDate() + 1);
+      return allBabas.filter(b => {
+        const c = new Date(b.created_at);
+        return c >= d && c < end;
+      }).length;
+    });
+    const famByDay = days.map(d => {
+      const end = new Date(d); end.setDate(d.getDate() + 1);
+      return allFamilies.filter(f => {
+        const c = new Date(f.created_at);
+        return c >= d && c < end;
+      }).length;
+    });
+
+    const max = Math.max(1, ...babaByDay, ...famByDay);
+    const w = 800, h = 200, padL = 30, padB = 24, padT = 8, padR = 12;
+    const chartW = w - padL - padR;
+    const chartH = h - padT - padB;
+
+    const xFor = i => padL + (i / 29) * chartW;
+    const yFor = v => padT + chartH - (v / max) * chartH;
+
+    const babaPath = babaByDay.map((v, i) => (i === 0 ? 'M' : 'L') + xFor(i) + ',' + yFor(v)).join(' ');
+    const famPath = famByDay.map((v, i) => (i === 0 ? 'M' : 'L') + xFor(i) + ',' + yFor(v)).join(' ');
+
+    // Y axis labels
+    const ticks = [0, Math.ceil(max/2), max];
+    const yLabels = ticks.map(t => `<text x="${padL-6}" y="${yFor(t)+3}" font-size="10" fill="#6F7785" text-anchor="end">${t}</text>`).join('');
+
+    // X axis labels (todo dia 5, 15, 25 e o último)
+    const xLabels = [];
+    days.forEach((d, i) => {
+      const isLast = i === days.length - 1;
+      if (d.getDate() % 5 === 0 || isLast) {
+        const label = `${d.getDate()}/${d.getMonth()+1}`;
+        xLabels.push(`<text x="${xFor(i)}" y="${h - 8}" font-size="10" fill="#6F7785" text-anchor="middle">${label}</text>`);
+      }
+    });
+
+    document.getElementById('chartSignups').innerHTML = `
+      <svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none">
+        <!-- grid -->
+        <line x1="${padL}" y1="${yFor(0)}" x2="${w-padR}" y2="${yFor(0)}" stroke="#E8EAEE" stroke-width="1"/>
+        <line x1="${padL}" y1="${yFor(max/2)}" x2="${w-padR}" y2="${yFor(max/2)}" stroke="#E8EAEE" stroke-width="1" stroke-dasharray="3 3"/>
+        <line x1="${padL}" y1="${yFor(max)}" x2="${w-padR}" y2="${yFor(max)}" stroke="#E8EAEE" stroke-width="1" stroke-dasharray="3 3"/>
+        ${yLabels}
+        ${xLabels.join('')}
+        <!-- Babá linha -->
+        <path d="${babaPath}" fill="none" stroke="#1A9D85" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <!-- Família linha -->
+        <path d="${famPath}" fill="none" stroke="#7C5BD3" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <!-- Pontos -->
+        ${babaByDay.map((v, i) => `<circle cx="${xFor(i)}" cy="${yFor(v)}" r="2.5" fill="#1A9D85"/>`).join('')}
+        ${famByDay.map((v, i) => `<circle cx="${xFor(i)}" cy="${yFor(v)}" r="2.5" fill="#7C5BD3"/>`).join('')}
+      </svg>
+    `;
+  }
+
+  function renderRevenueChart() {
+    // Últimos 6 meses
+    const now = new Date();
+    const months = [];
+    for (let i = 5; i >= 0; i--) {
+      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      months.push(d);
+    }
+
+    const babaPrice = 19, familiaPrice = 29;
+    const revByMonth = months.map(m => {
+      const next = new Date(m.getFullYear(), m.getMonth() + 1, 1);
+      const subsInMonth = allSubs.filter(s => {
+        const start = new Date(s.created_at);
+        return start < next && (
+          s.status === 'active' ||
+          s.status === 'trialing' ||
+          (s.status === 'canceled' && new Date(s.updated_at || s.created_at) >= next)
+        );
+      });
+      let rev = 0;
+      subsInMonth.forEach(s => {
+        const isBaba = (s.plan_name || '').toLowerCase().includes('bab');
+        rev += isBaba ? babaPrice : familiaPrice;
+      });
+      return rev;
+    });
+
+    const max = Math.max(1, ...revByMonth);
+    const w = 800, h = 200, padL = 40, padB = 28, padT = 8, padR = 12;
+    const chartW = w - padL - padR;
+    const chartH = h - padT - padB;
+    const barW = (chartW / months.length) * 0.6;
+
+    const xFor = i => padL + (i / months.length) * chartW + (chartW / months.length - barW) / 2;
+    const yFor = v => padT + chartH - (v / max) * chartH;
+
+    const monthNames = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+
+    const bars = revByMonth.map((v, i) => {
+      const barH = (v / max) * chartH;
+      const x = xFor(i);
+      const y = yFor(v);
+      return `
+        <rect x="${x}" y="${y}" width="${barW}" height="${barH}" fill="#1A9D85" rx="4"/>
+        <text x="${x + barW/2}" y="${y - 5}" font-size="11" fill="#0E1620" font-weight="700" text-anchor="middle">${v > 0 ? 'R$' + v : ''}</text>
+      `;
+    }).join('');
+
+    const xLabels = months.map((d, i) => {
+      const x = xFor(i) + barW / 2;
+      return `<text x="${x}" y="${h - 10}" font-size="10" fill="#6F7785" text-anchor="middle">${monthNames[d.getMonth()]}/${String(d.getFullYear()).slice(-2)}</text>`;
+    }).join('');
+
+    document.getElementById('chartRevenue').innerHTML = `
+      <svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none">
+        <line x1="${padL}" y1="${yFor(0)}" x2="${w-padR}" y2="${yFor(0)}" stroke="#E8EAEE" stroke-width="1"/>
+        ${bars}
+        ${xLabels}
+      </svg>
+    `;
+  }
+
+  function escapeHtml(s) {
+    if (s == null) return '';
+    return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[m]);
+  }
+
+  // ====================================
+  // EXPORT CSV
+  // ====================================
+
+  function exportCSV(type) {
+    let rows = [];
+    let filename = '';
+    const dateStr = new Date().toISOString().split('T')[0];
+
+    if (type === 'pending') {
+      filename = `pendentes-${dateStr}.csv`;
+      rows = [['Nome','Email','WhatsApp','CPF','Bairros','Exp.(anos)','Valor/h','Cadastrada']];
+      allPending.forEach(b => rows.push([
+        b.full_name || '', b.email || '', b.phone || '', b.cpf || '',
+        (b.neighborhoods || []).join('; '),
+        b.years_experience || '', b.hourly_rate || '',
+        fmtDateCSV(b.created_at)
+      ]));
+    } else if (type === 'approved') {
+      filename = `aprovadas-${dateStr}.csv`;
+      rows = [['Nome','Email','WhatsApp','CPF','Bairros','Exp.','Valor/h','CNH','Veículo','Passaporte','Pernoite','Viaja','Aprovada em','Plano']];
+      allApproved.forEach(b => rows.push([
+        b.full_name || '', b.email || '', b.phone || '', b.cpf || '',
+        (b.neighborhoods || []).join('; '),
+        b.years_experience || '', b.hourly_rate || '',
+        b.has_cnh ? 'Sim' : 'Não', b.has_vehicle ? 'Sim' : 'Não',
+        b.has_passport || '', b.accepts_overnight ? 'Sim' : 'Não',
+        b.accepts_travel ? 'Sim' : 'Não',
+        fmtDateCSV(b.approved_at), b.plan_name || ''
+      ]));
+    } else if (type === 'families') {
+      filename = `familias-${dateStr}.csv`;
+      rows = [['Nome','Email','WhatsApp','Bairro','Filhos','Idades','Endereço','CEP','Plano','Cadastrada']];
+      allFamilies.forEach(f => rows.push([
+        f.full_name || '', f.email || '', f.phone || '',
+        f.neighborhood || '', f.children_count || '',
+        (f.children_ages || []).join('; '),
+        `${f.address_street || ''}, ${f.address_number || ''} ${f.address_complement || ''}`.trim(),
+        f.address_cep || '', f.plan_name || '',
+        fmtDateCSV(f.created_at)
+      ]));
+    } else if (type === 'subs') {
+      filename = `assinaturas-${dateStr}.csv`;
+      rows = [['Nome','Email','Plano','Status','Iniciou em','Trial até','Renova em','Cancela no fim do período?']];
+      allSubs.forEach(s => rows.push([
+        s.full_name || '', s.email || '', s.plan_name || '',
+        s.status || '',
+        fmtDateCSV(s.created_at), fmtDateCSV(s.trial_end),
+        fmtDateCSV(s.current_period_end),
+        s.cancel_at_period_end ? 'Sim' : 'Não'
+      ]));
+    }
+
+    if (rows.length <= 1) { alert('Nada pra exportar.'); return; }
+
+    const csv = rows.map(row => row.map(cell => {
+      const v = String(cell == null ? '' : cell).replace(/"/g, '""');
+      return /[",\n]/.test(v) ? `"${v}"` : v;
+    }).join(',')).join('\n');
+
+    // BOM pra Excel reconhecer UTF-8
+    const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  function fmtDateCSV(s) {
+    if (!s) return '';
+    try { return new Date(s).toLocaleDateString('pt-BR'); }
+    catch { return ''; }
+  }
+  window.exportCSV = exportCSV;
 
   async function cancelStripeSub(userId) {
     try {
